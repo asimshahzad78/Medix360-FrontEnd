@@ -1,0 +1,23 @@
+:root {
+  /* 🌿 ERES-like Greens */
+  --primary: #4caf50;
+  --primary-dark: #43a047;
+
+  /* 🧼 Backgrounds */
+  --bg-page: #f3f7f5;
+  --bg-soft: #f1f8f4;
+  --bg-card: #ffffff;
+
+  /* 🟢 Sidebar */
+  --sidebar-bg: #4caf50;
+  --sidebar-hover: #66bb6a;
+  --sidebar-text: #ffffff;
+
+  /* 🖤 Text */
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+
+  /* 🧱 UI */
+  --radius: 14px;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}

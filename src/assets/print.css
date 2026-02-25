@@ -1,0 +1,87 @@
+/* =========================================================
+   PRINT RULES (GLOBAL) — Paste as-is (NO scoped)
+   Hides: AppSidebar (.sidebar), AppHeader (.header),
+          AppFooter (.app-footer), action bar (.no-print)
+   Prints: only invoice/thermal area cleanly
+========================================================= */
+
+/* Optional: normalize paper settings */
+@page {
+  size: A4;
+  margin: 10mm;
+}
+
+@media print {
+  /* --- hide app chrome --- */
+  .sidebar,
+  .header,
+  .app-footer,
+  .no-print,
+  nav,
+  aside,
+  footer,
+  header {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* --- remove layout spacing --- */
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Your wrappers */
+  #app,
+  .layout,
+  .main,
+  .content,
+  .fullwidth-layout {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: auto !important;
+    background: #fff !important;
+    overflow: visible !important;
+  }
+
+  /* Remove the page padding you add in layout */
+  .content {
+    padding: 0 !important;
+  }
+
+  /* --- ensure printable area takes full page --- */
+  #printableArea {
+    display: block !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* If you use these classes */
+  .print-page {
+    width: auto !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+  }
+
+  /* Thermal page: prevent shrinking/cropping */
+  .thermal {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Avoid weird scrollbars/gaps */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    overflow: visible !important;
+  }
+}

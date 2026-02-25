@@ -1,0 +1,10 @@
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+body {
+  background: var(--bg-page);
+}
