@@ -8,10 +8,13 @@ export interface PatientApiDto {
   Title: string
   FirstName: string
   LastName: string
+  Panel?: string
   Gender: string
   MaritalStatus: string
   Phone: string
   Age?: number
+    AgeUnit?: string       // ✅ add
+  AgeDisplay?: string
   Email?: string
   BloodGroup?: string
   FatherName?: string
@@ -36,6 +39,7 @@ const mapToApiPayload = (payload: PatientSaveDto) => ({
   FirstName: payload.firstName,
   LastName: payload.lastName,
   Phone: payload.phone,
+  Panel: payload.panel,
   Age: payload.age,
   Email: payload.email,
   Gender: payload.gender,
@@ -61,6 +65,7 @@ export interface PatientSaveDto {
   lastName: string
   phone: string
   age?: number | null
+  panel?: string
   email?: string
   gender: string
   maritalStatus?: string

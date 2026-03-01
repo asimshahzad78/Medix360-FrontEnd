@@ -135,4 +135,7 @@ export const checkupService = {
     const { data } = await api.get<CheckupApiDto[]>(`/checkups/patient/${patientId}/history`)
     return data.map(mapCheckup)
   },
+  async delete(id: number): Promise<void> {
+  await api.delete(`/checkups/${id}`)
+}
 }

@@ -47,7 +47,7 @@
 
           <div>
             <label>Doctor</label>
-            <select v-model="form.doctorId">
+            <select v-model.number="form.doctorId">
               <option :value="null">--- SELECT ---</option>
               <option v-for="d in doctors" :key="d.id" :value="d.id">
                 {{ d.name }}
@@ -228,7 +228,6 @@ import { doctorService } from '../doctor/doctor.service'
 import { checkupService } from './checkup.service'
 import { financeService } from '../finance/finance.service'
 import type { AxiosError } from 'axios'
-import router from '@/router'
 
 type TabType = 'info' | 'vitals' | 'medicine' | 'tests'
 type AlertType = 'success' | 'error'
@@ -273,8 +272,7 @@ interface CheckupForm {
   doctorId: number | null
   patientType: string
   checkupDate: string
-
-  paymentMode: string // ✅ NEW
+  paymentMode: string
 
   bpSystolic: number | null
   bpDiastolic: number | null
@@ -291,6 +289,19 @@ interface CheckupForm {
   labTests: LabTestItem[]
 }
 
+/** ✅ This matches your API after backend fix: DocId = DoctorsInfo.Id */
+interface DoctorApiItem {
+  DocId: number
+  FirstName: string
+  LastName: string
+  DoctorFee: number | null
+}
+
+interface DoctorPagedResponse {
+  items: DoctorApiItem[]
+  totalCount: number
+}
+
 export default defineComponent({
   props: {
     patient: {
@@ -303,39 +314,12 @@ export default defineComponent({
   setup(props, { emit }) {
     const tab = ref<TabType>('info')
     const alertState = ref<AlertState | null>(null)
-    const selectedAccountId = ref<string | null>(null)
-    const selectedDoctorFee = ref<number>(0)
-
-    const isCashAccountSelected = () => {
-      const acc = paymentAccounts.value.find((a) => a.Id === selectedAccountId.value)
-      return acc?.Name.toLowerCase().includes('cash') ?? false
-    }
-
-    /* const getDatePlusDays = (days: number): string => {
-      const d = new Date()
-      d.setDate(d.getDate() + days)
-      return d.toISOString().slice(0, 10)
-    } */
 
     const doctors = ref<DoctorItem[]>([])
     const paymentAccounts = ref<PaymentAccountItem[]>([])
 
-    onMounted(async () => {
-      const res = await doctorService.getAll()
-      doctors.value = res.items.map((d) => ({
-        id: d.DocId,
-        name: `${d.FirstName} ${d.LastName}`,
-        fee: d.DoctorFee ?? 0,
-      }))
-
-      paymentAccounts.value = await financeService.getPaymentAccounts()
-
-      const cash = paymentAccounts.value.find((a) => a.Name.toLowerCase().includes('cash in'))
-
-      if (cash) {
-        selectedAccountId.value = cash.Id
-      }
-    })
+    const selectedAccountId = ref<string | null>(null)
+    const selectedDoctorFee = ref<number>(0)
 
     const form = reactive<CheckupForm>({
       patientId: props.patient.id,
@@ -343,6 +327,7 @@ export default defineComponent({
       patientType: 'Out Patient',
       checkupDate: new Date().toISOString().slice(0, 10),
       paymentMode: 'Cash',
+
       bpSystolic: null,
       bpDiastolic: null,
       respirationRate: null,
@@ -357,6 +342,11 @@ export default defineComponent({
       medicines: [],
       labTests: [],
     })
+
+    const isCashAccountSelected = (): boolean => {
+      const acc = paymentAccounts.value.find((a) => a.Id === selectedAccountId.value)
+      return acc ? acc.Name.toLowerCase().includes('cash') : false
+    }
 
     watch(
       () => form.doctorId,
@@ -380,19 +370,38 @@ export default defineComponent({
       price: 0,
     })
 
-    const addMedicine = () => {
+    const addMedicine = (): void => {
       form.medicines.push({ ...newMed })
     }
 
-    const removeMedicine = (i: number) => form.medicines.splice(i, 1)
+    const removeMedicine = (i: number): void => {
+      form.medicines.splice(i, 1)
+    }
 
-    const addTest = () => {
+    const addTest = (): void => {
       form.labTests.push({ ...newTest })
     }
 
-    const removeTest = (i: number) => form.labTests.splice(i, 1)
+    const removeTest = (i: number): void => {
+      form.labTests.splice(i, 1)
+    }
 
-    const save = async () => {
+    onMounted(async () => {
+      const res = (await doctorService.getAll()) as DoctorPagedResponse
+
+      doctors.value = (res.items ?? []).map((d): DoctorItem => ({
+        id: d.DocId,
+        name: `${d.FirstName} ${d.LastName}`.trim(),
+        fee: d.DoctorFee ?? 0,
+      }))
+
+      paymentAccounts.value = await financeService.getPaymentAccounts()
+
+      const cash = paymentAccounts.value.find((a) => a.Name.toLowerCase().includes('cash in'))
+      if (cash) selectedAccountId.value = cash.Id
+    })
+
+    const save = async (): Promise<void> => {
       try {
         if (!form.doctorId) {
           alertState.value = { type: 'error', message: 'Please select a doctor.' }
@@ -438,7 +447,6 @@ export default defineComponent({
           respirationRate: form.respirationRate,
           temperature: form.temperature,
 
-          // 🔑 FIX: remove null IDs before sending
           medicines: form.medicines
             .filter((m) => m.medicineId !== null)
             .map((m) => ({
@@ -458,27 +466,17 @@ export default defineComponent({
           paymentAccountId: selectedAccountId.value,
         })
 
-        alertState.value = {
-          type: 'success',
-          message: 'Checkup saved successfully.',
-        }
+        alertState.value = { type: 'success', message: 'Checkup saved successfully.' }
 
         setTimeout(() => {
-          emit('saved')
+          emit('saved', res.PaymentId)
           emit('close')
-
-          router.push({
-            name: 'PaymentPrint',
-            params: { id: res.PaymentId },
-          })
         }, 1200)
       } catch (e) {
         const err = e as AxiosError<ApiErrorResponse>
-
         alertState.value = {
           type: 'error',
-          message:
-            err.response?.data?.message ?? 'Failed to save checkup. Please check required fields.',
+          message: err.response?.data?.message ?? 'Failed to save checkup. Please check required fields.',
         }
       }
     }

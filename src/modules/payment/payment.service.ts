@@ -72,94 +72,99 @@ getPaged(page: number, pageSize: number, search?: string) {
   /* =========================
      INVOICE / PRINT ✅ (doctorName + doctorMobile included)
   ========================= */
-  async getInvoiceForPrint(id: number): Promise<PaymentPrintResponse> {
-    const { data } = await api.get<{
+ async getInvoiceForPrint(id: number): Promise<PaymentPrintResponse> {
+  const { data } = await api.get<{
+    id: number
+    visitId: string
+    receiptNo: string
+    paymentDate: string
+    status: string
+
+    patient: {
       id: number
-      visitId: string
-      receiptNo: string
-      paymentDate: string
-      status: string
-
-      patient: {
-        id: number
-        fullName: string
-        age?: number
-        gender?: string
-        mrNo?: string
-        bedNo?: string | null
-      }
-
-      patientName?: string
-
-      totalAmount: number
-      totalDiscount: number
-      netAmount: number
-      paidAmount: number
-      balanceAmount: number
-
-      doctorId?: number | null
-      doctorName?: string | null
-      doctorMobile?: string | null
-
-      details: Array<{
-        id: number
-        description: string
-        quantity?: number
-        unitPrice?: number
-        amount: number
-        discount: number
-        netAmount: number
-      }>
-    }>(`/payments/${id}/invoice`)
-
-    // PaymentPrintResponse['status'] is: 'Draft' | 'Posted' | 'Cancelled'
-    // Your API status is coming as "Paid" now, so map it to "Posted"
-    const status: PaymentPrintResponse['status'] =
-      data.status === 'Draft' || data.status === 'Posted' || data.status === 'Cancelled'
-        ? data.status
-        : data.status === 'Paid'
-          ? 'Posted'
-          : 'Draft'
-
-    return {
-      id: data.id,
-      visitId: String(data.visitId ?? ''),
-      receiptNo: data.receiptNo ?? '',
-      paymentDate: data.paymentDate ?? '',
-      status,
-
-      patient: {
-        id: data.patient?.id ?? 0,
-        fullName: data.patient?.fullName ?? '',
-        age: data.patient?.age,
-        gender: data.patient?.gender,
-        mrNo: data.patient?.mrNo,
-        bedNo: data.patient?.bedNo ?? null,
-      },
-
-      patientName: data.patientName ?? data.patient?.fullName ?? '',
-
-      totalAmount: data.totalAmount ?? 0,
-      totalDiscount: data.totalDiscount ?? 0,
-      netAmount: data.netAmount ?? 0,
-      paidAmount: data.paidAmount ?? 0,
-      balanceAmount: data.balanceAmount ?? 0,
-
-      doctorId: data.doctorId ?? null,
-      doctorName: data.doctorName ?? null,
-      doctorMobile: data.doctorMobile ?? null,
-
-      details: (data.details ?? []).map((d) => ({
-        id: d.id ?? 0,
-        description: d.description ?? '',
-        quantity: d.quantity,
-        unitPrice: d.unitPrice,
-        amount: d.amount ?? 0,
-        discount: d.discount ?? 0,
-        netAmount: d.netAmount ?? 0,
-      })),
+      fullName: string
+      age?: number
+      ageDisplay?: string      // ✅ add
+      ageUnit?: string         // ✅ add
+      gender?: string
+      mrNo?: string
+      bedNo?: string | null
+      panel?: string          // ✅ add
     }
-  },
+
+    patientName?: string
+
+    totalAmount: number
+    totalDiscount: number
+    netAmount: number
+    paidAmount: number
+    balanceAmount: number
+
+    doctorId?: number | null
+    doctorName?: string | null
+    doctorMobile?: string | null
+
+    details: Array<{
+      id: number
+      description: string
+      quantity?: number
+      unitPrice?: number
+      amount: number
+      discount: number
+      netAmount: number
+    }>
+  }>(`/payments/${id}/invoice`)
+
+  // ✅ keep your existing mapping logic (Paid -> Posted)
+  const status: PaymentPrintResponse['status'] =
+    data.status === 'Draft' || data.status === 'Posted' || data.status === 'Cancelled'
+      ? data.status
+      : data.status === 'Paid'
+        ? 'Posted'
+        : 'Draft'
+
+  return {
+    id: data.id,
+    visitId: String(data.visitId ?? ''),
+    receiptNo: data.receiptNo ?? '',
+    paymentDate: data.paymentDate ?? '',
+    status,
+
+    patient: {
+      id: data.patient?.id ?? 0,
+      fullName: data.patient?.fullName ?? '',
+      age: data.patient?.age,
+      ageDisplay: data.patient?.ageDisplay,   // ✅ map
+      ageUnit: data.patient?.ageUnit,         // ✅ map
+      gender: data.patient?.gender,
+      mrNo: data.patient?.mrNo,
+      bedNo: data.patient?.bedNo ?? null,
+      panel: data.patient?.panel,             // ✅ map
+    },
+
+    patientName: data.patientName ?? data.patient?.fullName ?? '',
+
+    totalAmount: data.totalAmount ?? 0,
+    totalDiscount: data.totalDiscount ?? 0,
+    netAmount: data.netAmount ?? 0,
+    paidAmount: data.paidAmount ?? 0,
+    balanceAmount: data.balanceAmount ?? 0,
+
+    doctorId: data.doctorId ?? null,
+    doctorName: data.doctorName ?? null,
+    doctorMobile: data.doctorMobile ?? null,
+
+    details: (data.details ?? []).map((d) => ({
+      id: d.id ?? 0,
+      description: d.description ?? '',
+      quantity: d.quantity,
+      unitPrice: d.unitPrice,
+      amount: d.amount ?? 0,
+      discount: d.discount ?? 0,
+      netAmount: d.netAmount ?? 0,
+    })),
+  }
+},
 
   /* =========================
      LOAD PAYMENT (EDIT MODAL)

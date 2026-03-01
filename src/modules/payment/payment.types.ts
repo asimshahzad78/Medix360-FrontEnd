@@ -174,6 +174,7 @@ export interface PaymentDetailResponse {
     fullName: string
     age?: number
     gender?: string
+    panel?: string
     mrNo?: string
     bedNo?: string | null
   }
@@ -344,6 +345,10 @@ export interface PatientInfo {
   age?: number
   gender?: string
   mrNo?: string
+  panel?: string
+  Panel?: string
+  ageDisplay?: string
+  ageUnit?: string
   bedNo?: string | null
 }
 
@@ -354,6 +359,10 @@ export interface PaymentPrintResponse {
   receiptNo: string
   paymentDate: string
   status: PaymentStatus      // ✅ includes Paid
+panel?: string              // ✅ added in API
+  Panel?: string            // ✅ add
+  patientType?: string      // ✅ add
+  PatientType?: string      // ✅ add
 
   patient: PatientInfo
   patientName: string

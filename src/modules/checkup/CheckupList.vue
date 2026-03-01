@@ -48,7 +48,7 @@
               <td class="actions col-actions">
                 <button class="icon-btn" type="button" title="View">👁️</button>
                 <button class="icon-btn" type="button" title="Edit">✏️</button>
-                <button class="icon-btn" type="button" title="Delete">🗑️</button>
+                <button class="icon-btn" type="button" title="Delete" @click="deleteCheckup(c)">🗑️</button>
               </td>
             </tr>
 
@@ -120,10 +120,24 @@ export default defineComponent({
       tmr = setTimeout(() => loadCheckups(), 300)
     })
 
+    const deleteCheckup = async (c: CheckupListDto) => {
+      const ok = window.confirm(`Delete checkup #${c.id}?`)
+      if (!ok) return
+
+      loading.value = true
+      try {
+        await checkupService.delete(c.id)
+        await loadCheckups()
+      } finally {
+        loading.value = false
+      }
+    }
+
     onMounted(loadCheckups)
 
     return {
       search,
+      deleteCheckup,
       loading,
       filteredCheckups,
       page,

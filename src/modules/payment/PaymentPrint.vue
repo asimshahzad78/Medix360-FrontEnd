@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick, watch } from 'vue'
+import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { PaymentService } from './payment.service'
 import { companyInfoService } from '@/modules/company-info/company-info.service'
@@ -20,10 +20,6 @@ type Html2PdfOptions = {
   html2canvas?: {
     scale?: number
     useCORS?: boolean
-    scrollY?: number
-    scrollX?: number
-    windowWidth?: number
-    windowHeight?: number
     backgroundColor?: string | null
   }
   jsPDF?: {
@@ -43,10 +39,11 @@ const router = useRouter()
 const payment = ref<PaymentPrintResponse | null>(null)
 const company = ref<CompanyInfo | null>(null)
 
-/* ===== Logo logic (same as CompanyInfo page) ===== */
+/* ===== Logo ===== */
 const API_ORIGIN = (import.meta.env.VITE_API_ORIGIN || window.location.origin).replace(/\/$/, '')
 const logoPreview = ref('')
 const logoFailed = ref(false)
+const logoObjectUrl = ref<string>('')
 
 const buildLogoUrl = (path?: string) => {
   if (!path) return ''
@@ -55,8 +52,13 @@ const buildLogoUrl = (path?: string) => {
 }
 
 watch(logoPreview, () => {
-  // whenever logo url changes, reset failure flag
   logoFailed.value = false
+})
+
+onBeforeUnmount(() => {
+  if (logoObjectUrl.value) {
+    try { URL.revokeObjectURL(logoObjectUrl.value) } catch { }
+  }
 })
 
 /* ===== Computeds ===== */
@@ -83,39 +85,24 @@ const formattedDate = computed(() => {
   }).format(d)
 })
 
-/* ===== Load ===== */
-const load = async () => {
-  const id = Number(route.params.id)
-  payment.value = await PaymentService.getInvoiceForPrint(id)
-
-  try {
-    company.value = await companyInfoService.get()
-    logoPreview.value = buildLogoUrl(company.value?.CompanyLogoImagePath)
-    logoFailed.value = false
-  } catch {
-    company.value = null
-    logoPreview.value = ''
-    logoFailed.value = false
-  }
-}
-
-onMounted(load)
+const displayPanel = computed(() => {
+  const p = payment.value
+  if (!p) return '-'
+  return (
+    p.patient?.panel ??
+    p.patient?.Panel ??
+    p.panel ??
+    p.Panel ??
+    p.patientType ??
+    p.PatientType ??
+    '-'
+  )
+})
 
 /* ===== Helpers ===== */
-const waitForCurrentLogo = (timeoutMs = 2000) =>
+const waitForImagesIn = (root: HTMLElement, timeoutMs = 2500) =>
   new Promise<void>((resolve) => {
-    const img = document.querySelector('#printableArea img.logo') as HTMLImageElement | null
-    if (!img) return resolve()
-    if (img.complete) return resolve()
-    const done = () => resolve()
-    img.addEventListener('load', done, { once: true })
-    img.addEventListener('error', done, { once: true })
-    setTimeout(done, timeoutMs)
-  })
-
-const waitForImages = (win: Window, timeoutMs = 2000) =>
-  new Promise<void>((resolve) => {
-    const imgs = Array.from(win.document.images || [])
+    const imgs = Array.from(root.querySelectorAll('img')) as HTMLImageElement[]
     if (!imgs.length) return resolve()
 
     let pending = imgs.filter((i) => !i.complete).length
@@ -135,66 +122,147 @@ const waitForImages = (win: Window, timeoutMs = 2000) =>
     setTimeout(resolve, timeoutMs)
   })
 
-/* ===== ACTIONS ===== */
-const printInvoice = async () => {
-  // ensure data loaded (and logo URL set) before cloning HTML
-  if (!company.value) await load()
-  await nextTick()
-  await waitForCurrentLogo()
+const printBlobHidden = (blob: Blob) => {
+  const url = URL.createObjectURL(blob)
 
-  const el = document.querySelector('#printableArea .sheet') as HTMLElement | null
-  if (!el) return
+  const iframe = document.createElement('iframe')
+  iframe.style.position = 'fixed'
+  iframe.style.right = '0'
+  iframe.style.bottom = '0'
+  iframe.style.width = '0'
+  iframe.style.height = '0'
+  iframe.style.border = '0'
+  iframe.src = url
 
-  const w = window.open('', '_blank', 'width=980,height=720')
-  if (!w) return
+  const cleanup = () => {
+    try { URL.revokeObjectURL(url) } catch { }
+    try { iframe.remove() } catch { }
+  }
 
-  const headCss = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
-    .map((n) => (n as HTMLElement).outerHTML)
-    .join('\n')
+  iframe.onload = () => {
+    try {
+      iframe.contentWindow?.focus()
+      iframe.contentWindow?.print()
+    } catch { }
+    setTimeout(cleanup, 15000)
+  }
 
-  const baseHref = document.baseURI || window.location.href
+  document.body.appendChild(iframe)
+}
 
-  const html = `<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <base href="${baseHref}">
-    <title>Invoice</title>
-    ${headCss}
-    <style>
-      @page{size:A5 landscape;margin:5mm;}
-      html,body{margin:0;padding:0;background:#fff;}
-      #printRoot{width:100%;display:flex;justify-content:center;}
-    </style>
-  </head>
-  <body>
-    <div id="printRoot">${el.outerHTML}</div>
-  </body>
-</html>`
+/* ===== Load ===== */
+const load = async () => {
+  const id = Number(route.params.id)
+  payment.value = await PaymentService.getInvoiceForPrint(id)
 
   try {
-    w.document.open()
-    w.document.write(html)
-    w.document.close()
+    company.value = await companyInfoService.get()
 
-    await new Promise((r) => setTimeout(r, 200))
-    await waitForImages(w)
-  } catch (e) {
-    console.error('print window write failed:', e)
-    try { w.close() } catch { }
-    window.print()
-    return
+    const rawLogoUrl = buildLogoUrl(company.value?.CompanyLogoImagePath)
+    if (!rawLogoUrl) {
+      logoPreview.value = ''
+      return
+    }
+
+    // Best: Blob URL (no canvas/CORS drama)
+    try {
+      const res = await fetch(rawLogoUrl + `?v=${Date.now()}`, { mode: 'cors', cache: 'no-store' })
+      if (!res.ok) throw new Error(`logo fetch failed: ${res.status}`)
+      const blob = await res.blob()
+
+      if (logoObjectUrl.value) {
+        try { URL.revokeObjectURL(logoObjectUrl.value) } catch { }
+      }
+
+      logoObjectUrl.value = URL.createObjectURL(blob)
+      logoPreview.value = logoObjectUrl.value
+      logoFailed.value = false
+    } catch {
+      // fallback
+      logoPreview.value = rawLogoUrl + `?v=${Date.now()}`
+      logoFailed.value = false
+    }
+  } catch {
+    company.value = null
+    logoPreview.value = ''
+    logoFailed.value = false
   }
+}
 
-  w.focus()
-  w.onafterprint = () => {
-    try { w.close() } catch { }
+onMounted(load)
+
+/* ===== ACTIONS ===== */
+const printInvoice = async () => {
+  // capture ONLY sheet (prevents 2 pages)
+  const sheet = document.querySelector('#printableArea .sheet') as HTMLElement | null
+  if (!sheet || !payment.value) return
+
+  document.body.classList.add('pdf-mode')
+
+  try {
+    await new Promise((r) => setTimeout(r, 80))
+    await waitForImagesIn(sheet)
+
+    const { default: html2canvas } = (await import('html2canvas')) as unknown as {
+      default: (
+        el: HTMLElement,
+        opts: { scale: number; useCORS: boolean; backgroundColor: string }
+      ) => Promise<HTMLCanvasElement>
+    }
+
+    const { jsPDF } = (await import('jspdf')) as unknown as {
+      jsPDF: new (opts: { orientation: 'landscape'; unit: 'mm'; format: number[] }) => {
+        addImage: (data: string, type: 'JPEG', x: number, y: number, w: number, h: number) => void
+        output: (type: 'blob') => Blob
+      }
+    }
+
+    const canvas = await html2canvas(sheet, { scale: 2, useCORS: true, backgroundColor: '#ffffff' })
+    const imgData = canvas.toDataURL('image/jpeg', 0.98)
+
+    // ===== REPLACE YOUR OLD pageW/pageH/margin/x/y CODE WITH THIS =====
+
+    // A5 landscape in mm
+    const pageW = 210
+    const pageH = 148
+
+    // printer safe margins (bigger left)
+    const mTop = 10
+    const mLeft = 60
+    const mBottom = 10
+    const mRight = 5
+
+    // HP printers often shift print LEFT → push right
+    const offsetX = 14  // try 14, if still cut then 18
+    const offsetY = 0
+
+    // shrink a bit so right side never clips after shift
+    const shrink = 0.94
+
+    const maxW = (pageW - mLeft - mRight) * shrink
+    const maxH = (pageH - mTop - mBottom) * shrink
+
+    let imgW = maxW
+    let imgH = (canvas.height * imgW) / canvas.width
+
+    if (imgH > maxH) {
+      imgH = maxH
+      imgW = (canvas.width * imgH) / canvas.height
+    }
+
+    let x = mLeft + offsetX
+    let y = mTop + offsetY
+
+    x = Math.min(x, pageW - mRight - imgW)
+    y = Math.min(y, pageH - mBottom - imgH)
+
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [pageW, pageH] })
+    pdf.addImage(imgData, 'JPEG', x, y, imgW, imgH)
+
+    printBlobHidden(pdf.output('blob'))
+  } finally {
+    document.body.classList.remove('pdf-mode')
   }
-  w.print()
-
-  setTimeout(() => {
-    try { w.close() } catch { }
-  }, 1200)
 }
 
 const thermalPrint = () => {
@@ -254,9 +322,9 @@ const goBack = () => {
           <!-- HEADER: logo left, address/contact right -->
           <div class="top">
             <div class="top-left">
-              <img v-if="logoPreview && !logoFailed" class="logo" :src="logoPreview" alt="Company Logo"
+              <img v-if="logoPreview && !logoFailed" class="logo" :src="logoPreview" crossorigin="anonymous"
                 @error="logoFailed = true" />
-              <span v-else class="no-logo">No logo uploaded</span>
+              <!--  <span v-else class="no-logo">No logo uploaded</span> -->
             </div>
 
             <div class="top-right">
@@ -274,8 +342,15 @@ const goBack = () => {
               <div class="meta-col">
                 <p><strong>Patient:</strong> {{ payment.patient.fullName }}</p>
                 <p v-if="payment.patient.mrNo"><strong>MR No:</strong> {{ payment.patient.mrNo }}</p>
-                <p v-if="payment.patient.age">
-                  <strong>Age:</strong> {{ payment.patient.age }} {{ payment.patient.gender }}
+                <p v-if="payment.patient.ageDisplay || payment.patient.age !== undefined">
+                  <strong>Age:</strong>
+                  {{
+                    payment.patient.ageDisplay ??
+                    (payment.patient.age !== undefined
+                      ? `${payment.patient.age} ${payment.patient.ageUnit ?? ''}`.trim()
+                      : '')
+                  }}
+                  <span v-if="payment.patient.gender"> {{ payment.patient.gender }}</span>
                 </p>
                 <p v-if="payment.doctorName"><strong>Doctor:</strong> {{ payment.doctorName }}</p>
               </div>
@@ -283,7 +358,7 @@ const goBack = () => {
               <div class="meta-col">
                 <p><strong>Invoice #:</strong> {{ payment.receiptNo }}</p>
                 <p><strong>Date:</strong> {{ formattedDate }}</p>
-                <p><strong>Status:</strong> {{ displayStatus }}</p>
+                <p><strong>Panel:</strong> {{ displayPanel }}</p>
                 <p>
                   <strong>Mobile:</strong>
                   {{ payment.doctorMobile?.trim() ? payment.doctorMobile : '-' }}
@@ -320,6 +395,7 @@ const goBack = () => {
             <p><strong>Net: {{ payment.netAmount }}</strong></p>
             <p>Paid: {{ payment.paidAmount }}</p>
             <p><strong>Due: {{ payment.balanceAmount }}</strong></p>
+            <p><strong>Status:</strong> {{ displayStatus }}</p>
           </div>
         </div>
 
@@ -342,6 +418,7 @@ const goBack = () => {
 </template>
 
 <style scoped>
+/* ----------------- UI buttons ----------------- */
 .action-bar {
   display: flex;
   justify-content: flex-end;
@@ -396,16 +473,22 @@ const goBack = () => {
   padding: 12px;
 }
 
+/* ----------------- sheet ----------------- */
 .sheet {
   width: 190mm;
   margin: 0 auto;
   box-sizing: border-box;
   font-family: Arial, sans-serif;
   color: #000;
-
-  min-height: 138mm;
   display: flex;
   flex-direction: column;
+}
+
+/* screen only height */
+@media screen {
+  .sheet {
+    min-height: 138mm;
+  }
 }
 
 .content {
@@ -416,13 +499,11 @@ const goBack = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* ✅ vertical center against logo */
   gap: 10px;
 }
 
 .top-left {
   min-width: 70mm;
-  /* a bit wider so logo can grow */
   display: flex;
   align-items: center;
 }
@@ -430,9 +511,7 @@ const goBack = () => {
 .logo {
   display: block;
   max-height: 65px;
-  /* ✅ increase logo size */
   max-width: 90mm;
-  /* ✅ increase logo size */
   object-fit: contain;
 }
 
@@ -444,7 +523,6 @@ const goBack = () => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /* ✅ center text vertically */
 }
 
 .no-logo {
@@ -511,27 +589,22 @@ const goBack = () => {
   margin: 0 0 5px 0;
 }
 
-/* FOOTER (tighter + smaller) */
+/* footer */
 .footer {
   margin-top: auto;
   padding-top: 4mm;
-  /* ✅ less gap before footer */
   font-size: 9.5px;
-  /* ✅ smaller text */
   line-height: 1.2;
-  /* ✅ tighter lines */
 }
 
 .footer-note {
   margin-bottom: 1.5mm;
-  /* ✅ reduce gap before hr */
 }
 
 .footer-hr {
   border: none;
   border-top: 1px solid #999;
   margin: 0 0 1.5mm;
-  /* ✅ reduce gap after hr */
 }
 
 .footer-bottom {
@@ -539,19 +612,8 @@ const goBack = () => {
   justify-content: space-between;
 }
 
+/* ✅ print behavior for component elements (scoped targets only) */
 @media print {
-  @page {
-    size: A5 landscape;
-    margin: 5mm;
-  }
-
-  html,
-  body {
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #fff !important;
-  }
-
   .no-print {
     display: none !important;
   }
@@ -561,6 +623,44 @@ const goBack = () => {
     padding: 0 !important;
     margin: 0 !important;
     overflow: visible !important;
+  }
+
+  /* stop flex full-page logic (prevents 2 pages) */
+  .sheet {
+    width: 100% !important;
+    min-height: auto !important;
+    height: auto !important;
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  /* stop pushing footer to bottom */
+  .footer {
+    margin-top: 6mm !important;
+  }
+}
+</style>
+
+<style>
+@media print {
+
+  /* A5 landscape + safe internal margin (HP cannot print edge-to-edge) */
+  @page {
+    size: 210mm 148mm;
+    margin: 0;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  /* this becomes your "print-safe margin" instead of @page margin */
+  body {
+    padding: 12mm !important;
+    box-sizing: border-box !important;
   }
 }
 </style>

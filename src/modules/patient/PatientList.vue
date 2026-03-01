@@ -27,9 +27,9 @@
               <th class="text-left">ID</th>
               <th class="text-left">Name</th>
               <th class="text-left col-gender">Gender</th>
-              <th class="text-left col-marital">Marital</th>
               <th class="text-left col-age">Age</th>
               <th class="text-left">Phone</th>
+              <th class="text-left">Panel</th>
               <th class="text-left">Actions</th>
             </tr>
           </thead>
@@ -39,10 +39,11 @@
               <td class="col-id">{{ p.id }}</td>
               <td class="col-name">{{ buildFullName(p) }}</td>
               <td class="col-gender">{{ p.gender }}</td>
-              <td class="col-marital">{{ p.maritalStatus }}</td>
-              <td class="col-age">{{ p.age }}</td>
+              <td class="col-age">
+                {{ p.ageDisplay || (p.age ? `${p.age} ${p.ageUnit || ''}`.trim() : '') }}
+              </td>
               <td class="col-phone">{{ p.phone }}</td>
-
+              <td class="col-phone">{{ p.panel }}</td>
               <td class="actions">
                 <button class="icon-btn" type="button" title="Checkup" @click="openCheckupModal(p)">
                   🩺
@@ -83,7 +84,8 @@
 
       <PatientHistoryModal v-if="showHistory && selectedPatient" :patientId="selectedPatient.id" @close="closeModals" />
 
-      <CheckupModal v-if="showCheckup && selectedPatient" :patient="selectedPatient" @close="closeModals" />
+      <CheckupModal v-if="showCheckup && selectedPatient" :patient="selectedPatient" @saved="onCheckupSaved"
+        @close="closeModals" />
     </Teleport>
   </div>
 </template>
@@ -91,6 +93,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, watch } from 'vue'
 import { patientService, type PatientApiDto } from './patient.service'
+import { useRouter } from 'vue-router'
 
 import PatientFormModal from './PatientFormModal.vue'
 import PatientHistoryModal from './PatientHistoryModal.vue'
@@ -104,7 +107,11 @@ interface Patient {
   gender: string
   maritalStatus: string
   phone: string
+  panel?: string
   age: number
+  ageDisplay?: string      // ✅ add
+  ageUnit?: string
+
 }
 
 export default defineComponent({
@@ -141,7 +148,10 @@ export default defineComponent({
         gender: p.Gender ?? '',
         maritalStatus: p.MaritalStatus ?? '',
         phone: p.Phone ?? '',
+        panel: p.Panel ?? '',
         age: p.Age ?? 0,
+        ageDisplay: p.AgeDisplay ?? '',
+        ageUnit: p.AgeUnit ?? '',
       }))
       loading.value = false
     }
@@ -192,6 +202,22 @@ export default defineComponent({
       loadPatients()
     }
 
+    const router = useRouter()
+
+    /*  type CheckupSavedPayload =
+       | number
+       | { paymentId?: number; invoiceId?: number; id?: number } */
+
+    const onCheckupSaved = (paymentId?: number) => {
+      closeModals()
+
+      if (typeof paymentId === 'number' && paymentId > 0) {
+        router.push({ name: 'PaymentPrint', params: { id: paymentId } })
+      } else {
+        loadPatients()
+      }
+    }
+
     let tmr: ReturnType<typeof setTimeout> | null = null
 
     watch(search, () => {
@@ -210,6 +236,7 @@ export default defineComponent({
       buildFullName,
       page,
       pageSize,
+      onCheckupSaved,
       totalCount,
       startRecord,
       endRecord,
