@@ -90,6 +90,7 @@ getPaged(page: number, pageSize: number, search?: string) {
       mrNo?: string
       bedNo?: string | null
       panel?: string          // ✅ add
+      phoneNo?: string       // ✅ add
     }
 
     patientName?: string
@@ -140,6 +141,7 @@ getPaged(page: number, pageSize: number, search?: string) {
       mrNo: data.patient?.mrNo,
       bedNo: data.patient?.bedNo ?? null,
       panel: data.patient?.panel,             // ✅ map
+      phoneNo: data.patient?.phoneNo,       // ✅ map
     },
 
     patientName: data.patientName ?? data.patient?.fullName ?? '',
@@ -198,6 +200,7 @@ getPaged(page: number, pageSize: number, search?: string) {
         currencyId: p.CurrencyId ?? 1,
         insuranceNo: p.InsuranceNo ?? '',
         insuranceCoverage: p.InsuranceCoverage ?? 0,
+        phoneNo: '', // ✅ add empty string (since API doesn't return it)
       },
 
       listPaymentsDetailsCRUDViewModel: data.listPaymentsDetailsCRUDViewModel ?? [],

@@ -32,6 +32,7 @@ export interface PaymentCategoryListItem {
   name: string
   unitPrice: number
   revenueAccountName?: string
+    includeInCounterClosing: boolean
 }
 
 /* =========================

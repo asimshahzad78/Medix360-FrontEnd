@@ -176,6 +176,7 @@ export interface PaymentDetailResponse {
     gender?: string
     panel?: string
     mrNo?: string
+    phoneNo?: string
     bedNo?: string | null
   }
 
@@ -305,7 +306,7 @@ export interface ManagePaymentsDto {
     paidAmount: number
     dueAmount: number
     changedAmount: number
-
+    phoneNo?: string
     insuranceNo?: string | null
     insuranceCompanyId?: number | null
     insuranceCoverage?: number | null
@@ -350,6 +351,7 @@ export interface PatientInfo {
   ageDisplay?: string
   ageUnit?: string
   bedNo?: string | null
+  phoneNo?: string
 }
 
 

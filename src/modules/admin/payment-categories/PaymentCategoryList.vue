@@ -1,6 +1,5 @@
 <template>
   <div class="patient-page">
-    <!-- Header -->
     <div class="page-header">
       <div class="action-bar">
         <button class="btn-add" @click="openAdd">+ Add New</button>
@@ -12,14 +11,11 @@
       </div>
     </div>
 
-    <!-- Loader -->
     <div v-if="loading" class="loader-overlay">
       <img src="/loader.gif" width="100" />
     </div>
 
-    <!-- Table -->
     <div v-else class="card">
-      <!-- ✅ responsive wrapper -->
       <div class="table-wrap">
         <table class="patient-table">
           <thead>
@@ -27,6 +23,7 @@
               <th class="text-left col-code">Code</th>
               <th class="text-left col-name">Name</th>
               <th class="text-left col-price">Price</th>
+              <th class="text-left col-cc">Counter Closing</th>
               <th class="text-left col-rev">Revenue Account</th>
               <th class="text-left col-actions">Actions</th>
             </tr>
@@ -37,6 +34,19 @@
               <td class="col-code">{{ c.paymentItemCode }}</td>
               <td class="col-name">{{ c.name }}</td>
               <td class="col-price">{{ c.unitPrice }}</td>
+
+              <!-- ✅ toggle switch like modal -->
+              <td class="col-cc">
+                <div class="cc-toggle">
+                  <label class="switch">
+                    <input type="checkbox" :checked="c.includeInCounterClosing" :disabled="!!updating[c.id]"
+                      @change="toggleCounterClosing(c, ($event.target as HTMLInputElement).checked)" />
+                    <span class="slider"></span>
+                  </label>
+                  <span v-if="updating[c.id]" class="cc-saving">Saving...</span>
+                </div>
+              </td>
+
               <td class="col-rev">{{ c.revenueAccountName || '-' }}</td>
 
               <td class="actions col-actions">
@@ -47,14 +57,13 @@
             </tr>
 
             <tr v-if="filtered.length === 0">
-              <td colspan="5" class="no-records">No records</td>
+              <td colspan="6" class="no-records">No records</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- Pagination -->
     <div class="table-footer">
       <span> Showing {{ startRecord }} - {{ endRecord }} of {{ totalCount }} </span>
 
@@ -67,7 +76,6 @@
       </div>
     </div>
 
-    <!-- Modal -->
     <Teleport to="body">
       <PaymentCategoryFormModal v-if="showForm" :categoryId="selected?.id" @saved="reload" @close="close" />
     </Teleport>
@@ -94,17 +102,22 @@ export default defineComponent({
     const pageSize = ref(25)
     const totalCount = ref(0)
 
+    // ✅ reactive map for “saving” state (per row)
+    const updating = ref<Record<number, boolean>>({})
+
     const load = async () => {
       loading.value = true
       try {
         const res: PaymentCategoryApiDto[] = await paymentCategoryService.getAll()
         totalCount.value = res.length
+
         items.value = res.map((i) => ({
           id: i.Id,
           paymentItemCode: i.PaymentItemCode,
           name: i.Name,
           unitPrice: i.UnitPrice,
-          revenueAccountName: '',
+          revenueAccountName: i.RevenueAccountName ?? '',
+          includeInCounterClosing: !!i.IncludeInCounterClosing,
         }))
       } finally {
         loading.value = false
@@ -146,6 +159,21 @@ export default defineComponent({
       load()
     }
 
+    const toggleCounterClosing = async (c: PaymentCategoryListItem, checked: boolean) => {
+      const old = c.includeInCounterClosing
+      c.includeInCounterClosing = checked
+      updating.value[c.id] = true
+
+      try {
+        await paymentCategoryService.setCounterClosing(c.id, checked)
+      } catch {
+        c.includeInCounterClosing = old
+        alert('Failed to update counter closing flag.')
+      } finally {
+        updating.value[c.id] = false
+      }
+    }
+
     watch(search, () => {
       page.value = 1
     })
@@ -168,6 +196,8 @@ export default defineComponent({
       selected,
       close,
       reload,
+      toggleCounterClosing,
+      updating,
     }
   },
 })
@@ -180,7 +210,6 @@ export default defineComponent({
   min-height: 100vh;
 }
 
-/* ✅ responsive header */
 .page-header {
   display: flex;
   align-items: center;
@@ -189,11 +218,6 @@ export default defineComponent({
   margin-bottom: 16px;
 }
 
-.action-bar {
-  margin: 0;
-}
-
-/* ✅ search pill (perfect mobile) */
 .search-box {
   position: relative;
   width: 100%;
@@ -211,13 +235,6 @@ export default defineComponent({
   outline: none;
   font-size: 14px;
   box-sizing: border-box;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.search-box input:focus {
-  border-color: #34c759;
-  box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.15);
 }
 
 .search-box .icon {
@@ -251,7 +268,6 @@ export default defineComponent({
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
 }
 
-/* ✅ safe scroll wrapper */
 .table-wrap {
   width: 100%;
   overflow-x: auto;
@@ -260,7 +276,7 @@ export default defineComponent({
 
 .patient-table {
   width: 100%;
-  min-width: 720px;
+  min-width: 820px;
   border-collapse: collapse;
 }
 
@@ -285,7 +301,6 @@ export default defineComponent({
   color: #6b7280;
 }
 
-/* ✅ actions as buttons (touch friendly) */
 .actions {
   display: flex;
   align-items: center;
@@ -342,7 +357,66 @@ export default defineComponent({
   padding: 40px;
 }
 
-/* ✅ mobile tuning */
+/* ✅ toggle styling (same as modal) */
+.cc-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cc-saving {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #d1d5db;
+  transition: 0.2s;
+  border-radius: 999px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  top: 3px;
+  background-color: white;
+  transition: 0.2s;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.switch input:checked+.slider {
+  background-color: #34c759;
+}
+
+.switch input:checked+.slider:before {
+  transform: translateX(20px);
+}
+
+.switch input:disabled+.slider {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 @media (max-width: 640px) {
   .patient-page {
     padding: 14px;
@@ -365,14 +439,8 @@ export default defineComponent({
     padding: 8px;
   }
 
-  /* Optional: hide Revenue Account on very small screens */
-  .col-rev,
-  th.col-rev {
-    display: none;
-  }
-
   .patient-table {
-    min-width: 520px;
+    min-width: 740px;
   }
 }
 </style>

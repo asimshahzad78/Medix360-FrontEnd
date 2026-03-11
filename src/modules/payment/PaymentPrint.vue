@@ -222,41 +222,48 @@ const printInvoice = async () => {
 
     // ===== REPLACE YOUR OLD pageW/pageH/margin/x/y CODE WITH THIS =====
 
-    // A5 landscape in mm
+    // A5 landscape (mm)
     const pageW = 210
     const pageH = 148
 
-    // printer safe margins (bigger left)
-    const mTop = 10
-    const mLeft = 60
-    const mBottom = 10
-    const mRight = 5
+    // ✅ Safe padding inside paper (reduce risk of clipping)
+    // (keep left larger because printer clips left)
+    const padTop = 8
+    const padBottom = 8
+    const padLeft = 24
+    const padRight = 8
 
-    // HP printers often shift print LEFT → push right
-    const offsetX = 14  // try 14, if still cut then 18
-    const offsetY = 0
+    // ✅ Shift right to compensate printer shifting left
+    // increase if left still cuts: 20 -> 26
+    const shiftRight = 20 // mm
 
-    // shrink a bit so right side never clips after shift
-    const shrink = 0.94
+    // ✅ Shrink a bit so after shifting, right side won't clip
+    const shrink = 0.90
 
-    const maxW = (pageW - mLeft - mRight) * shrink
-    const maxH = (pageH - mTop - mBottom) * shrink
+    const maxW = (pageW - padLeft - padRight) * shrink
+    const maxH = (pageH - padTop - padBottom) * shrink
 
     let imgW = maxW
     let imgH = (canvas.height * imgW) / canvas.width
-
     if (imgH > maxH) {
       imgH = maxH
       imgW = (canvas.width * imgH) / canvas.height
     }
 
-    let x = mLeft + offsetX
-    let y = mTop + offsetY
+    // ✅ Center, then shift right
+    let x = (pageW - imgW) / 2 + shiftRight
+    let y = (pageH - imgH) / 2
 
-    x = Math.min(x, pageW - mRight - imgW)
-    y = Math.min(y, pageH - mBottom - imgH)
+    // ✅ Clamp into printable area
+    x = Math.min(Math.max(x, padLeft), pageW - padRight - imgW)
+    y = Math.min(Math.max(y, padTop), pageH - padBottom - imgH)
 
     const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [pageW, pageH] })
+
+    // OPTIONAL: draw border once to verify clipping (remove after test)
+    // pdf.setDrawColor(255, 0, 0)
+    // pdf.rect(1, 1, pageW - 2, pageH - 2)
+
     pdf.addImage(imgData, 'JPEG', x, y, imgW, imgH)
 
     printBlobHidden(pdf.output('blob'))
@@ -358,11 +365,12 @@ const goBack = () => {
               <div class="meta-col">
                 <p><strong>Invoice #:</strong> {{ payment.receiptNo }}</p>
                 <p><strong>Date:</strong> {{ formattedDate }}</p>
+                <p><strong>Mobile #:</strong> {{ payment.patient?.phoneNo || '-' }}</p>
                 <p><strong>Panel:</strong> {{ displayPanel }}</p>
-                <p>
+                <!-- <p>
                   <strong>Mobile:</strong>
                   {{ payment.doctorMobile?.trim() ? payment.doctorMobile : '-' }}
-                </p>
+                </p>-->
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import { api } from '@/services/api'
 
 /* =========================
-   API DTO
+   API DTO (Backend -> Frontend)
 ========================= */
 export interface PaymentCategoryApiDto {
   Id: number
@@ -11,10 +11,11 @@ export interface PaymentCategoryApiDto {
   Description?: string
   RevenueAccountId: string
   RevenueAccountName?: string
+  IncludeInCounterClosing?: boolean
 }
 
 /* =========================
-   SAVE DTO
+   SAVE DTO (Frontend -> Backend)
 ========================= */
 export interface PaymentCategorySaveDto {
   paymentItemCode: string
@@ -22,6 +23,7 @@ export interface PaymentCategorySaveDto {
   unitPrice: number
   description?: string
   revenueAccountId: string
+  includeInCounterClosing: boolean // ✅ camelCase (matches your modal payload)
 }
 
 /* =========================
@@ -33,6 +35,9 @@ const mapToApiPayload = (p: PaymentCategorySaveDto) => ({
   UnitPrice: p.unitPrice,
   Description: p.description,
   RevenueAccountId: p.revenueAccountId,
+
+  // ✅ This is the key fix
+  IncludeInCounterClosing: p.includeInCounterClosing,
 })
 
 /* =========================
@@ -62,6 +67,12 @@ export const paymentCategoryService = {
 
   async cancel(id: number): Promise<void> {
     await api.post(`/payment-categories/${id}/cancel`)
+  },
+
+  async setCounterClosing(id: number, include: boolean): Promise<void> {
+    await api.put(`/payment-categories/${id}/counter-closing`, {
+      IncludeInCounterClosing: include,
+    })
   },
 
   async getRevenueAccounts(): Promise<{ id: string; name: string }[]> {
