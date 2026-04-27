@@ -10,6 +10,10 @@
         <label>Code (optional)</label>
         <input class="input" v-model="code" placeholder="e.g. OPD" />
       </div>
+      <div class="full">
+        <label>Description</label>
+        <textarea class="input textarea" v-model="description" placeholder="Short department description"></textarea>
+      </div>
     </div>
 
     <div class="row">
@@ -26,13 +30,14 @@ import { ref, watch } from 'vue'
 import BaseModal from '../pages/BaseModal.vue'
 import { hrLookupsService } from '../hr-lookups.service'
 
-type DepartmentDto = { Id: number; Name: string; Code?: string | null }
+type DepartmentDto = { Id: number; Name: string; Code?: string | null; Description?: string | null }
 
 const props = defineProps<{ model: DepartmentDto | null }>()
 const emit = defineEmits<{ (e: 'close'): void; (e: 'saved'): void }>()
 
 const name = ref('')
 const code = ref('')
+const description = ref('')
 const saving = ref(false)
 
 watch(
@@ -40,6 +45,7 @@ watch(
   (m) => {
     name.value = (m?.Name ?? '').trim()
     code.value = (m?.Code ?? '').trim()
+    description.value = (m?.Description ?? '').trim()
   },
   { immediate: true },
 )
@@ -50,7 +56,11 @@ async function save() {
 
   saving.value = true
   try {
-    const payload = { name: n, code: code.value.trim() || undefined }
+    const payload = {
+      name: n,
+      code: code.value.trim() || undefined,
+      description: description.value.trim() || undefined,
+    }
     if (props.model) await hrLookupsService.updateDepartment(props.model.Id, payload)
     else await hrLookupsService.createDepartment(payload)
 
@@ -69,6 +79,10 @@ async function save() {
   row-gap: 12px;
 }
 
+.full {
+  grid-column: 1 / -1;
+}
+
 /* important: prevent overflow inside grid columns */
 .grid>div {
   min-width: 0;
@@ -83,6 +97,12 @@ async function save() {
   border-radius: 12px;
   padding: 0 12px;
   font-weight: 800;
+}
+
+.textarea {
+  height: 86px;
+  padding: 10px 12px;
+  resize: vertical;
 }
 
 label {

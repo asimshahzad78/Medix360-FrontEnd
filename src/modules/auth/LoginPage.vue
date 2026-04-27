@@ -21,7 +21,7 @@
 
           <div class="field">
             <label>Password</label>
-            <input v-model="form.password" type="password" placeholder="••••••••" required />
+            <input v-model="form.password" type="password" placeholder="Password" required />
           </div>
 
           <div class="remember">
@@ -40,7 +40,7 @@
 
     <!-- Footer -->
     <footer class="login-footer">
-      © {{ new Date().getFullYear() }} Aswad Information Systems · Crafted with ❤️
+      (c) {{ new Date().getFullYear() }} Aswad Information Systems
     </footer>
   </div>
 </template>
@@ -50,6 +50,8 @@ import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { authService } from './auth.service'
 import { useAuthStore } from '@/store/auth.store'
+import { usePlatformContextStore } from '@/store/platform-context.store'
+import { getApiErrorMessage } from '@/services/api-response'
 import type { LoginVM } from './auth.types'
 import type { AuthUser } from '@/store/auth.store'
 
@@ -65,6 +67,7 @@ type LoginResponse = {
 
 const router = useRouter()
 const authStore = useAuthStore()
+const platformContext = usePlatformContextStore()
 
 const errorMessage = ref('')
 
@@ -90,18 +93,17 @@ const submit = async () => {
       return
     }
 
-    // ✅ Pinia + localstorage (token/user/permissions)
     authStore.setAuth(token, user, permissions)
+    platformContext.update({
+      tenantId: user.TenantId,
+      facilityId: user.FacilityId ?? user.PropertyId,
+      propertyId: user.PropertyId ?? user.FacilityId,
+    })
 
-    // ✅ one tick
     await Promise.resolve()
     router.push('/dashboard')
   } catch (error: unknown) {
-    const err = error as { response?: { data?: { alertMessage?: string; AlertMessage?: string } } }
-    errorMessage.value =
-      err.response?.data?.alertMessage ||
-      err.response?.data?.AlertMessage ||
-      'Invalid email or password'
+    errorMessage.value = getApiErrorMessage(error, 'Invalid email or password')
   }
 }
 </script>

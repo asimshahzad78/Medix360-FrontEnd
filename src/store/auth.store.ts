@@ -1,9 +1,20 @@
 import { defineStore } from 'pinia'
+import {
+  clearStoredAuth,
+  isTokenUsable,
+  readStoredAuth,
+  writeStoredAuth,
+} from '@/security/auth-session'
+import { clearPlatformContext } from '@/services/systemContext'
+import { hasAllPermissions, hasAnyPermission, type PermissionRule } from '@/security/permissions'
 
 export interface AuthUser {
   Id: string
   Email: string
   JobRoleId: number
+  TenantId?: string
+  FacilityId?: string
+  PropertyId?: string
 }
 
 interface AuthState {
@@ -12,27 +23,25 @@ interface AuthState {
   permissions: string[]
 }
 
-function readJson<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(key)
-    return raw ? (JSON.parse(raw) as T) : fallback
-  } catch {
-    return fallback
-  }
-}
-
 export const useAuthStore = defineStore('auth', {
-  state: (): AuthState => ({
-    token: localStorage.getItem('token'),
-    user: readJson<AuthUser | null>('user', null),
-    permissions: readJson<string[]>('permissions', []),
-  }),
+  state: (): AuthState => {
+    const session = readStoredAuth<AuthUser>()
+
+    return {
+      token: session.token,
+      user: session.user,
+      permissions: session.permissions,
+    }
+  },
 
   getters: {
-    isLoggedIn: (state) =>
-      !!state.token && state.token !== 'null' && state.token !== 'undefined',
+    isLoggedIn: (state) => isTokenUsable(state.token),
 
     hasPerm: (state) => (perm: string) => state.permissions.includes(perm),
+    canAny: (state) => (permissions: PermissionRule) =>
+      hasAnyPermission(state.permissions, permissions),
+    canAll: (state) => (permissions: PermissionRule) =>
+      hasAllPermissions(state.permissions, permissions),
   },
 
   actions: {
@@ -41,9 +50,7 @@ export const useAuthStore = defineStore('auth', {
       this.user = user
       this.permissions = permissions
 
-      localStorage.setItem('token', token)
-      localStorage.setItem('user', JSON.stringify(user))
-      localStorage.setItem('permissions', JSON.stringify(permissions))
+      writeStoredAuth(token, user, permissions)
     },
 
     logout() {
@@ -51,9 +58,8 @@ export const useAuthStore = defineStore('auth', {
       this.user = null
       this.permissions = []
 
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      localStorage.removeItem('permissions')
+      clearStoredAuth()
+      clearPlatformContext()
     },
   },
 })

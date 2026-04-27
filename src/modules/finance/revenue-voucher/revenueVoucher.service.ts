@@ -31,15 +31,24 @@ export const revenueVoucherService = {
         Description?: string
       }[]
     },
+    reason: string,
   ): Promise<void> {
     await api.post(`/RevenueVoucher/${id}/post`, payload, {
       params: { tenantId, propertyId },
+      meta: {
+        auditReason: reason,
+        idempotencyKey: true,
+      },
     })
   },
 
   async reverse(id: string, tenantId: string, propertyId: string, reason?: string): Promise<void> {
     await api.post(`/RevenueVoucher/${id}/reverse`, reason ?? null, {
       params: { tenantId, propertyId },
+      meta: {
+        auditReason: reason,
+        idempotencyKey: true,
+      },
     })
   },
 }

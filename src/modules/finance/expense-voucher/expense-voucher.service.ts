@@ -31,8 +31,10 @@ export const expenseVoucherService = {
       Date: payload.date,
       Description: payload.description,
       Amount: payload.amount,
+      Type: payload.type,
       ExpenseAccountId: payload.expenseAccountId,
       BankAccountId: payload.paymentAccountId, // UI paymentAccountId -> API BankAccountId
+      Status: payload.status,
     }
 
     const { data } = await api.post<ExpenseVoucherApiDto>(BASE, dto, { params: scope })
@@ -47,8 +49,10 @@ export const expenseVoucherService = {
       Date: payload.date,
       Description: payload.description,
       Amount: payload.amount,
+      Type: payload.type,
       ExpenseAccountId: payload.expenseAccountId,
       BankAccountId: payload.paymentAccountId,
+      Status: payload.status,
     }
 
     const { data } = await api.put<ExpenseVoucherApiDto>(`${BASE}/${id}`, dto, { params: scope })
@@ -60,13 +64,25 @@ export const expenseVoucherService = {
     await api.delete(`${BASE}/${id}`, { params: scope })
   },
 
-  async post(id: string): Promise<void> {
+  async post(id: string, reason: string): Promise<void> {
     const scope = getFinanceScope()
-    await api.post(`${BASE}/${id}/post`, null, { params: scope })
+    await api.post(`${BASE}/${id}/post`, null, {
+      params: scope,
+      meta: {
+        auditReason: reason,
+        idempotencyKey: true,
+      },
+    })
   },
 
-  async reverse(id: string): Promise<void> {
+  async reverse(id: string, reason: string): Promise<void> {
     const scope = getFinanceScope()
-    await api.post(`${BASE}/${id}/reverse`, null, { params: scope })
+    await api.post(`${BASE}/${id}/reverse`, null, {
+      params: scope,
+      meta: {
+        auditReason: reason,
+        idempotencyKey: true,
+      },
+    })
   },
 }

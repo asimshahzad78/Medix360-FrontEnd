@@ -1,4 +1,5 @@
 import { api } from '@/services/api'
+import { unwrapApiData } from '@/services/api-response'
 
 /* =========================
    API DTO (PascalCase)
@@ -113,8 +114,10 @@ const mapCheckup = (c: CheckupApiDto): CheckupListDto => ({
 export const checkupService = {
   /* 🔁 CREATE */
   async create(payload: CheckupSaveDto): Promise<CheckupCreateResponse> {
-    const { data } = await api.post<CheckupCreateResponse>('/checkups', payload)
-    return data
+    const { data } = await api.post<CheckupCreateResponse>('/checkups', payload, {
+      meta: { idempotencyKey: true },
+    })
+    return unwrapApiData<CheckupCreateResponse>(data, data)
   },
 
   /* 📄 LIST */
@@ -123,9 +126,11 @@ export const checkupService = {
     params: { page, pageSize, search: search?.trim() || undefined },
   })
 
+  const result = unwrapApiData<PagedResult<CheckupApiDto>>(data, { items: [], totalCount: 0 })
+
   return {
-    totalCount: data.totalCount,
-    items: data.items.map(mapCheckup),
+    totalCount: result.totalCount,
+    items: (result.items ?? []).map(mapCheckup),
   }
 },
 
@@ -133,7 +138,7 @@ export const checkupService = {
   async getPatientHistory(patientId: number): Promise<PatientCheckupHistoryDto[]> {
     // ✅ Change this route if your backend differs
     const { data } = await api.get<CheckupApiDto[]>(`/checkups/patient/${patientId}/history`)
-    return data.map(mapCheckup)
+    return unwrapApiData<CheckupApiDto[]>(data, []).map(mapCheckup)
   },
   async delete(id: number): Promise<void> {
   await api.delete(`/checkups/${id}`)

@@ -72,6 +72,14 @@
     <!-- View Modal -->
     <Teleport to="body">
       <RevenueVoucherViewModal v-if="viewId" :voucherId="viewId" @close="viewId = null" />
+      <AuditReasonModal
+        v-if="pendingAction"
+        :action-label="getSensitiveActionLabel(pendingAction)"
+        :submitting="auditSubmitting"
+        confirm-label="Submit"
+        @confirm="confirmAuditAction"
+        @cancel="pendingAction = null"
+      />
     </Teleport>
   </div>
 </template>
@@ -81,16 +89,22 @@ import { defineComponent, ref, computed, onMounted } from 'vue'
 import { revenueVoucherService } from './revenueVoucher.service'
 import { RevenueVoucherStatus, type RevenueVoucherApiDto } from './revenueVoucher.types'
 import RevenueVoucherViewModal from './RevenueVoucherViewModal.vue'
+import AuditReasonModal from '@/components/ui/AuditReasonModal.vue'
 import { systemContext } from '@/services/systemContext'
+import { getSensitiveActionLabel, type SensitiveActionRequest } from '@/services/sensitive-actions'
 
 export default defineComponent({
-  components: { RevenueVoucherViewModal },
+  components: { RevenueVoucherViewModal, AuditReasonModal },
 
   setup() {
     const loading = ref(false)
     const list = ref<RevenueVoucherApiDto[]>([])
     const search = ref('')
     const viewId = ref<string | null>(null)
+    const auditSubmitting = ref(false)
+    const pendingAction = ref<
+      (SensitiveActionRequest & { run: (reason: string) => Promise<void> }) | null
+    >(null)
 
     const load = async () => {
       loading.value = true
@@ -122,15 +136,39 @@ export default defineComponent({
 
     const openView = (id: string) => (viewId.value = id)
 
-    const reverseVoucher = async (v: RevenueVoucherApiDto) => {
-      if (!confirm('Reverse this voucher?')) return
-      await revenueVoucherService.reverse(
-        v.Id,
-        systemContext.tenantId,
-        systemContext.propertyId,
-        'User reversal',
-      )
-      await load()
+    const requestAuditReason = (
+      action: SensitiveActionRequest & { run: (reason: string) => Promise<void> },
+    ) => {
+      pendingAction.value = action
+    }
+
+    const confirmAuditAction = async (reason: string) => {
+      if (!pendingAction.value) return
+
+      auditSubmitting.value = true
+      try {
+        await pendingAction.value.run(reason)
+        pendingAction.value = null
+      } finally {
+        auditSubmitting.value = false
+      }
+    }
+
+    const reverseVoucher = (v: RevenueVoucherApiDto) => {
+      requestAuditReason({
+        type: 'reverse',
+        label: 'Reverse revenue voucher',
+        target: v.InvoiceNumber ?? v.Id,
+        run: async (reason) => {
+          await revenueVoucherService.reverse(
+            v.Id,
+            systemContext.tenantId,
+            systemContext.propertyId,
+            reason,
+          )
+          await load()
+        },
+      })
     }
 
     const formatDate = (d: string) => new Date(d).toLocaleDateString()
@@ -148,6 +186,10 @@ export default defineComponent({
       canReverse,
       reverseVoucher,
       formatDate,
+      pendingAction,
+      auditSubmitting,
+      confirmAuditAction,
+      getSensitiveActionLabel,
     }
   },
 })

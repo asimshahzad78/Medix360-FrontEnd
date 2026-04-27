@@ -10,6 +10,8 @@ export const authService = {
       RememberMe: data.rememberMe,
       Latitude: null,
       Longitude: null,
+    }, {
+      meta: { skipContext: true },
     })
   },
 

@@ -33,13 +33,14 @@
             <th style="width: 90px">ID</th>
             <th>Name</th>
             <th style="width: 160px">Code</th>
+            <th>Description</th>
             <th style="width: 220px; text-align: right">Actions</th>
           </tr>
         </thead>
 
         <tbody>
           <tr v-if="filtered.length === 0">
-            <td colspan="4" class="empty">
+            <td colspan="5" class="empty">
               <div class="empty-title">No designations found</div>
               <div class="empty-sub">Click “Add Designation” to create one.</div>
             </td>
@@ -49,6 +50,7 @@
             <td class="muted">#{{ d.Id }}</td>
             <td class="name">{{ d.Name }}</td>
             <td class="muted">{{ d.Code || '-' }}</td>
+            <td class="muted">{{ d.Description || '-' }}</td>
             <td style="text-align: right">
               <button class="chip" type="button" @click="openEdit(d)">Edit</button>
               <button class="chip danger" type="button" @click="remove(d.Id)">Delete</button>
@@ -71,7 +73,13 @@ import { hrLookupsService } from '../hr-lookups.service'
 type AlertType = 'success' | 'error'
 type AlertState = { type: AlertType; message: string }
 
-type DesignationDto = { Id: number; Name: string; Code?: string | null; IsActive?: boolean }
+type DesignationDto = {
+  Id: number
+  Name: string
+  Code?: string | null
+  Description?: string | null
+  IsActive?: boolean
+}
 
 type UnknownRecord = Record<string, unknown>
 function isRecord(v: unknown): v is UnknownRecord {

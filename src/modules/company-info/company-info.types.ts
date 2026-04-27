@@ -27,4 +27,5 @@ export interface CompanyInfoSaveDto {
   Fax: string
   Website: string
   CompanyLogo?: File | null
+  CompanyLogoImagePath?: string
 }

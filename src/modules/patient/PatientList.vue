@@ -4,11 +4,12 @@
     <div class="page-header">
       <div class="action-bar">
         <button class="btn-add" @click="openAddModal">+ Add New</button>
+        <RouterLink class="btn-queue" to="/patients/queue">Queue</RouterLink>
       </div>
 
       <div class="search-box">
         <input v-model="search" placeholder="Search here" />
-        <span class="icon">🔍</span>
+        <span class="icon">Search</span>
       </div>
     </div>
 
@@ -37,7 +38,11 @@
           <tbody>
             <tr v-for="p in filteredPatients" :key="p.id">
               <td class="col-id">{{ p.id }}</td>
-              <td class="col-name">{{ buildFullName(p) }}</td>
+              <td class="col-name">
+                <RouterLink class="patient-link" :to="`/patients/${p.id}`">
+                  {{ buildFullName(p) }}
+                </RouterLink>
+              </td>
               <td class="col-gender">{{ p.gender }}</td>
               <td class="col-age">
                 {{ p.ageDisplay || (p.age ? `${p.age} ${p.ageUnit || ''}`.trim() : '') }}
@@ -46,13 +51,13 @@
               <td class="col-phone">{{ p.panel }}</td>
               <td class="actions">
                 <button class="icon-btn" type="button" title="Checkup" @click="openCheckupModal(p)">
-                  🩺
+                  Visit
                 </button>
                 <button class="icon-btn" type="button" title="Edit" @click="openEditModal(p)">
-                  ✏️
+                  Edit
                 </button>
-                <button class="icon-btn" type="button" title="History" @click="openHistoryModal(p)">
-                  📜
+                <button class="icon-btn" type="button" title="Timeline" @click="openTimelineModal(p)">
+                  Timeline
                 </button>
               </td>
             </tr>
@@ -82,7 +87,7 @@
     <Teleport to="body">
       <PatientFormModal v-if="showForm" :patientId="selectedPatient?.id" @saved="reload" @close="closeModals" />
 
-      <PatientHistoryModal v-if="showHistory && selectedPatient" :patientId="selectedPatient.id" @close="closeModals" />
+      <PatientTimelineModal v-if="showTimeline && selectedPatient" :patientId="selectedPatient.id" @close="closeModals" />
 
       <CheckupModal v-if="showCheckup && selectedPatient" :patient="selectedPatient" @saved="onCheckupSaved"
         @close="closeModals" />
@@ -96,7 +101,7 @@ import { patientService, type PatientApiDto } from './patient.service'
 import { useRouter } from 'vue-router'
 
 import PatientFormModal from './PatientFormModal.vue'
-import PatientHistoryModal from './PatientHistoryModal.vue'
+import PatientTimelineModal from './PatientTimelineModal.vue'
 import CheckupModal from '../checkup/CheckupModal.vue'
 
 interface Patient {
@@ -117,7 +122,7 @@ interface Patient {
 export default defineComponent({
   components: {
     PatientFormModal,
-    PatientHistoryModal,
+    PatientTimelineModal,
     CheckupModal,
   },
 
@@ -131,7 +136,7 @@ export default defineComponent({
     const totalCount = ref(0)
 
     const showForm = ref(false)
-    const showHistory = ref(false)
+    const showTimeline = ref(false)
     const showCheckup = ref(false)
 
     const selectedPatient = ref<Patient | null>(null)
@@ -180,9 +185,9 @@ export default defineComponent({
       showForm.value = true
     }
 
-    const openHistoryModal = (p: Patient) => {
+    const openTimelineModal = (p: Patient) => {
       selectedPatient.value = p
-      showHistory.value = true
+      showTimeline.value = true
     }
 
     const openCheckupModal = (p: Patient) => {
@@ -192,7 +197,7 @@ export default defineComponent({
 
     const closeModals = () => {
       showForm.value = false
-      showHistory.value = false
+      showTimeline.value = false
       showCheckup.value = false
       selectedPatient.value = null
     }
@@ -243,10 +248,10 @@ export default defineComponent({
       changePage,
       openAddModal,
       openEditModal,
-      openHistoryModal,
+      openTimelineModal,
       openCheckupModal,
       showForm,
-      showHistory,
+      showTimeline,
       showCheckup,
       selectedPatient,
       closeModals,
@@ -273,6 +278,8 @@ export default defineComponent({
 }
 
 .action-bar {
+  display: flex;
+  gap: 8px;
   margin: 0;
 }
 
@@ -321,7 +328,11 @@ export default defineComponent({
   opacity: 0.8;
 }
 
-.btn-add {
+.btn-add,
+.btn-queue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: #34c759;
   color: #fff;
   border: none;
@@ -329,6 +340,12 @@ export default defineComponent({
   border-radius: 30px;
   cursor: pointer;
   white-space: nowrap;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.btn-queue {
+  background: #166534;
 }
 
 .card {
@@ -374,6 +391,16 @@ export default defineComponent({
   color: #6b7280;
 }
 
+.patient-link {
+  color: #166534;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.patient-link:hover {
+  text-decoration: underline;
+}
+
 /* ✅ actions as buttons (better on mobile) */
 .actions {
   display: flex;
@@ -382,13 +409,14 @@ export default defineComponent({
 }
 
 .icon-btn {
-  border: none;
-  background: transparent;
+  border: 1px solid #dbe7db;
+  background: #fff;
+  color: #166534;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 12px;
   line-height: 1;
-  padding: 6px;
-  border-radius: 8px;
+  padding: 7px 9px;
+  border-radius: 6px;
 }
 
 .icon-btn:hover {
@@ -449,6 +477,10 @@ export default defineComponent({
   }
 
   .btn-add {
+    width: 100%;
+  }
+
+  .btn-queue {
     width: 100%;
   }
 

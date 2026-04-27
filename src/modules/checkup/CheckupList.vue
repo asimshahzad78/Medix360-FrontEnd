@@ -78,9 +78,13 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, watch } from 'vue'
 import { checkupService, type CheckupListDto } from './checkup.service'
+import { useConfirmationStore } from '@/store/confirmation.store'
+import { createMutationState, runMutation } from '@/services/mutations'
 
 export default defineComponent({
   setup() {
+    const confirmation = useConfirmationStore()
+    const deleteState = createMutationState()
     const checkups = ref<CheckupListDto[]>([])
     const search = ref('')
     const loading = ref(false)
@@ -121,16 +125,25 @@ export default defineComponent({
     })
 
     const deleteCheckup = async (c: CheckupListDto) => {
-      const ok = window.confirm(`Delete checkup #${c.id}?`)
+      const ok = await confirmation.request({
+        title: 'Delete checkup',
+        message: `Delete checkup #${c.id}? This action should only be used for records that are safe to remove.`,
+        confirmLabel: 'Delete',
+        variant: 'danger',
+      })
       if (!ok) return
 
-      loading.value = true
-      try {
-        await checkupService.delete(c.id)
-        await loadCheckups()
-      } finally {
-        loading.value = false
-      }
+      await runMutation(
+        deleteState,
+        async () => {
+          await checkupService.delete(c.id)
+          await loadCheckups()
+        },
+        {
+          successMessage: 'Checkup deleted',
+          errorMessage: 'Failed to delete checkup',
+        },
+      )
     }
 
     onMounted(loadCheckups)

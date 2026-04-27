@@ -1,6 +1,13 @@
 <template>
   <router-view />
+  <AppToastHost />
+  <AppConfirmHost />
 </template>
+
+<script setup lang="ts">
+import AppConfirmHost from '@/components/ui/AppConfirmHost.vue'
+import AppToastHost from '@/components/ui/AppToastHost.vue'
+</script>
 
 <style>
 html,

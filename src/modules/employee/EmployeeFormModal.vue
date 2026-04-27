@@ -29,10 +29,12 @@ interface PaymentAccount {
 
 interface EmployeeFormState {
   employeeId: string | null
+  title: string
   firstName: string
   lastName: string
   phoneNumber: string
   email: string
+  age: number | null
   dateOfBirth: string | null
   joiningDate: string | null
   leavingDate: string | null
@@ -45,6 +47,8 @@ interface EmployeeFormState {
   roleId: number
   applicationUserId: string | null
   hasUser: boolean
+  currentURL: string
+  profilePictureDetails: File | null
 }
 
 interface UserCreateState {
@@ -76,6 +80,7 @@ export default defineComponent({
 
     const roleOptions = ref<ManageRoleDto[]>([])
     const payableAccounts = ref<PaymentAccount[]>([])
+    const profilePicturePreview = ref('')
 
     // ✅ lookups
     const departments = ref<LookupItem[]>([])
@@ -90,10 +95,12 @@ export default defineComponent({
 
     const form = reactive<EmployeeFormState>({
       employeeId: null,
+      title: '',
       firstName: '',
       lastName: '',
       phoneNumber: '',
       email: '',
+      age: null,
       dateOfBirth: null,
       joiningDate: null,
       leavingDate: null,
@@ -106,6 +113,8 @@ export default defineComponent({
       roleId: 0,
       applicationUserId: null,
       hasUser: false,
+      currentURL: window.location.href,
+      profilePictureDetails: null,
     })
 
     const userForm = reactive<UserCreateState>({
@@ -157,10 +166,12 @@ export default defineComponent({
       const e: EmployeeApiDto = await employeeService.getById(props.employeeId)
 
       form.employeeId = (e.EmployeeId ?? null) as string | null
+      form.title = e.Title ?? ''
       form.firstName = e.FirstName ?? ''
       form.lastName = e.LastName ?? ''
       form.phoneNumber = e.PhoneNumber ?? ''
       form.email = e.Email ?? ''
+      form.age = e.Age ?? null
       form.dateOfBirth = (e.DateOfBirth ?? null) as string | null
       form.joiningDate = (e.JoiningDate ?? null) as string | null
       form.leavingDate = (e.LeavingDate ?? null) as string | null
@@ -173,6 +184,7 @@ export default defineComponent({
       form.roleId = (e.RoleId ?? 0) as number
       form.applicationUserId = (e.ApplicationUserId ?? null) as string | null
       form.hasUser = !!form.applicationUserId
+      profilePicturePreview.value = e.ProfilePicture ?? ''
 
       if (form.hasUser) createLogin.value = false
 
@@ -212,10 +224,12 @@ export default defineComponent({
         if (isEdit.value && props.employeeId) {
           await employeeService.update(props.employeeId, {
             employeeId: form.employeeId,
+            title: form.title,
             firstName: form.firstName,
             lastName: form.lastName,
             email: form.email,
             phoneNumber: form.phoneNumber,
+            age: form.age,
             dateOfBirth: form.dateOfBirth,
             joiningDate: form.joiningDate,
             leavingDate: form.leavingDate,
@@ -226,16 +240,20 @@ export default defineComponent({
             country: form.country,
             userType: Number(form.userType),
             roleId: form.roleId || 0,
+            currentURL: form.currentURL,
+            profilePictureDetails: form.profilePictureDetails,
           })
           await loadEmployee()
         } else {
           // ✅ IMPORTANT: your create() MUST return { userProfileId }
           const res = await employeeService.create({
             employeeId: form.employeeId,
+            title: form.title,
             firstName: form.firstName,
             lastName: form.lastName,
             email: form.email,
             phoneNumber: form.phoneNumber,
+            age: form.age,
             dateOfBirth: form.dateOfBirth,
             joiningDate: form.joiningDate,
             leavingDate: form.leavingDate,
@@ -246,6 +264,8 @@ export default defineComponent({
             country: form.country,
             userType: Number(form.userType),
             roleId: form.roleId || 0,
+            currentURL: form.currentURL,
+            profilePictureDetails: form.profilePictureDetails,
           })
 
           createdEmployeeId.value = res.userProfileId
@@ -353,6 +373,12 @@ export default defineComponent({
       },
     )
 
+    const onProfilePictureChange = (event: Event) => {
+      const file = (event.target as HTMLInputElement).files?.[0] ?? null
+      form.profilePictureDetails = file
+      profilePicturePreview.value = file ? URL.createObjectURL(file) : ''
+    }
+
     return {
       tab,
       alertState,
@@ -362,6 +388,7 @@ export default defineComponent({
       subDepartments,
       designations,
       form,
+      profilePicturePreview,
       userForm,
       doctorForm,
       isEdit,
@@ -369,6 +396,7 @@ export default defineComponent({
       createLogin,
       hasUserAlready,
       isSaving,
+      onProfilePictureChange,
       save,
     }
   },
@@ -419,6 +447,11 @@ export default defineComponent({
           <!-- BASIC INFO -->
           <section v-if="tab === 'basic'" class="grid">
             <div class="field">
+              <label>Title</label>
+              <input v-model="form.title" placeholder="e.g. Mr, Ms, Dr" />
+            </div>
+
+            <div class="field">
               <label>First Name *</label>
               <input v-model="form.firstName" />
             </div>
@@ -439,6 +472,11 @@ export default defineComponent({
             </div>
 
             <div class="field">
+              <label>Age</label>
+              <input type="number" v-model.number="form.age" />
+            </div>
+
+            <div class="field">
               <label>Date of Birth</label>
               <input type="date" v-model="form.dateOfBirth" />
             </div>
@@ -451,6 +489,21 @@ export default defineComponent({
             <div class="field full">
               <label>Address</label>
               <textarea v-model="form.address"></textarea>
+            </div>
+
+            <div class="field">
+              <label>Profile Picture</label>
+              <input type="file" accept="image/*" @change="onProfilePictureChange" />
+            </div>
+
+            <div v-if="profilePicturePreview" class="field">
+              <label>Preview</label>
+              <img class="profile-preview" :src="profilePicturePreview" alt="Employee profile preview" />
+            </div>
+
+            <div class="field full">
+              <label>Current URL</label>
+              <input v-model="form.currentURL" />
             </div>
           </section>
 
@@ -810,6 +863,14 @@ textarea:focus {
   font-size: 12px;
   color: #6b7280;
   font-weight: 700;
+}
+
+.profile-preview {
+  max-height: 78px;
+  max-width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 4px;
 }
 
 code {

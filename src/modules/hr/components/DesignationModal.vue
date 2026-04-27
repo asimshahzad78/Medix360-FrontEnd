@@ -11,6 +11,10 @@
         <label>Code (optional)</label>
         <input class="input" v-model="code" placeholder="e.g. NUR" />
       </div>
+      <div class="full">
+        <label>Description</label>
+        <textarea class="input textarea" v-model="description" placeholder="Short designation description"></textarea>
+      </div>
     </div>
 
     <template #footer>
@@ -29,13 +33,14 @@ import { ref, watch } from 'vue'
 import BaseModal from '../pages/BaseModal.vue'
 import { hrLookupsService } from '../hr-lookups.service'
 
-type DesignationDto = { Id: number; Name: string; Code?: string | null }
+type DesignationDto = { Id: number; Name: string; Code?: string | null; Description?: string | null }
 
 const props = defineProps<{ model: DesignationDto | null }>()
 const emit = defineEmits<{ (e: 'close'): void; (e: 'saved'): void }>()
 
 const name = ref('')
 const code = ref('')
+const description = ref('')
 const saving = ref(false)
 
 watch(
@@ -43,6 +48,7 @@ watch(
   (m) => {
     name.value = (m?.Name ?? '').trim()
     code.value = (m?.Code ?? '').trim()
+    description.value = (m?.Description ?? '').trim()
   },
   { immediate: true },
 )
@@ -53,7 +59,11 @@ async function save() {
 
   saving.value = true
   try {
-    const payload = { name: n, code: code.value.trim() || undefined }
+    const payload = {
+      name: n,
+      code: code.value.trim() || undefined,
+      description: description.value.trim() || undefined,
+    }
 
     if (props.model) await hrLookupsService.updateDesignation(props.model.Id, payload)
     else await hrLookupsService.createDesignation(payload)
@@ -73,6 +83,10 @@ async function save() {
   /* ✅ space between textboxes */
 }
 
+.full {
+  grid-column: 1 / -1;
+}
+
 label {
   font-size: 12px;
   font-weight: 900;
@@ -88,6 +102,12 @@ label {
   padding: 0 12px;
   font-weight: 800;
   box-sizing: border-box;
+}
+
+.textarea {
+  height: 86px;
+  padding: 10px 12px;
+  resize: vertical;
 }
 
 .btn {

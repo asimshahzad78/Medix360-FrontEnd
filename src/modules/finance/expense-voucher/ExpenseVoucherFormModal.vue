@@ -31,6 +31,27 @@
           </div>
 
           <div>
+            <label>Type</label>
+            <select v-model.number="form.type">
+              <option :value="0">General</option>
+              <option :value="1">Petty Cash</option>
+              <option :value="2">Vendor Payment</option>
+              <option :value="3">Adjustment</option>
+              <option :value="4">Expense</option>
+              <option :value="5">Journal</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Status</label>
+            <select v-model="form.status">
+              <option>Unpaid</option>
+              <option>Paid</option>
+              <option>Cancelled</option>
+            </select>
+          </div>
+
+          <div>
             <label>Expense Head *</label>
             <select v-model="form.expenseAccountId">
               <option value="">Select</option>
@@ -55,11 +76,6 @@
             <label>Description *</label>
             <textarea v-model="form.description"
               placeholder="e.g., generator fuel, stationery, maintenance..."></textarea>
-          </div>
-
-          <div v-if="isEdit" class="full">
-            <label>Status</label>
-            <input :value="statusLabel" disabled />
           </div>
         </div>
 
@@ -104,14 +120,14 @@ export default defineComponent({
   setup(props, { emit }) {
     const alertState = ref<AlertState | null>(null)
     const accounts = ref<ChartOfAccountUiDto[]>([])
-    const statusLabel = ref('Draft')
-
     const form = reactive({
       date: todayIsoDate(),
       amount: 0,
+      type: 4,
       description: '',
       expenseAccountId: '',
       paymentAccountId: '',
+      status: 'Unpaid' as 'Unpaid' | 'Paid' | 'Cancelled',
     })
 
     const isEdit = computed(() => !!props.voucherId)
@@ -138,10 +154,11 @@ export default defineComponent({
 
       form.date = (v.Date ?? '').slice(0, 10)
       form.amount = v.Amount ?? 0
+      form.type = typeof v.Type === 'number' ? v.Type : 4
       form.description = v.Description ?? ''
       form.expenseAccountId = v.ExpenseAccountId ?? ''
       form.paymentAccountId = v.BankAccountId ?? ''
-      statusLabel.value = v.Status ?? 'Draft'
+      form.status = v.Status ?? 'Unpaid'
     }
 
     onMounted(load)
@@ -166,9 +183,11 @@ export default defineComponent({
         const payload = {
           date: form.date,
           amount: form.amount,
+          type: form.type,
           description: form.description,
           expenseAccountId: form.expenseAccountId,
           paymentAccountId: form.paymentAccountId,
+          status: form.status,
         }
 
         if (isEdit.value) {
@@ -196,7 +215,6 @@ export default defineComponent({
       alertState,
       expenseAccounts,
       paymentAccounts,
-      statusLabel,
     }
   },
 })

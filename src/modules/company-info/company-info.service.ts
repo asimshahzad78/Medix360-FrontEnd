@@ -13,6 +13,7 @@ const mapToApiPayload = (payload: {
   fax: string
   website: string
   companyLogo: File | null
+  companyLogoImagePath?: string
 }): CompanyInfoSaveDto => ({
   Name: payload.name,
   ApplicationTitle: payload.applicationTitle,
@@ -25,6 +26,7 @@ const mapToApiPayload = (payload: {
   Fax: payload.fax,
   Website: payload.website,
   CompanyLogo: payload.companyLogo ?? undefined,
+  CompanyLogoImagePath: payload.companyLogoImagePath,
 })
 
 export const companyInfoService = {
@@ -47,6 +49,7 @@ export const companyInfoService = {
     fax: string
     website: string
     companyLogo: File | null
+    companyLogoImagePath?: string
   }): Promise<void> {
     const dto = mapToApiPayload(payload)
     const formData = new FormData()
@@ -75,6 +78,7 @@ export const companyInfoService = {
       fax: string
       website: string
       companyLogo: File | null
+      companyLogoImagePath?: string
     },
   ): Promise<void> {
     const dto = mapToApiPayload(payload)

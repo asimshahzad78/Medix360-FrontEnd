@@ -8,10 +8,12 @@ import { api } from '@/services/api'
 export interface EmployeeApiDto {
   UserProfileId: number
   EmployeeId?: string | null
+  Title?: string | null
   FirstName: string
   LastName: string
   Email?: string | null
   PhoneNumber?: string | null
+  Age?: number | null
 
   DateOfBirth?: string | null
   JoiningDate?: string | null
@@ -28,6 +30,7 @@ export interface EmployeeApiDto {
   RoleId: number
   ApplicationUserId?: string | null
   hasUser?: boolean
+  ProfilePicture?: string | null
 }
 
 
@@ -84,10 +87,12 @@ type PagedLookup = {
  */
 export interface EmployeeSaveDto {
   employeeId?: string | null
+  title?: string | null
   firstName: string
   lastName: string
   email?: string | null
   phoneNumber?: string | null
+  age?: number | null
 
   dateOfBirth?: string | null
   joiningDate?: string | null
@@ -102,14 +107,18 @@ export interface EmployeeSaveDto {
 
   userType: number
   roleId?: number | null
+  currentURL?: string | null
+  profilePictureDetails?: File | null
 }
 
 const mapToApiPayload = (payload: EmployeeSaveDto) => ({
   EmployeeId: payload.employeeId,
+  Title: payload.title,
   FirstName: payload.firstName,
   LastName: payload.lastName,
   Email: payload.email,
   PhoneNumber: payload.phoneNumber,
+  Age: payload.age,
   DateOfBirth: payload.dateOfBirth,
   JoiningDate: payload.joiningDate,
   LeavingDate: payload.leavingDate,
@@ -120,7 +129,23 @@ const mapToApiPayload = (payload: EmployeeSaveDto) => ({
   Country: payload.country,
   UserType: payload.userType,
   RoleId: payload.roleId ?? 0,
+  CurrentURL: payload.currentURL,
+  ProfilePictureDetails: payload.profilePictureDetails ?? undefined,
 })
+
+const toRequestBody = (payload: EmployeeSaveDto) => {
+  const dto = mapToApiPayload(payload)
+  if (!payload.profilePictureDetails) return dto
+
+  const formData = new FormData()
+  Object.entries(dto).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, value instanceof File ? value : String(value))
+    }
+  })
+
+  return formData
+}
 
 /**
  * Create login for employee (calls EmployeeUsers API)
@@ -182,7 +207,10 @@ export const employeeService = {
 
   // 🔹 CREATE employee record only
   async create(payload: EmployeeSaveDto): Promise<{ userProfileId: number; employeeId?: string | null }> {
-    const { data } = await api.post('/employees', mapToApiPayload(payload))
+    const body = toRequestBody(payload)
+    const { data } = await api.post('/employees', body, {
+      headers: body instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
+    })
 
     // your backend returns JsonResultViewModel
     const obj = data?.ModelObject ?? data?.modelObject ?? data?.Model ?? data
@@ -194,10 +222,23 @@ export const employeeService = {
   },
 
   async update(id: number, payload: EmployeeSaveDto): Promise<void> {
-    await api.put(`/employees/${id}`, {
-      UserProfileId: id,
-      ...mapToApiPayload(payload),
-    })
+    const body = toRequestBody(payload)
+    if (body instanceof FormData) {
+      body.append('UserProfileId', String(id))
+    }
+
+    await api.put(
+      `/employees/${id}`,
+      body instanceof FormData
+        ? body
+        : {
+            UserProfileId: id,
+            ...body,
+          },
+      {
+        headers: body instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
+      },
+    )
   },
 
   // 🔹 SOFT DELETE

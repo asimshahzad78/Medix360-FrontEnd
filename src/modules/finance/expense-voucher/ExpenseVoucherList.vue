@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from 'vue'
 import ExpenseVoucherFormModal from './ExpenseVoucherFormModal.vue'
+import AuditReasonModal from '@/components/ui/AuditReasonModal.vue'
 import { expenseVoucherService } from './expense-voucher.service'
 import type {
   ExpenseVoucherListItem,
@@ -9,6 +10,7 @@ import type {
 } from './expense-voucher.types'
 import { coaService } from '../coa/coa.service'
 import type { ChartOfAccountUiDto } from '../coa/coa.types'
+import { getSensitiveActionLabel, type SensitiveActionRequest } from '@/services/sensitive-actions'
 
 function safeStr(v: unknown): string {
   return typeof v === 'string' ? v : ''
@@ -22,7 +24,7 @@ function normalizeStatus(v: unknown): ExpenseVoucherStatus {
 }
 
 export default defineComponent({
-  components: { ExpenseVoucherFormModal },
+  components: { ExpenseVoucherFormModal, AuditReasonModal },
 
   setup() {
     const loading = ref(false)
@@ -33,6 +35,10 @@ export default defineComponent({
 
     const showForm = ref(false)
     const selectedId = ref<string | null>(null)
+    const auditSubmitting = ref(false)
+    const pendingAction = ref<
+      (SensitiveActionRequest & { run: (reason: string) => Promise<void> }) | null
+    >(null)
 
     const vouchers = ref<ExpenseVoucherListItem[]>([])
     const accounts = ref<ChartOfAccountUiDto[]>([])
@@ -159,16 +165,48 @@ export default defineComponent({
       await load()
     }
 
-    const postVoucher = async (v: ExpenseVoucherListItem) => {
-      if (!canPost(v)) return
-      await expenseVoucherService.post(v.id)
-      await load()
+    const requestAuditReason = (
+      action: SensitiveActionRequest & { run: (reason: string) => Promise<void> },
+    ) => {
+      pendingAction.value = action
     }
 
-    const reverseVoucher = async (v: ExpenseVoucherListItem) => {
+    const confirmAuditAction = async (reason: string) => {
+      if (!pendingAction.value) return
+
+      auditSubmitting.value = true
+      try {
+        await pendingAction.value.run(reason)
+        pendingAction.value = null
+      } finally {
+        auditSubmitting.value = false
+      }
+    }
+
+    const postVoucher = (v: ExpenseVoucherListItem) => {
+      if (!canPost(v)) return
+      requestAuditReason({
+        type: 'post',
+        label: 'Post expense voucher',
+        target: v.voucherNo,
+        run: async (reason) => {
+          await expenseVoucherService.post(v.id, reason)
+          await load()
+        },
+      })
+    }
+
+    const reverseVoucher = (v: ExpenseVoucherListItem) => {
       if (!canReverse(v)) return
-      await expenseVoucherService.reverse(v.id)
-      await load()
+      requestAuditReason({
+        type: 'reverse',
+        label: 'Reverse expense voucher',
+        target: v.voucherNo,
+        run: async (reason) => {
+          await expenseVoucherService.reverse(v.id, reason)
+          await load()
+        },
+      })
     }
 
     const deleteVoucher = async (v: ExpenseVoucherListItem) => {
@@ -214,6 +252,10 @@ export default defineComponent({
       paymentAccountFilter,
       cashOnly,
       paymentAccounts,
+      pendingAction,
+      auditSubmitting,
+      confirmAuditAction,
+      getSensitiveActionLabel,
     }
   },
 })
@@ -343,6 +385,14 @@ export default defineComponent({
     <Teleport to="body">
       <ExpenseVoucherFormModal v-if="showForm" :voucherId="selectedId ?? undefined" @saved="reload"
         @close="closeModals" />
+      <AuditReasonModal
+        v-if="pendingAction"
+        :action-label="getSensitiveActionLabel(pendingAction)"
+        :submitting="auditSubmitting"
+        confirm-label="Submit"
+        @confirm="confirmAuditAction"
+        @cancel="pendingAction = null"
+      />
     </Teleport>
   </div>
 </template>

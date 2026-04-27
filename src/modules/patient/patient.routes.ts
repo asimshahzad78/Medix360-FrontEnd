@@ -7,6 +7,13 @@ export default [
     },
   },
   {
+    path: '/patients/queue',
+    component: () => import('./PatientQueue.vue'),
+    meta: {
+      title: 'Registration Queue',
+    },
+  },
+  {
     path: '/patients/:id',
     component: () => import('./PatientDetail.vue'),
     meta: {

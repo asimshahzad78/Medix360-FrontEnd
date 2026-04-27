@@ -36,6 +36,8 @@ export interface ExpenseVoucherSaveDto {
   date: string
   description: string
   amount: number
+  type: number
   expenseAccountId: string
   paymentAccountId: string
+  status: ExpenseVoucherStatus
 }

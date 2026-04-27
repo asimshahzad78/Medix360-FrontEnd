@@ -19,6 +19,24 @@
           </div>
         </div>
 
+        <div v-if="duplicateLoading || duplicateMatches.length" class="duplicate-panel">
+          <div class="duplicate-header">
+            <strong>Possible duplicates</strong>
+            <span v-if="duplicateLoading">Checking...</span>
+            <span v-else>{{ duplicateMatches.length }} match{{ duplicateMatches.length === 1 ? '' : 'es' }}</span>
+          </div>
+          <button
+            v-for="match in duplicateMatches"
+            :key="match.Id"
+            class="duplicate-row"
+            type="button"
+            @click="loadDuplicate(match.Id)"
+          >
+            <span>{{ match.Title }} {{ match.FirstName }} {{ match.LastName }}</span>
+            <small>{{ match.Phone }} · {{ match.Gender }} · {{ match.AgeDisplay || match.Age || 'Age not set' }}</small>
+          </button>
+        </div>
+
         <!-- Tabs -->
         <div class="tabs">
           <button :class="{ active: tab === 'basic' }" @click="tab = 'basic'">Basic Info</button>
@@ -70,6 +88,16 @@
               <input v-model="form.panel" />
             </div>
 
+            <div>
+              <label>User Type</label>
+              <input type="number" v-model.number="form.userType" />
+            </div>
+
+            <div>
+              <label>Role Id</label>
+              <input type="number" v-model.number="form.roleId" />
+            </div>
+
           </div>
 
           <!-- OTHER INFO -->
@@ -88,6 +116,11 @@
                 <option>Married</option>
                 <option>Divorced</option>
               </select>
+            </div>
+
+            <div>
+              <label>Spouse Name</label>
+              <input v-model="form.spouseName" />
             </div>
 
             <div v-if="!isEdit">
@@ -140,8 +173,25 @@
             </div>
 
             <div>
+              <label>Profile Picture</label>
+              <input type="file" accept="image/*" @change="onProfilePictureChange" />
+            </div>
+
+            <div v-if="profilePicturePreview">
+              <label>Preview</label>
+              <img class="profile-preview" :src="profilePicturePreview" alt="Patient profile preview" />
+            </div>
+
+            <div>
               <label>Country</label>
               <input v-model="form.country" />
+            </div>
+
+            <div class="full">
+              <label class="checkbox">
+                <input type="checkbox" v-model="form.agreement" />
+                Agreement signed
+              </label>
             </div>
 
             <div class="full">
@@ -167,24 +217,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, computed, onMounted } from 'vue'
-import { patientService } from './patient.service'
+import { defineComponent, reactive, ref, computed, onMounted, watch } from 'vue'
+import { patientService, type PatientApiDto } from './patient.service'
+import { getApiErrorMessage } from '@/services/api-response'
 
 type AlertType = 'success' | 'error'
 
 interface AlertState {
   type: AlertType
   message: string
-}
-
-interface BackendErrorShape {
-  message?: string
-  response?: {
-    data?: {
-      message?: string
-      error?: string
-    }
-  }
 }
 
 const titleOptions = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Prof', 'Master', 'Baby'] as const
@@ -198,6 +239,9 @@ export default defineComponent({
   setup(props, { emit }) {
     const tab = ref<'basic' | 'other'>('basic')
     const alertState = ref<AlertState | null>(null)
+    const duplicateMatches = ref<PatientApiDto[]>([])
+    const duplicateLoading = ref(false)
+    const profilePicturePreview = ref('')
 
     const form = reactive({
       title: '',
@@ -209,6 +253,7 @@ export default defineComponent({
       email: '',
       gender: '',
       maritalStatus: '',
+      spouseName: '',
       bloodGroup: '',
       fatherName: '',
       motherName: '',
@@ -216,7 +261,11 @@ export default defineComponent({
       registrationFee: null as number | null,
       address: '',
       country: '',
+      agreement: false as boolean | null,
       remarks: '',
+      profilePictureDetails: null as File | null,
+      userType: 0 as number | null,
+      roleId: 0 as number | null,
       passwordHash: '',
       confirmPassword: '',
     })
@@ -249,6 +298,7 @@ export default defineComponent({
       form.email = p.Email ?? ''
       form.gender = p.Gender ?? ''
       form.maritalStatus = p.MaritalStatus ?? ''
+      form.spouseName = p.SpouseName ?? ''
       form.bloodGroup = p.BloodGroup ?? ''
       form.fatherName = p.FatherName ?? ''
       form.motherName = p.MotherName ?? ''
@@ -256,10 +306,48 @@ export default defineComponent({
       form.registrationFee = p.RegistrationFee ?? null
       form.address = p.Address ?? ''
       form.country = p.Country ?? ''
+      form.agreement = Boolean((p as PatientApiDto & { Agreement?: boolean | null }).Agreement)
       form.remarks = p.Remarks ?? ''
+      form.userType = p.UserType ?? 0
+      form.roleId = p.RoleId ?? 0
+      profilePicturePreview.value = p.ProfilePicture ?? ''
     }
 
     onMounted(loadPatient)
+
+    let duplicateTimer: ReturnType<typeof setTimeout> | null = null
+
+    const checkDuplicates = () => {
+      if (isEdit.value) return
+      if (duplicateTimer) clearTimeout(duplicateTimer)
+
+      duplicateTimer = setTimeout(async () => {
+        duplicateLoading.value = true
+        try {
+          duplicateMatches.value = await patientService.findDuplicates({
+            firstName: form.firstName,
+            phone: form.phone,
+          })
+        } finally {
+          duplicateLoading.value = false
+        }
+      }, 350)
+    }
+
+    const loadDuplicate = async (id: number) => {
+      alertState.value = {
+        type: 'error',
+        message: `Patient #${id} may already exist. Open the patient list or history before creating a new record.`,
+      }
+    }
+
+    watch(() => [form.firstName, form.phone], checkDuplicates)
+
+    const onProfilePictureChange = (event: Event) => {
+      const file = (event.target as HTMLInputElement).files?.[0] ?? null
+      form.profilePictureDetails = file
+      profilePicturePreview.value = file ? URL.createObjectURL(file) : ''
+    }
 
     const validate = (): boolean => {
       // reset
@@ -313,16 +401,6 @@ export default defineComponent({
       return ok
     }
 
-    const getErrorMessage = (e: unknown): string => {
-      const err = e as BackendErrorShape
-      return (
-        err.response?.data?.message ??
-        err.response?.data?.error ??
-        err.message ??
-        'Operation failed. Please check data.'
-      )
-    }
-
     const save = async (): Promise<void> => {
       if (!validate()) {
         alertState.value = { type: 'error', message: 'Please fix the highlighted fields.' }
@@ -343,18 +421,23 @@ export default defineComponent({
           emit('close')
         }, 1200)
       } catch (e: unknown) {
-        alertState.value = { type: 'error', message: getErrorMessage(e) }
+        alertState.value = { type: 'error', message: getApiErrorMessage(e, 'Operation failed. Please check data.') }
       }
     }
 
     return {
       tab,
       alertState,
+      duplicateLoading,
+      duplicateMatches,
+      profilePicturePreview,
       form,
       errors,
       clearError,
       isEdit,
       save,
+      loadDuplicate,
+      onProfilePictureChange,
       titleOptions,
       ageLabel,
     }
@@ -558,5 +641,53 @@ textarea {
   margin-top: 6px;
   font-size: 12px;
   color: #b42318;
+}
+
+.duplicate-panel {
+  border: 1px solid #fed7aa;
+  background: #fff7ed;
+  border-radius: 8px;
+  margin: 12px 0 16px;
+  padding: 10px;
+}
+
+.duplicate-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #9a3412;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.duplicate-row {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  border: 1px solid #fed7aa;
+  background: #fff;
+  border-radius: 6px;
+  color: #1f2937;
+  padding: 8px 10px;
+  margin-top: 6px;
+  cursor: pointer;
+}
+
+.duplicate-row:hover {
+  border-color: #fb923c;
+}
+
+.duplicate-row small {
+  color: #64748b;
+}
+
+.profile-preview {
+  max-height: 72px;
+  max-width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 4px;
 }
 </style>

@@ -24,19 +24,21 @@
               <th style="width: 90px">ID</th>
               <th>Name</th>
               <th style="width: 140px">Code</th>
+              <th>Description</th>
               <th style="width: 220px; text-align:right;">Actions</th>
             </tr>
           </thead>
 
           <tbody>
             <tr v-if="filteredDepartments.length === 0">
-              <td colspan="4" class="empty">No departments found.</td>
+              <td colspan="5" class="empty">No departments found.</td>
             </tr>
 
             <tr v-for="d in filteredDepartments" :key="d.Id">
               <td class="muted">#{{ d.Id }}</td>
               <td class="name">{{ d.Name }}</td>
               <td class="muted">{{ d.Code || '-' }}</td>
+              <td class="muted">{{ d.Description || '-' }}</td>
               <td class="actions">
                 <button class="btn btn-sm" @click="openDeptModalForEdit(d)">Edit</button>
                 <button class="btn btn-sm" @click="openSubsModal(d)">Sub Departments</button>
@@ -67,6 +69,7 @@ type DepartmentDto = {
   Id: number
   Name: string
   Code?: string | null
+  Description?: string | null
 }
 
 

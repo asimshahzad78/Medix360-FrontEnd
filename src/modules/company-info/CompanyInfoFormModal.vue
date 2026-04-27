@@ -35,6 +35,11 @@
           </div>
 
           <div class="field">
+            <label>Fax</label>
+            <input v-model="form.fax" />
+          </div>
+
+          <div class="field">
             <label>Email</label>
             <input v-model="form.email" />
           </div>
@@ -62,6 +67,11 @@
           <div class="field">
             <label>Company Logo</label>
             <input type="file" @change="onFileChange" />
+          </div>
+
+          <div class="field">
+            <label>Logo Path</label>
+            <input v-model="form.companyLogoImagePath" readonly />
           </div>
 
           <div class="field">
@@ -113,6 +123,7 @@ export default defineComponent({
       fax: '',
       website: '',
       companyLogo: null as File | null,
+      companyLogoImagePath: '',
     })
 
     const load = async () => {
@@ -131,6 +142,7 @@ export default defineComponent({
         form.email = c.Email
         form.fax = c.Fax
         form.website = c.Website
+        form.companyLogoImagePath = c.CompanyLogoImagePath
 
         logoPreview.value = API_ORIGIN + c.CompanyLogoImagePath
       } catch {
@@ -145,6 +157,7 @@ export default defineComponent({
       const file = (e.target as HTMLInputElement)?.files?.[0]
       if (!file) return
       form.companyLogo = file
+      form.companyLogoImagePath = ''
       logoPreview.value = URL.createObjectURL(file)
     }
 

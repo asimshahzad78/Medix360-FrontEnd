@@ -1,7 +1,7 @@
 <template>
   <div class="modal-backdrop">
     <div class="modal-card">
-      <h2>New Checkup</h2>
+      <h2>OPD Encounter</h2>
 
       <!-- ALERT WRAPPER -->
       <div v-if="alertState" class="alert-wrapper">
@@ -20,18 +20,22 @@
       <form @submit.prevent="save">
         <!-- TABS -->
         <div class="tabs">
-          <button :class="{ active: tab === 'info' }" @click.prevent="tab = 'info'">Info</button>
+          <button :class="{ active: tab === 'encounter' }" @click.prevent="tab = 'encounter'">Encounter</button>
           <button :class="{ active: tab === 'vitals' }" @click.prevent="tab = 'vitals'">
             Vitals
           </button>
-          <button :class="{ active: tab === 'medicine' }" @click.prevent="tab = 'medicine'">
-            Medicine
+          <button :class="{ active: tab === 'diagnosis' }" @click.prevent="tab = 'diagnosis'">
+            Diagnosis
           </button>
-          <button :class="{ active: tab === 'tests' }" @click.prevent="tab = 'tests'">Labs</button>
+          <button :class="{ active: tab === 'prescription' }" @click.prevent="tab = 'prescription'">
+            Prescription
+          </button>
+          <button :class="{ active: tab === 'orders' }" @click.prevent="tab = 'orders'">Orders</button>
+          <button :class="{ active: tab === 'payment' }" @click.prevent="tab = 'payment'">Payment</button>
         </div>
 
-        <!-- ================= INFO TAB ================= -->
-        <div v-if="tab === 'info'" class="grid">
+        <!-- ================= ENCOUNTER TAB ================= -->
+        <div v-if="tab === 'encounter'" class="grid">
           <div>
             <label>Patient</label>
             <input type="text" :value="patient.firstName + ' ' + patient.lastName" disabled />
@@ -47,39 +51,17 @@
 
           <div>
             <label>Doctor</label>
-            <select v-model.number="form.doctorId">
-              <option :value="null">--- SELECT ---</option>
-              <option v-for="d in doctors" :key="d.id" :value="d.id">
-                {{ d.name }}
-              </option>
-            </select>
+            <AppLookupSelect
+              v-model="form.doctorId"
+              kind="doctor"
+              placeholder="Search doctor"
+              @selected="selectDoctor"
+            />
           </div>
 
           <div>
             <label>Checkup Date</label>
             <input type="date" v-model="form.checkupDate" />
-          </div>
-
-          <div>
-            <label>Payment Mode</label>
-            <select v-model="form.paymentMode">
-              <option value="">--- SELECT ---</option>
-              <option value="Free">Free</option>
-              <option value="Cash">Cash</option>
-              <option value="Card">Card</option>
-              <option value="Wallet">Wallet</option>
-              <option value="Online Transfer">Online Transfer</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Payment Account</label>
-            <select v-model="selectedAccountId">
-              <option :value="null">--- SELECT ---</option>
-              <option v-for="a in paymentAccounts" :key="a.Id" :value="a.Id">
-                {{ a.Name }}
-              </option>
-            </select>
           </div>
         </div>
 
@@ -104,7 +86,10 @@
             <label>Temperature</label>
             <input type="number" v-model="form.temperature" />
           </div>
+        </div>
 
+        <!-- ================= DIAGNOSIS TAB ================= -->
+        <div v-if="tab === 'diagnosis'" class="grid">
           <div class="full">
             <label>Symptoms</label>
             <textarea v-model="form.symptoms"></textarea>
@@ -141,13 +126,18 @@
           </div>
         </div>
 
-        <!-- ================= MEDICINE TAB ================= -->
-        <div v-if="tab === 'medicine'">
+        <!-- ================= PRESCRIPTION TAB ================= -->
+        <div v-if="tab === 'prescription'">
           <div class="grid">
-            <div>
-              <label>Medicine Name</label>
-              <input v-model="newMed.name" />
-            </div>
+          <div>
+            <label>Medicine Name</label>
+            <AppLookupSelect
+              v-model="newMed.medicineId"
+              kind="medicine"
+              placeholder="Search medicine"
+              @selected="selectMedicine"
+            />
+          </div>
 
             <div>
               <label>No of Days</label>
@@ -183,12 +173,27 @@
           </table>
         </div>
 
-        <!-- ================= LABS TAB ================= -->
-        <div v-if="tab === 'tests'">
+        <!-- ================= ORDERS TAB ================= -->
+        <div v-if="tab === 'orders'">
           <div class="grid">
+          <div>
+              <label>Lab / Radiology Order</label>
+              <AppLookupSelect
+                v-model="newTest.testId"
+                kind="labTest"
+                placeholder="Search lab test"
+                @selected="(option) => selectDiagnosticOrder(option, 'Lab')"
+              />
+            </div>
+
             <div>
-              <label>Test Name</label>
-              <input v-model="newTest.name" />
+              <label>Radiology Study</label>
+              <AppLookupSelect
+                v-model="newTest.testId"
+                kind="radiologyStudy"
+                placeholder="Search study"
+                @selected="(option) => selectDiagnosticOrder(option, 'Radiology')"
+              />
             </div>
 
             <div>
@@ -212,6 +217,39 @@
           </table>
         </div>
 
+        <!-- ================= PAYMENT TAB ================= -->
+        <div v-if="tab === 'payment'" class="grid">
+          <div>
+            <label>Payment Mode</label>
+            <AppLookupSelect
+              v-model="form.paymentMode"
+              kind="paymentMode"
+              placeholder="Select payment mode"
+              @selected="selectPaymentMode"
+            />
+          </div>
+
+          <div>
+            <label>Payment Account</label>
+            <AppLookupSelect
+              v-model="selectedAccountId"
+              kind="paymentAccount"
+              placeholder="Search payment account"
+              @selected="selectPaymentAccount"
+            />
+          </div>
+
+          <div>
+            <label>Doctor Fee</label>
+            <input type="number" :value="selectedDoctorFee" disabled />
+          </div>
+
+          <div>
+            <label>Lab / Order Amount</label>
+            <input type="number" :value="orderTotal" disabled />
+          </div>
+        </div>
+
         <!-- ACTIONS -->
         <div class="actions">
           <button class="btn-primary">Save</button>
@@ -223,13 +261,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, ref, watch } from 'vue'
-import { doctorService } from '../doctor/doctor.service'
+import { computed, defineComponent, onMounted, reactive, ref } from 'vue'
+import AppLookupSelect from '@/components/ui/AppLookupSelect.vue'
+import { lookupService, type LookupOption } from '@/services/lookup.service'
 import { checkupService } from './checkup.service'
-import { financeService } from '../finance/finance.service'
 import type { AxiosError } from 'axios'
 
-type TabType = 'info' | 'vitals' | 'medicine' | 'tests'
+type TabType = 'encounter' | 'vitals' | 'diagnosis' | 'prescription' | 'orders' | 'payment'
 type AlertType = 'success' | 'error'
 
 interface AlertState {
@@ -241,20 +279,8 @@ interface ApiErrorResponse {
   message?: string
 }
 
-interface DoctorItem {
-  id: number
-  name: string
-  fee: number
-}
-
-interface PaymentAccountItem {
-  Id: string
-  Name: string
-  Code: string
-}
-
 interface MedicineItem {
-  medicineId: number | null
+  medicineId: string | number | null
   name: string
   noOfDays: number
   whenToTake: string
@@ -262,14 +288,14 @@ interface MedicineItem {
 }
 
 interface LabTestItem {
-  testId: number | null
+  testId: string | number | null
   name: string
   price: number
 }
 
 interface CheckupForm {
   patientId: number
-  doctorId: number | null
+  doctorId: string | number | null
   patientType: string
   checkupDate: string
   paymentMode: string
@@ -290,19 +316,8 @@ interface CheckupForm {
 }
 
 /** ✅ This matches your API after backend fix: DocId = DoctorsInfo.Id */
-interface DoctorApiItem {
-  DocId: number
-  FirstName: string
-  LastName: string
-  DoctorFee: number | null
-}
-
-interface DoctorPagedResponse {
-  items: DoctorApiItem[]
-  totalCount: number
-}
-
 export default defineComponent({
+  components: { AppLookupSelect },
   props: {
     patient: {
       type: Object as () => { id: number; firstName: string; lastName: string },
@@ -312,14 +327,15 @@ export default defineComponent({
   emits: ['saved', 'close'],
 
   setup(props, { emit }) {
-    const tab = ref<TabType>('info')
+    const tab = ref<TabType>('encounter')
     const alertState = ref<AlertState | null>(null)
 
-    const doctors = ref<DoctorItem[]>([])
-    const paymentAccounts = ref<PaymentAccountItem[]>([])
-
     const selectedAccountId = ref<string | null>(null)
+    const selectedPaymentAccount = ref<LookupOption | null>(null)
     const selectedDoctorFee = ref<number>(0)
+    const orderTotal = computed(() =>
+      form.labTests.reduce((total, order) => total + Number(order.price || 0), 0),
+    )
 
     const form = reactive<CheckupForm>({
       patientId: props.patient.id,
@@ -343,18 +359,10 @@ export default defineComponent({
       labTests: [],
     })
 
-    const isCashAccountSelected = (): boolean => {
-      const acc = paymentAccounts.value.find((a) => a.Id === selectedAccountId.value)
-      return acc ? acc.Name.toLowerCase().includes('cash') : false
-    }
-
-    watch(
-      () => form.doctorId,
-      (doctorId) => {
-        const doc = doctors.value.find((d) => d.id === doctorId)
-        selectedDoctorFee.value = doc?.fee ?? 0
-      },
-    )
+    const isCashAccountSelected = (): boolean =>
+      [selectedPaymentAccount.value?.label, selectedPaymentAccount.value?.code]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes('cash'))
 
     const newMed = reactive<MedicineItem>({
       medicineId: null,
@@ -369,6 +377,33 @@ export default defineComponent({
       name: '',
       price: 0,
     })
+
+    const selectDoctor = (option: LookupOption | null): void => {
+      selectedDoctorFee.value = option?.fee ?? 0
+    }
+
+    const selectMedicine = (option: LookupOption | null): void => {
+      newMed.name = option?.label ?? ''
+    }
+
+    const selectDiagnosticOrder = (option: LookupOption | null, type: 'Lab' | 'Radiology'): void => {
+      if (!option) {
+        newTest.name = ''
+        newTest.price = 0
+        return
+      }
+
+      newTest.name = `${type}: ${option.label}`
+      newTest.price = option.price ?? 0
+    }
+
+    const selectPaymentMode = (option: LookupOption | null): void => {
+      form.paymentMode = option ? String(option.id) : ''
+    }
+
+    const selectPaymentAccount = (option: LookupOption | null): void => {
+      selectedPaymentAccount.value = option
+    }
 
     const addMedicine = (): void => {
       form.medicines.push({ ...newMed })
@@ -387,34 +422,31 @@ export default defineComponent({
     }
 
     onMounted(async () => {
-      const res = (await doctorService.getAll()) as DoctorPagedResponse
-
-      doctors.value = (res.items ?? []).map((d): DoctorItem => ({
-        id: d.DocId,
-        name: `${d.FirstName} ${d.LastName}`.trim(),
-        fee: d.DoctorFee ?? 0,
-      }))
-
-      paymentAccounts.value = await financeService.getPaymentAccounts()
-
-      const cash = paymentAccounts.value.find((a) => a.Name.toLowerCase().includes('cash in'))
-      if (cash) selectedAccountId.value = cash.Id
+      const accounts = await lookupService.search('paymentAccount')
+      const cash = accounts.find((a) => a.label.toLowerCase().includes('cash in') || a.label.toLowerCase() === 'cash')
+      if (cash) {
+        selectedAccountId.value = String(cash.id)
+        selectedPaymentAccount.value = cash
+      }
     })
 
     const save = async (): Promise<void> => {
       try {
         if (!form.doctorId) {
           alertState.value = { type: 'error', message: 'Please select a doctor.' }
+          tab.value = 'encounter'
           return
         }
 
         if (!form.paymentMode) {
           alertState.value = { type: 'error', message: 'Please select payment mode.' }
+          tab.value = 'payment'
           return
         }
 
         if (!selectedAccountId.value) {
           alertState.value = { type: 'error', message: 'Please select a payment account.' }
+          tab.value = 'payment'
           return
         }
 
@@ -423,12 +455,13 @@ export default defineComponent({
             type: 'error',
             message: 'Selected payment mode is not Cash. Please select a suitable payment account.',
           }
+          tab.value = 'payment'
           return
         }
 
         const res = await checkupService.create({
           patientId: form.patientId,
-          doctorId: form.doctorId,
+          doctorId: Number(form.doctorId),
           patientType: form.patientType,
           checkupDate: form.checkupDate,
           paymentMode: form.paymentMode,
@@ -450,7 +483,7 @@ export default defineComponent({
           medicines: form.medicines
             .filter((m) => m.medicineId !== null)
             .map((m) => ({
-              medicineId: m.medicineId as number,
+              medicineId: Number(m.medicineId),
               noOfDays: m.noOfDays,
               whenToTake: m.whenToTake,
               isBeforeMeal: m.isBeforeMeal,
@@ -459,7 +492,7 @@ export default defineComponent({
           labTests: form.labTests
             .filter((t) => t.testId !== null)
             .map((t) => ({
-              testId: t.testId as number,
+              testId: Number(t.testId),
               price: t.price,
             })),
 
@@ -485,11 +518,16 @@ export default defineComponent({
       tab,
       alertState,
       selectedAccountId,
-      doctors,
-      paymentAccounts,
+      selectedDoctorFee,
+      orderTotal,
       form,
       newMed,
       newTest,
+      selectDoctor,
+      selectMedicine,
+      selectDiagnosticOrder,
+      selectPaymentMode,
+      selectPaymentAccount,
       addMedicine,
       removeMedicine,
       addTest,
