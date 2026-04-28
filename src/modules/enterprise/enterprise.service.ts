@@ -39,6 +39,17 @@ const pick = (record: LooseRecord, keys: string[]): unknown => {
 
 const toArray = (value: unknown): unknown[] => (Array.isArray(value) ? value : [])
 
+const toPascalKey = (key: string): string => (key ? `${key.charAt(0).toUpperCase()}${key.slice(1)}` : key)
+
+const toDtoPayload = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(toDtoPayload)
+  if (!isRecord(value)) return value
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, item]) => [toPascalKey(key), toDtoPayload(item)]),
+  )
+}
+
 const getRowsSource = (payload: unknown): unknown[] => {
   if (Array.isArray(payload)) return payload
   if (!isRecord(payload)) return []
@@ -165,8 +176,8 @@ export const enterpriseService = {
 
     const response =
       options.method === 'put'
-        ? await api.put(endpoint, payload, config)
-        : await api.post(endpoint, payload, config)
+        ? await api.put(endpoint, toDtoPayload(payload), config)
+        : await api.post(endpoint, toDtoPayload(payload), config)
 
     return unwrapApiData<unknown>(response.data, response.data)
   },

@@ -107,5 +107,31 @@ const emit = defineEmits<{
 .app-modal__body {
   padding: 14px 18px;
 }
-</style>
 
+@media (max-width: 700px) {
+  .app-modal-backdrop {
+    padding: 10px;
+  }
+
+  .app-modal {
+    max-height: calc(100vh - 20px);
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+  }
+
+  .app-modal__header,
+  .app-modal__footer {
+    padding: 12px;
+  }
+
+  .app-modal__body {
+    overflow: auto;
+    padding: 12px;
+  }
+
+  .app-modal__title {
+    font-size: 17px;
+  }
+}
+</style>

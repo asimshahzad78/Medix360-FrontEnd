@@ -16,7 +16,7 @@
         <div class="grid">
           <!-- Parent Account -->
           <div>
-            <label>Parent Account *</label>
+            <label>Parent Account</label>
             <Multiselect v-model="form.ParentId" :options="parentAccounts" value-prop="Id" label="Name" searchable
               placeholder="Search parent account...">
               <template #option="{ option }">
@@ -40,9 +40,26 @@
             <input v-model="form.Name" />
           </div>
 
+          <div>
+            <label>Account Code *</label>
+            <input v-model="form.Code" />
+          </div>
+
           <!-- Account Type (Derived – UI only) -->
           <div>
             <label>Account Type</label>
+            <select v-model="form.Type">
+              <option value="Asset">Asset</option>
+              <option value="Liability">Liability</option>
+              <option value="Equity">Equity</option>
+              <option value="Income">Income</option>
+              <option value="Expense">Expense</option>
+              <option value="Revenue">Revenue</option>
+            </select>
+          </div>
+
+          <div v-if="derivedType">
+            <label>Parent Type</label>
             <input :value="derivedType" disabled />
           </div>
         </div>
@@ -67,6 +84,7 @@ import type {
   ChartOfAccountApiDto,
   ChartOfAccountCreateDto,
   ChartOfAccountUpdateDto,
+  AccountType,
 } from './coa.types'
 
 export default defineComponent({
@@ -87,17 +105,20 @@ export default defineComponent({
     const parentAccounts = ref<ChartOfAccountApiDto[]>([])
 
     const form = reactive({
+      Code: '',
       Name: '',
       ParentId: '',
+      Type: 'Expense' as AccountType,
       IsActive: true,
     })
 
-    const accountTypeMap: Record<number, string> = {
+    const accountTypeMap: Record<number, AccountType> = {
       0: 'Asset',
       1: 'Liability',
       2: 'Equity',
       3: 'Expense',
       4: 'Income',
+      5: 'Revenue',
     }
 
     const isEdit = computed(() => !!props.accountId)
@@ -117,31 +138,38 @@ export default defineComponent({
     const loadEdit = async () => {
       if (!props.accountId) return
       const a = await coaService.getById(props.accountId)
+      form.Code = a.Code ?? ''
       form.Name = a.Name
       form.ParentId = a.ParentId ?? ''
+      form.Type = accountTypeMap[a.Type] ?? 'Expense'
       form.IsActive = a.IsActive
     }
 
     const save = async () => {
       try {
-        if (!form.Name || !form.ParentId) {
+        if (!form.Code || !form.Name || !form.Type) {
           alert.value = {
             type: 'error',
-            message: 'Parent Account and Name are required.',
+            message: 'Code, Name and Type are required.',
           }
           return
         }
 
         if (isEdit.value && props.accountId) {
           const payload: ChartOfAccountUpdateDto = {
+            Code: form.Code,
             Name: form.Name,
+            Type: form.Type,
+            ParentId: form.ParentId || null,
             IsActive: form.IsActive,
           }
           await coaService.update(props.accountId, payload)
         } else {
           const payload: ChartOfAccountCreateDto = {
+            Code: form.Code,
             Name: form.Name,
-            ParentId: form.ParentId,
+            Type: form.Type,
+            ParentId: form.ParentId || null,
             IsActive: form.IsActive,
           }
           await coaService.create(payload)

@@ -33,13 +33,18 @@
 ]
 
     const fields: CrudField[] = [
-  { key: 'employeeId', label: 'Employee Id', type: 'number', placeholder: "e.g. 1001", required: true, step: "1" },
-  { key: 'leaveTypeId', label: 'Leave Type Id', type: 'number', placeholder: "e.g. 1", required: true, step: "1" },
+  { key: 'employeeId', label: 'Employee', type: 'lookup', lookupKind: 'employee', placeholder: "Search employee", required: true },
+  { key: 'leaveTypeId', label: 'Leave Type', type: 'lookup', lookupKind: 'leaveType', placeholder: "Search leave type", required: true },
   { key: 'fromDate', label: 'From Date', type: 'date', placeholder: "", required: true },
   { key: 'toDate', label: 'To Date', type: 'date', placeholder: "", required: true },
   { key: 'days', label: 'Days', type: 'number', placeholder: "0", step: "0.01" },
   { key: 'reason', label: 'Reason', type: 'textarea', placeholder: "Leave reason", rows: 4 },
-  { key: 'status', label: 'Status', type: 'text', placeholder: "e.g. Pending" },
+  { key: 'status', label: 'Status', type: 'select', placeholder: "e.g. Pending", options: [
+    { value: 'Pending', label: 'Pending' },
+    { value: 'Approved', label: 'Approved' },
+    { value: 'Rejected', label: 'Rejected' },
+    { value: 'Cancelled', label: 'Cancelled' },
+  ] },
   { key: 'approvedByUserId', label: 'Approved By User Id', type: 'text', placeholder: "e.g. admin" },
   { key: 'approvedAt', label: 'Approved At', type: 'datetime-local', placeholder: "" }
 ]

@@ -150,6 +150,7 @@ export const patientService = {
           },
       {
         headers: body instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
+        meta: { idempotencyKey: true },
       },
     )
   },

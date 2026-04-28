@@ -198,11 +198,15 @@ function toPascalPayload(payload: Record<string, unknown>): Record<string, unkno
 }
 
 async function create(url: string, payload: Record<string, unknown>): Promise<void> {
-  await api.post(url, toPascalPayload(payload))
+  await api.post(url, toPascalPayload(payload), {
+    meta: { idempotencyKey: true },
+  })
 }
 
 async function update(url: string, id: number, payload: Record<string, unknown>): Promise<void> {
-  await api.put(`${url}/${id}`, toPascalPayload(payload))
+  await api.put(`${url}/${id}`, toPascalPayload(payload), {
+    meta: { idempotencyKey: true },
+  })
 }
 
 async function remove(url: string, id: number): Promise<void> {

@@ -17,16 +17,24 @@ interface PaymentsCrudVmRaw {
   Id: number
   PatientId: number
   VisitId: string
+  PhoneNo?: string | null
   CommonCharge?: number
   Discount?: number
   Tax?: number
   CurrencyId?: number
   InsuranceNo?: string | null
+  InsuranceCompanyId?: number | null
+  InsuranceCompanyName?: string | null
   InsuranceCoverage?: number | null
+  InsuranceAmount?: number | null
+  PaymentStatus?: string | null
+  CurrentURL?: string | null
+  UserRole?: string | null
 }
 
 interface PaymentModeRaw {
   Id: number
+  PaymentId?: number | null
   ModeOfPayment: 'Cash' | 'Bank' | 'Card'
   Amount: number
   ReferenceNo?: string | null
@@ -199,8 +207,14 @@ getPaged(page: number, pageSize: number, search?: string) {
         changedAmount: 0,
         currencyId: p.CurrencyId ?? 1,
         insuranceNo: p.InsuranceNo ?? '',
+        insuranceCompanyId: p.InsuranceCompanyId ?? null,
+        insuranceCompanyName: p.InsuranceCompanyName ?? '',
         insuranceCoverage: p.InsuranceCoverage ?? 0,
-        phoneNo: '', // ✅ add empty string (since API doesn't return it)
+        insuranceAmount: p.InsuranceAmount ?? 0,
+        phoneNo: p.PhoneNo ?? '',
+        paymentStatus: p.PaymentStatus ?? 'Draft',
+        currentURL: p.CurrentURL ?? '',
+        userRole: p.UserRole ?? '',
       },
 
       listPaymentsDetailsCRUDViewModel: data.listPaymentsDetailsCRUDViewModel ?? [],
@@ -208,6 +222,7 @@ getPaged(page: number, pageSize: number, search?: string) {
       listPaymentModeHistoryCRUDViewModel: (data.listPaymentModeHistoryCRUDViewModel ?? []).map(
         (x): PaymentModeHistoryDto => ({
           id: x.Id,
+          paymentId: x.PaymentId ?? id,
           modeOfPayment: x.ModeOfPayment,
           amount: x.Amount,
           referenceNo: x.ReferenceNo ?? '',
@@ -220,7 +235,45 @@ getPaged(page: number, pageSize: number, search?: string) {
      SAVE / UPDATE PAYMENT
   ========================= */
   async saveManagePayment(payload: ManagePaymentsDto): Promise<void> {
-    await api.post('/payments/add-edit', payload)
+    await api.post('/payments/add-edit', payload, {
+      meta: { idempotencyKey: true },
+    })
+  },
+
+  async refundRevenueVoucher(voucherId: number | string, payload: RefundRequestDto): Promise<void> {
+    await api.post(`/finance/refund/revenue/${voucherId}`, normalizeRefundPayload(payload), {
+      meta: { idempotencyKey: true },
+    })
+  },
+
+  async refundReceipt(voucherId: number | string, payload: RefundRequestDto): Promise<void> {
+    await api.post(`/finance/refund/receipt/${voucherId}`, normalizeRefundPayload(payload), {
+      meta: { idempotencyKey: true },
+    })
+  },
+
+  async reverseExpenseVoucher(voucherId: number | string, payload: RefundRequestDto): Promise<void> {
+    await api.post(`/finance/refund/expense/${voucherId}`, normalizeRefundPayload(payload), {
+      meta: { idempotencyKey: true },
+    })
+  },
+
+  async requestPreAuthorization(payload: RequestPreAuthorizationDto): Promise<void> {
+    await api.post('/billing/claims-workflow/pre-authorizations', payload, {
+      meta: { idempotencyKey: true },
+    })
+  },
+
+  async submitInsuranceClaim(claimId: number | string, payload: SubmitInsuranceClaimRequestDto): Promise<void> {
+    await api.post(`/billing/claims-workflow/claims/${claimId}/submit`, payload, {
+      meta: { idempotencyKey: true },
+    })
+  },
+
+  async submitClaimAppeal(appealId: number | string, payload: SubmitClaimAppealRequestDto): Promise<void> {
+    await api.post(`/billing/claims-workflow/appeals/${appealId}/submit`, payload, {
+      meta: { idempotencyKey: true },
+    })
   },
 
   /* =========================
@@ -237,3 +290,34 @@ getPaged(page: number, pageSize: number, search?: string) {
     }))
   },
 }
+
+export interface RefundRequestDto {
+  Reason?: string
+  UserId?: string | null
+}
+
+export interface RequestPreAuthorizationDto {
+  InvoiceId: number
+  PayerContractId: number
+  PreAuthorizationNumber: string
+  RequestedAmount: number
+  ValidFrom?: string | null
+  ValidTo?: string | null
+  Notes?: string | null
+}
+
+export interface SubmitInsuranceClaimRequestDto {
+  PreAuthorizationNumber?: string | null
+  SubmittedBy?: string | null
+  Notes?: string | null
+}
+
+export interface SubmitClaimAppealRequestDto {
+  SubmittedBy?: string | null
+  Notes?: string | null
+}
+
+const normalizeRefundPayload = (payload: RefundRequestDto): RefundRequestDto => ({
+  Reason: payload.Reason ?? '',
+  UserId: payload.UserId ?? null,
+})

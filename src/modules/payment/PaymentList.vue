@@ -86,7 +86,7 @@ onMounted(loadPayments)
 
       <div class="search-box">
         <input v-model="search" type="search" placeholder="Search payments..." />
-        <span class="icon">🔍</span>
+        <span class="icon">Search</span>
       </div>
     </div>
 
@@ -122,13 +122,13 @@ onMounted(loadPayments)
 
               <td class="actions col-actions">
                 <button class="icon-btn" type="button" title="View" @click="viewPayment(p.Id)">
-                  👁️
+                  View
                 </button>
                 <button class="icon-btn" type="button" title="Edit" @click="editPayment(p.Id)">
-                  ✏️
+                  Edit
                 </button>
                 <button class="icon-btn" type="button" title="Invoice" @click="viewInvoice(p.Id)">
-                  🧾
+                  Invoice
                 </button>
               </td>
             </tr>

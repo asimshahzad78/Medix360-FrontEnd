@@ -264,25 +264,32 @@ export interface PaymentCategoryDto {
 /** From: PaymentsDetailsCRUDViewModel */
 export interface PaymentItemCrudDto {
   id?: number
+  paymentsId?: number | null
+  itemDetailId?: number | null
   paymentItemCode: string
   paymentItemName?: string
   quantity: number
   unitPrize: number
   totalAmount: number
+  paymentType?: number | null
 }
 
 export interface PaymentItemCrudRaw {
   Id?: number
+  PaymentsId?: number | null
+  ItemDetailId?: number | null
   PaymentItemCode: string
   PaymentItemName: string
   Quantity: number
   UnitPrize: number
   TotalAmount: number
+  PaymentType?: number | null
 }
 
 /** From: PaymentModeHistoryCRUDViewModel */
 export interface PaymentModeHistoryDto {
   id?: number
+  paymentId?: number | null
   modeOfPayment: 'Cash' | 'Bank' | 'Card'
   amount: number
   referenceNo?: string | null
@@ -309,10 +316,14 @@ export interface ManagePaymentsDto {
     phoneNo?: string
     insuranceNo?: string | null
     insuranceCompanyId?: number | null
+    insuranceCompanyName?: string | null
     insuranceCoverage?: number | null
+    insuranceAmount?: number | null
 
     currencyId: number
     paymentStatus?: string
+    currentURL?: string
+    userRole?: string
   }
 
   listPaymentsDetailsCRUDViewModel: PaymentItemCrudDto[]

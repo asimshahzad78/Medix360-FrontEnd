@@ -33,12 +33,21 @@
 ]
 
     const fields: CrudField[] = [
-  { key: 'employeeId', label: 'Employee Id', type: 'number', placeholder: "e.g. 1001", required: true, step: "1" },
+  { key: 'employeeId', label: 'Employee', type: 'lookup', lookupKind: 'employee', placeholder: "Search employee", required: true },
   { key: 'incidentDate', label: 'Incident Date', type: 'date', placeholder: "", required: true },
   { key: 'incidentType', label: 'Incident Type', type: 'text', placeholder: "e.g. Late Reporting", required: true },
-  { key: 'severity', label: 'Severity', type: 'text', placeholder: "e.g. High" },
+  { key: 'severity', label: 'Severity', type: 'select', placeholder: "e.g. High", options: [
+    { value: 'Low', label: 'Low' },
+    { value: 'Medium', label: 'Medium' },
+    { value: 'High', label: 'High' },
+    { value: 'Critical', label: 'Critical' },
+  ] },
   { key: 'actionTaken', label: 'Action Taken', type: 'text', placeholder: "e.g. Warning" },
-  { key: 'status', label: 'Status', type: 'text', placeholder: "e.g. Open" },
+  { key: 'status', label: 'Status', type: 'select', placeholder: "e.g. Open", options: [
+    { value: 'Open', label: 'Open' },
+    { value: 'UnderReview', label: 'Under Review' },
+    { value: 'Closed', label: 'Closed' },
+  ] },
   { key: 'notes', label: 'Notes', type: 'textarea', placeholder: "Optional notes", rows: 4 }
 ]
 

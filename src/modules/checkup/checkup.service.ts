@@ -50,11 +50,15 @@ export type PatientCheckupHistoryDto = CheckupListDto
    SAVE DTO (already used by modal)
 ========================= */
 export interface CheckupSaveDto {
+  visitId: string
+  serialNo?: number | null
   patientId: number
   doctorId: number
   patientType: string
   checkupDate: string
+  nextVisitDate?: string | null
   paymentMode: string
+  paymentType: string
   doctorFee: number
   symptoms: string
   diagnosis: string
@@ -64,6 +68,7 @@ export interface CheckupSaveDto {
   advice: string
   comments: string
   nursingNotes: string
+  currentURL?: string
 
   bpSystolic?: number | null
   bpDiastolic?: number | null
@@ -72,13 +77,20 @@ export interface CheckupSaveDto {
 
   medicines: {
     medicineId: number
+    medicineName?: string
     noOfDays: number
     whenToTake: string
+    whenToTakeDayCount?: number | null
     isBeforeMeal: boolean
+    visitId?: string
+    checkupId?: number | null
+    paymentId?: number | null
   }[]
 
   labTests: {
     testId: number
+    testName?: string
+    orderType?: 'Lab' | 'Radiology'
     price: number
   }[]
 

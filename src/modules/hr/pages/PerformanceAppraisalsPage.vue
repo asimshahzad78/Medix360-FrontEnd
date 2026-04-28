@@ -33,11 +33,16 @@
 ]
 
     const fields: CrudField[] = [
-  { key: 'employeeId', label: 'Employee Id', type: 'number', placeholder: "e.g. 1001", required: true, step: "1" },
+  { key: 'employeeId', label: 'Employee', type: 'lookup', lookupKind: 'employee', placeholder: "Search employee", required: true },
   { key: 'reviewPeriodFrom', label: 'Review Period From', type: 'date', placeholder: "", required: true },
   { key: 'reviewPeriodTo', label: 'Review Period To', type: 'date', placeholder: "", required: true },
   { key: 'score', label: 'Score', type: 'number', placeholder: "0", step: "0.01" },
-  { key: 'rating', label: 'Rating', type: 'text', placeholder: "e.g. Excellent" },
+  { key: 'rating', label: 'Rating', type: 'select', placeholder: "e.g. Excellent", options: [
+    { value: 'Excellent', label: 'Excellent' },
+    { value: 'Good', label: 'Good' },
+    { value: 'Satisfactory', label: 'Satisfactory' },
+    { value: 'NeedsImprovement', label: 'Needs Improvement' },
+  ] },
   { key: 'reviewerUserId', label: 'Reviewer User Id', type: 'text', placeholder: "e.g. hr.admin" },
   { key: 'notes', label: 'Notes', type: 'textarea', placeholder: "Optional notes", rows: 4 }
 ]

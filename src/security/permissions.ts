@@ -208,18 +208,40 @@ const routePermissionByPath: Record<string, PermissionRule> = {
   '/ipd/nursing': [PERMISSIONS.IpdNursingView],
   '/ipd/mar': [PERMISSIONS.IpdMarView],
   '/ipd/discharge': [PERMISSIONS.IpdDischargeView],
+  '/emergency/triage': [PERMISSIONS.IpdAdmissionsView],
+  '/emergency/encounters': [PERMISSIONS.IpdAdmissionsView],
+  '/emergency/observation-beds': [PERMISSIONS.IpdBedBoardView],
+  '/ot/procedures': [PERMISSIONS.IpdNursingView],
+  '/icu/workflows': [PERMISSIONS.IpdNursingView],
 
   '/inventory/procurement': [PERMISSIONS.InventoryProcurementView],
+  '/inventory/suppliers': [PERMISSIONS.InventoryProcurementView],
+  '/inventory/requisitions': [PERMISSIONS.InventoryProcurementView],
+  '/inventory/purchase-orders': [PERMISSIONS.InventoryProcurementView],
+  '/inventory/receiving': [PERMISSIONS.InventoryProcurementView],
+  '/inventory/stock-lots': [PERMISSIONS.InventoryStockMovementsView],
+  '/inventory/expiry': [PERMISSIONS.InventoryStockMovementsView],
+  '/inventory/adjustments': [PERMISSIONS.InventoryStockMovementsView],
   '/inventory/stock-movements': [PERMISSIONS.InventoryStockMovementsView],
   '/inventory/reports': [PERMISSIONS.InventoryReportsView],
 
   '/analytics/executive': [PERMISSIONS.AnalyticsExecutiveView],
   '/analytics/clinical': [PERMISSIONS.AnalyticsClinicalView],
   '/analytics/finance': [PERMISSIONS.AnalyticsFinanceView],
+  '/analytics/exports': [PERMISSIONS.AnalyticsFinanceView],
+
+  '/patient-engagement/portal-accounts': [PERMISSIONS.PatientsView],
+  '/patient-engagement/prescription-access': [PERMISSIONS.PatientsView],
+  '/patient-engagement/notifications': [PERMISSIONS.PatientsView],
+  '/patient-engagement/consents': [PERMISSIONS.PatientsView],
+  '/patient-engagement/messages': [PERMISSIONS.PatientsView],
 
   '/interoperability/outbox': [PERMISSIONS.InteroperabilityOutboxView],
   '/interoperability/hl7-fhir': [PERMISSIONS.InteroperabilityFhirView],
   '/interoperability/partners': [PERMISSIONS.InteroperabilityPartnersView],
+  '/interoperability/exchange': [PERMISSIONS.InteroperabilityFhirView],
+  '/interoperability/webhooks': [PERMISSIONS.InteroperabilityFhirView],
+  '/interoperability/pacs-dicom': [PERMISSIONS.InteroperabilityFhirView],
 }
 
 const firstAllowedRoutePriority: Array<{ permission: PermissionInput; path: string }> = [
@@ -407,6 +429,13 @@ const menuPermissionRules: Record<string, PermissionRule> = {
   'analytics.executive': [PERMISSIONS.AnalyticsExecutiveView],
   'analytics.clinical': [PERMISSIONS.AnalyticsClinicalView],
   'analytics.finance': [PERMISSIONS.AnalyticsFinanceView],
+
+  patientEngagement: [PERMISSIONS.PatientsView],
+  'patientEngagement.portal': [PERMISSIONS.PatientsView],
+  'patientEngagement.prescriptions': [PERMISSIONS.PatientsView],
+  'patientEngagement.notifications': [PERMISSIONS.PatientsView],
+  'patientEngagement.consents': [PERMISSIONS.PatientsView],
+  'patientEngagement.messages': [PERMISSIONS.PatientsView],
 
   interoperability: [
     PERMISSIONS.InteroperabilityOutboxView,

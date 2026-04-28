@@ -10,7 +10,7 @@
 
       <div class="search-box">
         <input v-model="search" type="search" placeholder="Search here" />
-        <span class="icon">🔍</span>
+        <span class="icon">Search</span>
       </div>
     </div>
 
@@ -51,12 +51,12 @@
 
               <td class="actions col-actions">
                 <button class="icon-btn" type="button" title="View" @click="openView(v.Id)">
-                  👁
+                  View
                 </button>
 
                 <button v-if="canReverse(v.Status)" class="icon-btn" type="button" title="Reverse Voucher"
                   @click="reverseVoucher(v)">
-                  🔁
+                  Reverse
                 </button>
               </td>
             </tr>
@@ -202,7 +202,6 @@ export default defineComponent({
   min-height: 100vh;
 }
 
-/* ✅ header responsive */
 .page-header {
   display: flex;
   align-items: center;
@@ -227,7 +226,6 @@ export default defineComponent({
   white-space: nowrap;
 }
 
-/* ✅ search pill */
 .search-box {
   position: relative;
   width: 100%;
@@ -359,7 +357,6 @@ export default defineComponent({
   padding: 40px;
 }
 
-/* ✅ mobile */
 @media (max-width: 640px) {
   .revenue-page {
     padding: 14px;
@@ -382,7 +379,6 @@ export default defineComponent({
     padding: 8px;
   }
 
-  /* optional: hide Doctor on very small screens */
   .col-doctor,
   th.col-doctor {
     display: none;

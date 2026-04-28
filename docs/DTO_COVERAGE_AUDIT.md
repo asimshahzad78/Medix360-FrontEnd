@@ -26,6 +26,38 @@ Generated from `C:/Users/Dell/Downloads/New Text Document.txt` against the curre
 - `CompanyInfoCRUDViewModel`: added fax to the visible form and exposed logo path while preserving logo upload.
 - `DepartmentCRUDViewModel` and `DesignationCRUDViewModel`: added description to forms, tables, types, and save payloads.
 
+## Clinical / OPD Pass Completed
+
+- `CheckupSummaryCRUDViewModel`: checkup form now submits `VisitId`, `SerialNo`, `NextVisitDate`, `VitalSigns`, `PaymentType`, `DoctorFee`, `PaymentAccountId`, `CurrentURL`, numeric vitals, diagnosis, advice, comments, and nursing notes.
+- `CheckupMedicineDetailsCRUDViewModel`: medicine rows now carry `MedicineId`, `MedicineName`, `NoofDays`, `WhentoTake`, `WhentoTakeDayCount`, `IsBeforeMeal`, and the encounter `VisitId`. `CheckupId` and `PaymentId` stay nullable on create because those IDs are returned after the checkup is saved.
+- Diagnostic orders inside checkup now preserve `OrderType` (`Lab` or `Radiology`), display name, selected test/study id, and price.
+- Vitals contract decision: the active UI contract is still the legacy `VitalSignsCRUDViewModel` plus `CheckupSummaryCRUDViewModel` vital fields on `/api/checkups`. `VitalsWorkflowInputDto` remains `Unclear / needs backend confirmation` until the backend exposes or confirms the newer vitals workflow endpoint.
+- OPD workflow page is represented through the active checkup encounter modal. Dedicated workflow DTOs outside `/api/checkups` should be confirmed against backend routes before adding parallel UI.
+
+## Billing / Payments Pass Completed
+
+- `PaymentCategoriesCRUDViewModel` vs `PaymentCategorySaveDto`: current payment category form covers legacy fields (`PaymentItemCode`, `Name`, `UnitPrice`, `Description`) and API fields (`RevenueAccountId`, `IncludeInCounterClosing`).
+- `PaymentsCRUDViewModel`: payment modal now carries `PhoneNo`, `InsuranceNo`, `InsuranceCompanyId`, `InsuranceCompanyName`, `InsuranceCoverage`, `InsuranceAmount`, `PaymentStatus`, `CurrentURL`, and `UserRole` in addition to totals, taxes, charges, patient, currency, and visit fields.
+- `PaymentsDetailsCRUDViewModel`: payment item rows now type optional `PaymentsId`, `ItemDetailId`, `PaymentType`, item code/name, quantity, unit prize, and total.
+- `PaymentModeHistoryCRUDViewModel`: payment modes now type optional `PaymentId` with mode, amount, and reference number.
+- Refund, pre-authorization, claim submit, and appeal submit now have dedicated payment service methods and invoice workflow buttons. The buttons ask for backend workflow identifiers instead of guessing voucher, claim, or appeal ids from the receipt.
+- Idempotency confirmed/added on checkup create, payment save, refund receipt/revenue/expense, pre-authorization, claim submit, and appeal submit mutations.
+
+## Finance Pass Completed
+
+- `ExpenseVoucherDto`: form covers `Date`, `Description`, `Amount`, `Type`, `ExpenseAccountId`, `BankAccountId`, and `Status`; type values are wired to backend enum order `General`, `PettyCash`, `VendorPayment`, `Adjustment`, `Expense`, `Journal`. Status remains the backend string contract `Unpaid`, `Paid`, `Cancelled`; backend should confirm if `Posted` or `Reversed` are also valid save states.
+- `RevenueVoucherDto` / `CreateRevenueDto`: current UI intentionally exposes list, view, post, and reverse only. The add button remains disabled because revenue vouchers are generated from OPD/IPD billing; backend/product confirmation is still needed before enabling manual create/edit.
+- `ChartOfAccountDto`: create/update now includes `Code`, `Name`, `Type`, `ParentId`, and `IsActive`; `ParentId` is optional to support backend root-account creation when permitted.
+- Finance workflow screens: posting dashboard, refunds, finance claims, revenue analytics/reporting, and export flows are represented through the enterprise finance routes. Dedicated ledger detail and manual revenue-voucher create/edit remain open product/backend decisions.
+
+## HR Pass Completed
+
+- Shared HR CRUD forms still send PascalCase payloads and now add idempotency keys for create/update mutations.
+- Employee, shift, and leave-type raw ID fields were replaced with lookup controls where a lookup endpoint already exists.
+- Status/severity/rating fields were converted from free text to controlled selects on attendance logs, credentials, disciplinary incidents, leave requests, payrolls, performance appraisals, and training enrollments.
+- Shared HR modal now validates required fields, numeric ID fields, select values, and date ordering for leave periods, training dates, credential expiry, and appraisal periods.
+- Field-by-field DTO coverage checked for attendance logs, credentials, disciplinary incidents, duty rosters, leave balances, leave requests, leave types, onboarding checklist items, payrolls, performance appraisals, permissions, shifts, and training enrollments. Current forms include the DTO fields present in `hr-lookups.service.ts`; remaining risk is backend enum vocabulary for statuses and any HR expansion DTOs outside these CRUD pages.
+
 ## Platform/Core Administration
 
 | DTO | Status | Field hits | Endpoint |
@@ -643,3 +675,69 @@ Generated from `C:/Users/Dell/Downloads/New Text Document.txt` against the curre
 | `WebhookSubscriptionCreateDto` | Missing form | 1/6 | POST /api/interoperability/webhook-subscriptions (Create) |
 | `WebhookSubscriptionUpdateDto` | Unclear / needs backend confirmation | 1/4 | PUT /api/interoperability/webhook-subscriptions/{id:long} (Update) |
 
+## Implementation Pass: Inventory / Procurement, Pharmacy, Lab / Radiology
+
+### Inventory / Procurement checklist
+
+- [x] Identified inventory/procurement DTO families from `New Text Document.txt`: `InventoryProcurementRiskDto`, `InventoryRiskItemDto`, `InventoryExpiryRiskDto`, pharmacy/inventory stock lot, purchase order, purchase order line, stock adjustment, stock ledger, expiry action, and supplier-linked receiving DTOs.
+- [x] Confirmed existing UI was generic enterprise coverage only: `/inventory/procurement`, `/inventory/stock-movements`, and `/inventory/reports`.
+- [x] Added dedicated enterprise screens/forms for suppliers, requisitions, purchase orders, receiving, stock lots, expiry management, and adjustments.
+- [x] Added supplier lookup support through `LookupKind = supplier`.
+- [x] Added batch/expiry/stock validation in `EnterpriseModulePage`: required fields, positive quantities, non-negative amounts, and no past expiry date.
+- [ ] Backend confirmation needed: exact API payload casing and whether purchase-order line arrays must be submitted as nested detail collections instead of one line per generic form command.
+
+### Pharmacy checklist
+
+- [x] Identified pharmacy DTO families from `New Text Document.txt`: `MedicationOrderCreateDto`, `MedicationOrderUpdateDto`, `PrescriptionCreateDto`, `PrescriptionUpdateDto`, `PrescriptionWorkflowInputDto`, `MedicationWorkflowInputDto`, `PharmacyUnitConversionRequestDto`, `PharmacyExpiryActionCreateDto`, `PharmacyPurchaseOrderCreateDto`, `PharmacyPurchaseOrderLineCreateDto`, `PharmacyStockAdjustmentCreateDto`, and stock ledger/expiry report DTOs.
+- [x] Verified existing pharmacy UI was generic enterprise coverage: dispensing, batches, unit/box sales, free medicine, payment modes, and reports.
+- [x] Expanded pharmacy forms with prescription linkage, encounter, store, medicine, batch number, expiry date, quantity, sale unit, unit price, total amount, payment mode, payment account, status, workflow type, and reason.
+- [x] Added workflow actions for verification and dispensing on pharmacy rows.
+- [x] Idempotency is covered by the shared enterprise mutation path for create/update/workflow actions.
+- [ ] Backend confirmation needed: whether medication/prescription clinical DTOs should remain in OPD/checkup workflow only or get a separate prescription-management page.
+
+### Lab / Radiology checklist
+
+- [x] Identified lab/radiology DTO families from `New Text Document.txt`: `ClinicalOrderCreateDto`, `ClinicalOrderUpdateDto`, `ClinicalOrderWorkflowInputDto`, `ChangeClinicalOrderStatusRequestDto`, `ReleaseClinicalOrderResultRequestDto`, laboratory result amendment/verification DTOs, radiology worklist/report/approval DTOs, and patient visible diagnostic result/report DTOs.
+- [x] Verified existing UI was generic enterprise coverage: diagnostic orders, sample collection, result entry, reports, approvals, radiology worklist, and radiology reporting.
+- [x] Expanded lab/radiology forms with encounter, order ID, accession number, order type, lab test, radiology study, priority, status, sample/barcode number, result value, result unit, reference range, critical flag, quality-control status, report text, findings, impression, report file/upload URI, and notes.
+- [x] Added status workflow buttons for ordered, in progress, verified, approved, and released flows across diagnostics/radiology queues.
+- [x] Idempotency is covered by the shared enterprise mutation path for orders, result release, verification, and approval actions.
+- [ ] Backend confirmation needed: whether report upload expects a real multipart file field, a document-storage URI, or a generated `ReportPath` string.
+
+## Implementation Pass: IPD / Emergency / OT / ICU, Analytics / Observability, Patient Engagement / Interoperability, API Hardening
+
+### IPD / Emergency / OT / ICU checklist
+
+- [x] Confirmed IPD had enterprise screens only: admissions, bed board, nursing, MAR, and discharge.
+- [x] Confirmed Emergency, OT, and ICU did not have real dedicated UI pages before this pass.
+- [x] Expanded IPD form coverage with encounter/admission numbers, encounter type, admission date, ward, bed, bed code, status, disposition, effective date, workflow type, and notes.
+- [x] Added enterprise screens/forms for emergency triage, emergency encounters, observation beds, OT procedures, and ICU workflows.
+- [x] Added status/disposition workflow actions: admit, transfer, discharge, cancel, in progress, disposition, schedule, start, complete, verify.
+- [ ] Backend confirmation needed: exact active DTO ownership between platform `WardCreateDto`, inpatient admission DTOs, emergency observation-bed DTOs, and any OT/ICU module-specific procedure DTOs.
+
+### Analytics / Observability checklist
+
+- [x] Confirmed analytics is mostly dashboard/read-only coverage in the UI, while observability already has a real admin page.
+- [x] Added analytics export/job screen for report/export workflow DTOs.
+- [x] Added analytics query/export fields: from, to, facility, department, tenant ID, property ID, report type, export format, export limit, and notes.
+- [x] Added analytics filters for status, facility, department, report type, export format, and date range.
+- [ ] Backend confirmation needed: whether analytics export endpoints require queued report-run DTOs, export-job DTOs, or both for the final marketing demo workflow.
+
+### Patient Engagement / Interoperability checklist
+
+- [x] Added patient engagement screens/forms for portal accounts, prescription access, notifications, consents, and messages.
+- [x] Added fields for patient, prescription ID, access code, portal visibility, expiry, status, consent type/text/signature, notification type/channel/body, scheduled date, telemedicine message/session data, and delivery status.
+- [x] Added interoperability screens/forms for outbox, HL7/FHIR, partners, external exchange, webhooks, and PACS/DICOM links.
+- [x] Added interoperability fields for partner, endpoint, message type, resource type, external reference, payload reference/URI, status, retry count, workflow type, and notes.
+- [x] Added workflow actions for send, retry, resolve, verify, sign, and cancel where appropriate.
+- [x] Audit trail/status views are represented through `/admin/audit`, `/admin/observability`, status filters, and queue row statuses.
+- [ ] Backend confirmation needed: exact exchange payload shape for FHIR bundles, HL7 messages, webhook deliveries, PACS/DICOM links, and patient-engagement consent signing.
+
+### API contract hardening checklist
+
+- [x] Shared enterprise mutations already apply idempotency keys to create/update/workflow actions.
+- [x] Sensitive enterprise forms and workflow actions now require audit reason where the screen is patient, finance, clinical, IPD, emergency, OT/ICU, inventory, pharmacy, interoperability, or consent/prescription-access related.
+- [x] API context headers now send both canonical tenant/property headers and existing facility aliases: `X-Tenant-Id`, `X-Tenant-ID`, `X-Property-Id`, `X-Property-ID`, `X-Facility-Id`, and `X-Facility-ID`.
+- [x] Enterprise API mutations normalize camelCase form state to PascalCase DTO payload keys before POST/PUT.
+- [x] Response unwrapping continues through shared `unwrapApiData` and enterprise workspace normalization for list/table/dashboard payloads.
+- [ ] Remaining hardening task: audit all non-enterprise legacy services for any sensitive POST/PUT/PATCH calls missing `meta.idempotencyKey`, because this pass hardened the shared enterprise service and previously touched payment/checkup/finance/HR services but not every old MVC service.

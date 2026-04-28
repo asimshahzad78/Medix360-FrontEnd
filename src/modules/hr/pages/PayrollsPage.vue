@@ -33,13 +33,19 @@
 ]
 
     const fields: CrudField[] = [
-  { key: 'employeeId', label: 'Employee Id', type: 'number', placeholder: "e.g. 1001", required: true, step: "1" },
+  { key: 'employeeId', label: 'Employee', type: 'lookup', lookupKind: 'employee', placeholder: "Search employee", required: true },
   { key: 'payrollMonth', label: 'Payroll Month', type: 'date', placeholder: "", required: true },
   { key: 'basicSalary', label: 'Basic Salary', type: 'number', placeholder: "0", step: "0.01" },
   { key: 'allowances', label: 'Allowances', type: 'number', placeholder: "0", step: "0.01" },
   { key: 'deductions', label: 'Deductions', type: 'number', placeholder: "0", step: "0.01" },
   { key: 'netSalary', label: 'Net Salary', type: 'number', placeholder: "0", step: "0.01" },
-  { key: 'status', label: 'Status', type: 'text', placeholder: "e.g. Draft" }
+  { key: 'status', label: 'Status', type: 'select', placeholder: "e.g. Draft", options: [
+    { value: 'Draft', label: 'Draft' },
+    { value: 'Approved', label: 'Approved' },
+    { value: 'Posted', label: 'Posted' },
+    { value: 'Paid', label: 'Paid' },
+    { value: 'Cancelled', label: 'Cancelled' },
+  ] }
 ]
 
     const initialState = {"employeeId": null, "payrollMonth": "", "basicSalary": null, "allowances": null, "deductions": null, "netSalary": null, "status": ""}

@@ -1,4 +1,16 @@
 export type ExpenseVoucherStatus = 'Unpaid' | 'Paid' | 'Cancelled'
+export type ExpenseVoucherType = 0 | 1 | 2 | 3 | 4 | 5
+
+export const expenseVoucherTypeOptions: { value: ExpenseVoucherType; label: string }[] = [
+  { value: 0, label: 'General' },
+  { value: 1, label: 'Petty Cash' },
+  { value: 2, label: 'Vendor Payment' },
+  { value: 3, label: 'Adjustment' },
+  { value: 4, label: 'Expense' },
+  { value: 5, label: 'Journal' },
+]
+
+export const expenseVoucherStatusOptions: ExpenseVoucherStatus[] = ['Unpaid', 'Paid', 'Cancelled']
 
 // API DTO (based on your controller using ExpenseVoucherDto)
 export interface ExpenseVoucherApiDto {
@@ -36,7 +48,7 @@ export interface ExpenseVoucherSaveDto {
   date: string
   description: string
   amount: number
-  type: number
+  type: ExpenseVoucherType
   expenseAccountId: string
   paymentAccountId: string
   status: ExpenseVoucherStatus

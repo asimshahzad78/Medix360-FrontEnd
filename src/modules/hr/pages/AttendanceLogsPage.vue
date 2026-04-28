@@ -33,13 +33,19 @@
 ]
 
     const fields: CrudField[] = [
-  { key: 'employeeId', label: 'Employee Id', type: 'number', placeholder: "e.g. 1001", required: true, step: "1" },
-  { key: 'shiftId', label: 'Shift Id', type: 'number', placeholder: "e.g. 1", step: "1" },
+  { key: 'employeeId', label: 'Employee', type: 'lookup', lookupKind: 'employee', placeholder: "Search employee", required: true },
+  { key: 'shiftId', label: 'Shift', type: 'lookup', lookupKind: 'shift', placeholder: "Search shift" },
   { key: 'dutyRosterId', label: 'Duty Roster Id', type: 'number', placeholder: "e.g. 1", step: "1" },
   { key: 'attendanceDate', label: 'Attendance Date', type: 'date', placeholder: "", required: true },
   { key: 'checkInTime', label: 'Check In Time', type: 'datetime-local', placeholder: "" },
   { key: 'checkOutTime', label: 'Check Out Time', type: 'datetime-local', placeholder: "" },
-  { key: 'status', label: 'Status', type: 'text', placeholder: "e.g. Present" },
+  { key: 'status', label: 'Status', type: 'select', placeholder: "e.g. Present", options: [
+    { value: 'Present', label: 'Present' },
+    { value: 'Absent', label: 'Absent' },
+    { value: 'Late', label: 'Late' },
+    { value: 'HalfDay', label: 'Half Day' },
+    { value: 'OnLeave', label: 'On Leave' },
+  ] },
   { key: 'lateMinutes', label: 'Late Minutes', type: 'number', placeholder: "0", step: "0.01" },
   { key: 'overtimeMinutes', label: 'Overtime Minutes', type: 'number', placeholder: "0", step: "0.01" },
   { key: 'notes', label: 'Notes', type: 'textarea', placeholder: "Optional notes", rows: 4 }

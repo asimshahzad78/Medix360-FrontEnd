@@ -1,3 +1,5 @@
+import type { LookupKind } from '@/services/lookup.service'
+
 export type CrudFieldType =
   | 'text'
   | 'textarea'
@@ -7,6 +9,7 @@ export type CrudFieldType =
   | 'time'
   | 'checkbox'
   | 'select'
+  | 'lookup'
 
 export type CrudFieldOption = {
   value: string | number | boolean
@@ -17,6 +20,7 @@ export type CrudField = {
   key: string
   label: string
   type?: CrudFieldType
+  lookupKind?: LookupKind
   placeholder?: string
   required?: boolean
   options?: CrudFieldOption[]

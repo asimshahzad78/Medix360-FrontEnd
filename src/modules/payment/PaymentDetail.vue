@@ -113,6 +113,68 @@ const printThermal = (): void => {
   window.open(`/payments/${paymentId.value}/thermal`, '_blank')
 }
 
+const refreshAfterWorkflow = async (message: string): Promise<void> => {
+  alert(message)
+  await loadPayment()
+}
+
+const requestRefundReceipt = async (): Promise<void> => {
+  const voucherId = window.prompt('Receipt voucher ID')
+  if (!voucherId) return
+
+  const reason = window.prompt('Refund reason') ?? ''
+  await PaymentService.refundReceipt(voucherId, { Reason: reason })
+  await refreshAfterWorkflow('Refund request submitted.')
+}
+
+const requestPreAuthorization = async (): Promise<void> => {
+  if (!payment.value) return
+
+  const payerContractId = Number(window.prompt('Payer contract ID'))
+  if (!payerContractId) return
+
+  const requestedAmount = Number(window.prompt('Requested amount', String(payment.value.balanceAmount || payment.value.netAmount)))
+  if (!requestedAmount) return
+
+  const preAuthorizationNumber = window.prompt('Pre-authorization number') ?? ''
+  if (!preAuthorizationNumber) return
+
+  const notes = window.prompt('Notes') ?? ''
+  await PaymentService.requestPreAuthorization({
+    InvoiceId: payment.value.id,
+    PayerContractId: payerContractId,
+    PreAuthorizationNumber: preAuthorizationNumber,
+    RequestedAmount: requestedAmount,
+    ValidFrom: null,
+    ValidTo: null,
+    Notes: notes,
+  })
+  await refreshAfterWorkflow('Pre-authorization requested.')
+}
+
+const submitInsuranceClaim = async (): Promise<void> => {
+  const claimId = window.prompt('Claim ID')
+  if (!claimId) return
+
+  await PaymentService.submitInsuranceClaim(claimId, {
+    PreAuthorizationNumber: window.prompt('Pre-authorization number') ?? '',
+    SubmittedBy: window.prompt('Submitted by') ?? '',
+    Notes: window.prompt('Notes') ?? '',
+  })
+  await refreshAfterWorkflow('Claim submitted.')
+}
+
+const submitClaimAppeal = async (): Promise<void> => {
+  const appealId = window.prompt('Appeal ID')
+  if (!appealId) return
+
+  await PaymentService.submitClaimAppeal(appealId, {
+    SubmittedBy: window.prompt('Submitted by') ?? '',
+    Notes: window.prompt('Notes') ?? '',
+  })
+  await refreshAfterWorkflow('Appeal submitted.')
+}
+
 /* =======================
    LIFECYCLE
 ======================= */
@@ -219,6 +281,14 @@ onMounted(loadPayment)
       <p v-if="payment.remarks">Remarks: {{ payment.remarks }}</p>
     </div>
 
+    <div class="card workflow-actions">
+      <h4>Billing Workflow</h4>
+      <button class="btn btn-danger" @click="requestRefundReceipt">Refund Receipt</button>
+      <button class="btn btn-info" @click="requestPreAuthorization">Pre-Authorization</button>
+      <button class="btn btn-primary" @click="submitInsuranceClaim">Submit Claim</button>
+      <button class="btn btn-secondary" @click="submitClaimAppeal">Submit Appeal</button>
+    </div>
+
     <!-- HISTORY -->
     <div class="card" v-if="payment.history.length">
       <h4>Payment History</h4>
@@ -255,6 +325,18 @@ onMounted(loadPayment)
 
 .actions button {
   margin-left: 6px;
+}
+
+.workflow-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.workflow-actions h4 {
+  width: 100%;
+  margin-bottom: 4px;
 }
 
 .status-strip {

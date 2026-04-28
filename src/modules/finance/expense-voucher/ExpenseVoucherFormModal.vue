@@ -33,21 +33,18 @@
           <div>
             <label>Type</label>
             <select v-model.number="form.type">
-              <option :value="0">General</option>
-              <option :value="1">Petty Cash</option>
-              <option :value="2">Vendor Payment</option>
-              <option :value="3">Adjustment</option>
-              <option :value="4">Expense</option>
-              <option :value="5">Journal</option>
+              <option v-for="option in typeOptions" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
             </select>
           </div>
 
           <div>
             <label>Status</label>
             <select v-model="form.status">
-              <option>Unpaid</option>
-              <option>Paid</option>
-              <option>Cancelled</option>
+              <option v-for="status in statusOptions" :key="status" :value="status">
+                {{ status }}
+              </option>
             </select>
           </div>
 
@@ -93,6 +90,8 @@ import { defineComponent, reactive, ref, computed, onMounted } from 'vue'
 import { expenseVoucherService } from './expense-voucher.service'
 import { coaService } from '../coa/coa.service'
 import type { ChartOfAccountUiDto } from '../coa/coa.types'
+import { expenseVoucherStatusOptions, expenseVoucherTypeOptions } from './expense-voucher.types'
+import type { ExpenseVoucherStatus, ExpenseVoucherType } from './expense-voucher.types'
 
 type AlertType = 'success' | 'error'
 interface AlertState {
@@ -123,11 +122,11 @@ export default defineComponent({
     const form = reactive({
       date: todayIsoDate(),
       amount: 0,
-      type: 4,
+      type: 4 as ExpenseVoucherType,
       description: '',
       expenseAccountId: '',
       paymentAccountId: '',
-      status: 'Unpaid' as 'Unpaid' | 'Paid' | 'Cancelled',
+      status: 'Unpaid' as ExpenseVoucherStatus,
     })
 
     const isEdit = computed(() => !!props.voucherId)
@@ -154,7 +153,7 @@ export default defineComponent({
 
       form.date = (v.Date ?? '').slice(0, 10)
       form.amount = v.Amount ?? 0
-      form.type = typeof v.Type === 'number' ? v.Type : 4
+      form.type = typeof v.Type === 'number' ? (v.Type as ExpenseVoucherType) : 4
       form.description = v.Description ?? ''
       form.expenseAccountId = v.ExpenseAccountId ?? ''
       form.paymentAccountId = v.BankAccountId ?? ''
@@ -169,6 +168,8 @@ export default defineComponent({
       if (!form.expenseAccountId) return 'Expense Head is required.'
       if (!form.paymentAccountId) return 'Payment Account (Cash/Bank) is required.'
       if (!form.description.trim()) return 'Description is required.'
+      if (!expenseVoucherTypeOptions.some((option) => option.value === form.type)) return 'Voucher type is invalid.'
+      if (!expenseVoucherStatusOptions.includes(form.status)) return 'Voucher status is invalid.'
       return null
     }
 
@@ -215,6 +216,8 @@ export default defineComponent({
       alertState,
       expenseAccounts,
       paymentAccounts,
+      typeOptions: expenseVoucherTypeOptions,
+      statusOptions: expenseVoucherStatusOptions,
     }
   },
 })

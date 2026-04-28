@@ -1,22 +1,22 @@
 <template>
   <div class="dashboard">
-    <p class="subtitle">Welcome back 👋</p>
+    <p class="subtitle">Welcome back</p>
 
     <div class="kpi-grid">
       <DashboardKpiCard label="Total Patient" :value="summary.totalPatients" variant="red">
-        ❤️
+        PT
       </DashboardKpiCard>
 
       <DashboardKpiCard label="Doctor" :value="summary.totalDoctors" variant="green">
-        🩺
+        DR
       </DashboardKpiCard>
 
       <DashboardKpiCard label="Appointment" :value="summary.totalAppointments" variant="blue">
-        📅
+        AP
       </DashboardKpiCard>
 
       <DashboardKpiCard label="Hospital Earning" :value="`PKR ${summary.totalRevenue}`" variant="purple">
-        💲
+        PKR
       </DashboardKpiCard>
     </div>
 
@@ -67,21 +67,18 @@ onMounted(async () => {
   margin: 0;
 }
 
-/* KPI cards: already good, just slightly smaller min width for phones */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
 }
 
-/* Charts + lists: make min width smaller so it never overflows on mobile */
 .grid-2 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 16px;
 }
 
-/* ✅ Mobile tuning */
 @media (max-width: 640px) {
   .dashboard {
     gap: 14px;
@@ -90,12 +87,10 @@ onMounted(async () => {
   .kpi-grid,
   .grid-2 {
     grid-template-columns: 1fr;
-    /* force single column */
     gap: 12px;
   }
 }
 
-/* ✅ Tablet tuning */
 @media (min-width: 641px) and (max-width: 1023px) {
   .kpi-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -103,7 +98,6 @@ onMounted(async () => {
 
   .grid-2 {
     grid-template-columns: 1fr;
-    /* charts stacked on tablet looks better */
   }
 }
 </style>

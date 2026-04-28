@@ -3,6 +3,7 @@ import { unwrapApiData } from '@/services/api-response'
 
 export type LookupKind =
   | 'medicine'
+  | 'patient'
   | 'labTest'
   | 'radiologyStudy'
   | 'bed'
@@ -10,11 +11,14 @@ export type LookupKind =
   | 'store'
   | 'counter'
   | 'shift'
+  | 'employee'
+  | 'leaveType'
   | 'doctor'
   | 'facility'
   | 'department'
   | 'paymentAccount'
   | 'paymentMode'
+  | 'supplier'
 
 export type LookupOption = {
   id: string | number
@@ -40,6 +44,13 @@ type LookupConfig = {
 type LooseRecord = Record<string, unknown>
 
 const lookupConfigs: Record<LookupKind, LookupConfig> = {
+  patient: {
+    endpoint: '/patients',
+    labelKeys: ['label', 'Label', 'name', 'Name', 'fullName', 'FullName', 'patientName', 'PatientName'],
+    idKeys: ['id', 'Id', 'patientId', 'PatientId', 'patientRecordId', 'PatientRecordId'],
+    codeKeys: ['code', 'Code', 'mrn', 'MRN', 'registrationNo', 'RegistrationNo'],
+    descriptionKeys: ['phone', 'Phone', 'mobile', 'Mobile', 'gender', 'Gender'],
+  },
   medicine: {
     endpoint: '/lookups/medicines',
     labelKeys: ['label', 'Label', 'name', 'Name', 'medicineName', 'MedicineName', 'genericName', 'GenericName'],
@@ -99,6 +110,20 @@ const lookupConfigs: Record<LookupKind, LookupConfig> = {
     codeKeys: ['code', 'Code'],
     descriptionKeys: ['startTime', 'StartTime', 'endTime', 'EndTime'],
   },
+  employee: {
+    endpoint: '/employees',
+    labelKeys: ['label', 'Label', 'fullName', 'FullName', 'name', 'Name', 'employeeName', 'EmployeeName', 'firstName', 'FirstName'],
+    idKeys: ['id', 'Id', 'employeeId', 'EmployeeId'],
+    codeKeys: ['code', 'Code', 'employeeCode', 'EmployeeCode'],
+    descriptionKeys: ['department', 'Department', 'designation', 'Designation', 'phone', 'Phone'],
+  },
+  leaveType: {
+    endpoint: '/hr/leave-types',
+    labelKeys: ['label', 'Label', 'name', 'Name'],
+    idKeys: ['id', 'Id', 'leaveTypeId', 'LeaveTypeId'],
+    codeKeys: ['code', 'Code'],
+    descriptionKeys: ['description', 'Description'],
+  },
   doctor: {
     endpoint: '/doctors',
     labelKeys: ['label', 'Label', 'name', 'Name', 'doctorName', 'DoctorName', 'fullName', 'FullName'],
@@ -134,6 +159,13 @@ const lookupConfigs: Record<LookupKind, LookupConfig> = {
     idKeys: ['id', 'Id', 'code', 'Code', 'mode', 'Mode'],
     codeKeys: ['code', 'Code'],
     descriptionKeys: ['description', 'Description'],
+  },
+  supplier: {
+    endpoint: '/inventory/suppliers',
+    labelKeys: ['label', 'Label', 'name', 'Name', 'supplierName', 'SupplierName', 'vendorName', 'VendorName'],
+    idKeys: ['id', 'Id', 'supplierId', 'SupplierId', 'vendorId', 'VendorId'],
+    codeKeys: ['code', 'Code', 'supplierCode', 'SupplierCode', 'vendorCode', 'VendorCode'],
+    descriptionKeys: ['contactPerson', 'ContactPerson', 'phone', 'Phone', 'email', 'Email'],
   },
 }
 

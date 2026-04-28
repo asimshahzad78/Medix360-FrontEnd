@@ -20,7 +20,6 @@
 
     <!-- Table -->
     <div v-else class="card">
-      <!-- ✅ Responsive table wrapper -->
       <div class="table-wrap">
         <table class="patient-table">
           <thead>

@@ -72,7 +72,11 @@ export const createContextHeaders = (context: PlatformContextInput = getPlatform
     if (value) headers[name] = value
   }
 
+  addHeader('X-Tenant-Id', context.tenantId)
   addHeader('X-Tenant-ID', context.tenantId)
+  addHeader('X-Property-Id', context.propertyId ?? context.facilityId)
+  addHeader('X-Property-ID', context.propertyId ?? context.facilityId)
+  addHeader('X-Facility-Id', context.facilityId ?? context.propertyId)
   addHeader('X-Facility-ID', context.facilityId ?? context.propertyId)
   addHeader('X-Department-ID', context.departmentId)
   addHeader('X-Doctor-ID', context.doctorId)

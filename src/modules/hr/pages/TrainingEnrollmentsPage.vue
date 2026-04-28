@@ -33,14 +33,20 @@
 ]
 
     const fields: CrudField[] = [
-  { key: 'employeeId', label: 'Employee Id', type: 'number', placeholder: "e.g. 1001", required: true, step: "1" },
+  { key: 'employeeId', label: 'Employee', type: 'lookup', lookupKind: 'employee', placeholder: "Search employee", required: true },
   { key: 'courseName', label: 'Course Name', type: 'text', placeholder: "e.g. BLS Training", required: true },
   { key: 'provider', label: 'Provider', type: 'text', placeholder: "e.g. DHA" },
   { key: 'startDate', label: 'Start Date', type: 'date', placeholder: "" },
   { key: 'endDate', label: 'End Date', type: 'date', placeholder: "" },
   { key: 'expiryDate', label: 'Expiry Date', type: 'date', placeholder: "" },
   { key: 'cmeHours', label: 'CME Hours', type: 'number', placeholder: "0", step: "0.01" },
-  { key: 'status', label: 'Status', type: 'text', placeholder: "e.g. Completed" },
+  { key: 'status', label: 'Status', type: 'select', placeholder: "e.g. Completed", options: [
+    { value: 'Planned', label: 'Planned' },
+    { value: 'InProgress', label: 'In Progress' },
+    { value: 'Completed', label: 'Completed' },
+    { value: 'Expired', label: 'Expired' },
+    { value: 'Cancelled', label: 'Cancelled' },
+  ] },
   { key: 'notes', label: 'Notes', type: 'textarea', placeholder: "Optional notes", rows: 4 }
 ]
 

@@ -4,21 +4,23 @@
       <!-- HEADER -->
       <div class="modal-header">
         <h3>{{ isCreate ? 'Add Payment' : 'Edit Payment' }}</h3>
-        <button type="button" class="btn-close-header" @click="close">✕</button>
+        <button type="button" class="btn-close-header" aria-label="Close" @click="close">x</button>
       </div>
 
       <!-- LOADING -->
       <div v-if="loading" class="loader-container">Loading Payment Data...</div>
+      <div v-else-if="loadError" class="error-panel">{{ loadError }}</div>
 
       <!-- FORM -->
       <form v-else @submit.prevent="save" class="modal-content-wrapper">
         <!-- BASIC INFO -->
         <div class="info-row">
           <span><strong>Visit Id:</strong> {{ master.visitId || '-' }}</span>
+          <span><strong>Status:</strong> {{ master.paymentStatus }}</span>
         </div>
 
         <!-- PATIENT -->
-        <div class="info-row">
+        <div class="info-grid">
           <!-- CREATE -->
           <div v-if="isCreate">
             <label><strong>Patient *</strong></label>
@@ -29,10 +31,26 @@
 
           <!-- EDIT -->
           <div v-else><strong>Patient:</strong> {{ patientName }}</div>
+
+          <div>
+            <label><strong>Phone No</strong></label>
+            <input v-model="master.phoneNo" class="form-control" />
+          </div>
+
+          <div>
+            <label><strong>Payment Status</strong></label>
+            <select v-model="master.paymentStatus" class="form-control">
+              <option value="Draft">Draft</option>
+              <option value="Paid">Paid</option>
+              <option value="Posted">Posted</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
         </div>
 
         <!-- ITEMS -->
         <h5 class="section-label">Payment Items: Rs. {{ subTotal.toFixed(2) }}</h5>
+        <p v-if="formError" class="error-panel compact">{{ formError }}</p>
 
         <table class="custom-table green-theme">
           <thead>
@@ -62,6 +80,10 @@
               <td>
                 <button type="button" class="btn-red-sm" @click="removeItem(i)">Remove</button>
               </td>
+            </tr>
+
+            <tr v-if="paymentItems.length === 0">
+              <td colspan="6" class="empty-cell">No payment items added yet.</td>
             </tr>
 
             <!-- ADD ROW -->
@@ -132,6 +154,18 @@
                 <th>Tax (%)</th>
                 <td><input type="number" v-model.number="master.tax" /></td>
               </tr>
+              <tr>
+                <th>Insurance No</th>
+                <td><input v-model="master.insuranceNo" /></td>
+              </tr>
+              <tr>
+                <th>Insurance Company ID</th>
+                <td><input type="number" v-model.number="master.insuranceCompanyId" /></td>
+              </tr>
+              <tr>
+                <th>Insurance Coverage (%)</th>
+                <td><input type="number" v-model.number="master.insuranceCoverage" /></td>
+              </tr>
             </table>
           </div>
 
@@ -173,7 +207,9 @@
             </table>
 
             <div class="main-actions">
-              <button type="submit" class="btn-save">Save</button>
+              <button type="submit" class="btn-save" :disabled="saving">
+                {{ saving ? 'Saving...' : 'Save' }}
+              </button>
               <button type="button" class="btn-close-footer" @click="close">Close</button>
             </div>
           </div>
@@ -191,6 +227,7 @@ import '@vueform/multiselect/themes/default.css'
 import { PaymentService } from './payment.service'
 import { financeService, type PaymentAccountDto } from '../finance/finance.service'
 import { patientService, type PatientApiDto } from '../patient/patient.service'
+import { getApiErrorMessage } from '@/services/api-response'
 
 import type {
   ManagePaymentsDto,
@@ -204,6 +241,9 @@ const props = defineProps<{ paymentId?: number }>()
 const emit = defineEmits<{ (e: 'close'): void; (e: 'saved'): void }>()
 
 const loading = ref(false)
+const saving = ref(false)
+const loadError = ref('')
+const formError = ref('')
 const categories = ref<PaymentCategoryDto[]>([])
 const accounts = ref<PaymentAccountDto[]>([])
 const patientName = ref('')
@@ -212,12 +252,19 @@ const master = ref({
   id: 0,
   patientId: 0,
   visitId: '',
+  phoneNo: '',
   commonCharge: 0,
   discount: 0,
   tax: 0,
   currencyId: 1,
   insuranceNo: '',
+  insuranceCompanyId: null as number | null,
+  insuranceCompanyName: '',
   insuranceCoverage: 0,
+  insuranceAmount: 0,
+  paymentStatus: 'Draft',
+  currentURL: window.location.href,
+  userRole: '',
 })
 
 const paymentItems = ref<PaymentItemCrudDto[]>([])
@@ -265,55 +312,80 @@ const dueAmount = computed(() => Math.max(0, grandTotal.value - paidAmount.value
 /* LOAD */
 const loadData = async () => {
   loading.value = true
-  const [cat, acc] = await Promise.all([
-    PaymentService.getMvcPaymentCategories(),
-    financeService.getPaymentAccounts(),
-  ])
-  categories.value = cat
-  accounts.value = acc
+  loadError.value = ''
+  try {
+    const [cat, acc] = await Promise.all([
+      PaymentService.getMvcPaymentCategories(),
+      financeService.getPaymentAccounts(),
+    ])
+    categories.value = cat
+    accounts.value = acc
 
-  if (props.paymentId) {
-    const data = await PaymentService.getManagePaymentById(props.paymentId)
-    patientName.value = data.patientName
+    if (props.paymentId) {
+      const data = await PaymentService.getManagePaymentById(props.paymentId)
+      patientName.value = data.patientName
 
-    const vm = data.paymentsCRUDViewModel
-    master.value = {
-      id: vm.id ?? 0,
-      patientId: vm.patientId,
-      visitId: vm.visitId,
-      commonCharge: vm.commonCharge,
-      discount: vm.discount,
-      tax: vm.tax,
-      currencyId: vm.currencyId,
-      insuranceNo: vm.insuranceNo ?? '',
-      insuranceCoverage: vm.insuranceCoverage ?? 0,
+      const vm = data.paymentsCRUDViewModel
+      master.value = {
+        id: vm.id ?? 0,
+        patientId: vm.patientId,
+        visitId: vm.visitId,
+        phoneNo: vm.phoneNo ?? '',
+        commonCharge: vm.commonCharge,
+        discount: vm.discount,
+        tax: vm.tax,
+        currencyId: vm.currencyId,
+        insuranceNo: vm.insuranceNo ?? '',
+        insuranceCompanyId: vm.insuranceCompanyId ?? null,
+        insuranceCompanyName: vm.insuranceCompanyName ?? '',
+        insuranceCoverage: vm.insuranceCoverage ?? 0,
+        insuranceAmount: vm.insuranceAmount ?? 0,
+        paymentStatus: vm.paymentStatus ?? 'Draft',
+        currentURL: vm.currentURL || window.location.href,
+        userRole: vm.userRole ?? '',
+      }
+
+      paymentItems.value = data.listPaymentsDetailsCRUDViewModel.map(
+        (x: PaymentItemCrudRaw): PaymentItemCrudDto => ({
+          id: x.Id,
+          paymentsId: x.PaymentsId ?? null,
+          itemDetailId: x.ItemDetailId ?? null,
+          paymentItemCode: x.PaymentItemCode,
+          paymentItemName: x.PaymentItemName,
+          quantity: x.Quantity,
+          unitPrize: x.UnitPrize,
+          totalAmount: x.TotalAmount,
+          paymentType: x.PaymentType ?? null,
+        }),
+      )
+
+      paymentModes.value =
+        data.listPaymentModeHistoryCRUDViewModel.length > 0
+          ? data.listPaymentModeHistoryCRUDViewModel
+          : [{ modeOfPayment: 'Cash', amount: 0 }]
+    } else {
+      paymentModes.value = [{ modeOfPayment: 'Cash', amount: 0 }]
     }
-
-    paymentItems.value = data.listPaymentsDetailsCRUDViewModel.map(
-      (x: PaymentItemCrudRaw): PaymentItemCrudDto => ({
-        id: x.Id,
-        paymentItemCode: x.PaymentItemCode,
-        quantity: x.Quantity,
-        unitPrize: x.UnitPrize,
-        totalAmount: x.TotalAmount,
-      }),
-    )
-
-    paymentModes.value =
-      data.listPaymentModeHistoryCRUDViewModel.length > 0
-        ? data.listPaymentModeHistoryCRUDViewModel
-        : [{ modeOfPayment: 'Cash', amount: 0 }]
-  } else {
-    paymentModes.value = [{ modeOfPayment: 'Cash', amount: 0 }]
+  } catch (error) {
+    loadError.value = getApiErrorMessage(error, 'Could not load payment form data.')
+  } finally {
+    loading.value = false
   }
-  loading.value = false
 }
 
 watch(() => props.paymentId, loadData, { immediate: true })
 
 /* ACTIONS */
 const addItem = () => {
-  if (!newItem.value.paymentItemCode) return
+  formError.value = ''
+  if (!newItem.value.paymentItemCode) {
+    formError.value = 'Select a payment category before adding an item.'
+    return
+  }
+  if (newItem.value.quantity <= 0 || newItem.value.unitPrize < 0) {
+    formError.value = 'Quantity must be greater than zero and unit price cannot be negative.'
+    return
+  }
   paymentItems.value.push({ ...newItem.value })
   newItem.value = { paymentItemCode: '', quantity: 1, unitPrize: 0, totalAmount: 0 }
 }
@@ -322,7 +394,23 @@ const addPaymentMode = () => paymentModes.value.push({ modeOfPayment: 'Cash', am
 const removePaymentMode = (i: number) => paymentModes.value.splice(i, 1)
 
 const save = async () => {
-  if (!master.value.patientId) return alert('Select patient')
+  formError.value = ''
+  if (!master.value.patientId) {
+    formError.value = 'Select patient.'
+    return
+  }
+  if (paymentItems.value.length === 0) {
+    formError.value = 'Add at least one payment item.'
+    return
+  }
+  if (paymentItems.value.some((item) => !item.paymentItemCode || item.quantity <= 0 || item.unitPrize < 0)) {
+    formError.value = 'Each payment item needs a category, positive quantity, and non-negative price.'
+    return
+  }
+  if (paymentModes.value.some((mode) => !mode.modeOfPayment || (mode.amount ?? 0) < 0)) {
+    formError.value = 'Each payment mode needs a mode and non-negative amount.'
+    return
+  }
 
   const payload: ManagePaymentsDto = {
     paymentsCRUDViewModel: {
@@ -339,15 +427,31 @@ const save = async () => {
       paidAmount: paidAmount.value,
       dueAmount: dueAmount.value,
       changedAmount: 0,
+      phoneNo: master.value.phoneNo,
+      insuranceNo: master.value.insuranceNo,
+      insuranceCompanyId: master.value.insuranceCompanyId,
+      insuranceCompanyName: master.value.insuranceCompanyName,
+      insuranceCoverage: master.value.insuranceCoverage,
+      insuranceAmount: master.value.insuranceAmount,
       currencyId: master.value.currencyId,
+      paymentStatus: master.value.paymentStatus,
+      currentURL: master.value.currentURL,
+      userRole: master.value.userRole,
     },
     listPaymentsDetailsCRUDViewModel: paymentItems.value,
     listPaymentModeHistoryCRUDViewModel: paymentModes.value,
   }
 
-  await PaymentService.saveManagePayment(payload)
-  emit('saved')
-  emit('close')
+  try {
+    saving.value = true
+    await PaymentService.saveManagePayment(payload)
+    emit('saved')
+    emit('close')
+  } catch (error) {
+    formError.value = getApiErrorMessage(error, 'Could not save payment.')
+  } finally {
+    saving.value = false
+  }
 }
 
 const close = () => emit('close')
@@ -403,6 +507,14 @@ const close = () => emit('close')
 
 .info-row span {
   margin-right: 15px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 10px;
+  align-items: end;
 }
 
 .section-label {
@@ -643,5 +755,54 @@ const close = () => emit('close')
   border-radius: 3px;
   font-size: 14px;
   cursor: pointer;
+}
+
+.loader-container,
+.error-panel,
+.empty-cell {
+  padding: 16px;
+  color: #64748b;
+  text-align: center;
+}
+
+.error-panel {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+  border-radius: 6px;
+  margin: 12px 15px;
+}
+
+.error-panel.compact {
+  margin: 8px 0;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.btn-save:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+@media (max-width: 760px) {
+  .modal-backdrop {
+    padding: 10px;
+  }
+
+  .modal-card {
+    max-height: calc(100vh - 20px);
+    overflow: auto;
+  }
+
+  .info-grid,
+  .split-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .col-left,
+  .col-right {
+    width: 100%;
+  }
 }
 </style>

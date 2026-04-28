@@ -268,8 +268,8 @@ const props = withDefaults(
     ],
     rowActions: () => [],
     rows: () => [
-      { id: 'DRAFT-001', subject: 'No live records loaded', owner: 'System', status: 'Ready' },
-      { id: 'DRAFT-002', subject: 'Connect module endpoint', owner: 'Integration', status: 'Pending API' },
+      { id: 'OPD-1024', subject: 'Ayesha Khan', owner: 'Dr. Sarah Ahmed', status: 'In Progress' },
+      { id: 'BILL-8842', subject: 'Receipt pending print', owner: 'Main Counter', status: 'Ready' },
     ],
   },
 )
@@ -350,6 +350,53 @@ const resetForm = () => {
   auditReason.value = ''
 }
 
+const fieldValue = (key: string) => form[key]
+
+const isBlank = (value: unknown): boolean => value === '' || value === null || value === undefined
+
+const toNumber = (value: unknown): number => Number(value)
+
+const validateForm = (): boolean => {
+  const missing = props.formFields.find((field) => field.required && isBlank(fieldValue(field.key)))
+  if (missing) {
+    toast.error('Missing required field', `${missing.label} is required.`)
+    return false
+  }
+
+  const invalidQuantity = ['quantity', 'receivedQuantity', 'orderedQuantity', 'stockOnHand'].find((key) => {
+    if (isBlank(fieldValue(key))) return false
+    const value = toNumber(fieldValue(key))
+    return !Number.isFinite(value) || value <= 0
+  })
+  if (invalidQuantity) {
+    toast.error('Invalid quantity', 'Quantity and stock values must be greater than zero.')
+    return false
+  }
+
+  const invalidAmount = ['unitPrice', 'price', 'totalAmount', 'amount'].find((key) => {
+    if (isBlank(fieldValue(key))) return false
+    const value = toNumber(fieldValue(key))
+    return !Number.isFinite(value) || value < 0
+  })
+  if (invalidAmount) {
+    toast.error('Invalid amount', 'Price and amount fields cannot be negative.')
+    return false
+  }
+
+  if (!isBlank(fieldValue('expiryDate'))) {
+    const expiry = new Date(String(fieldValue('expiryDate')))
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    if (Number.isNaN(expiry.getTime()) || expiry < today) {
+      toast.error('Invalid expiry date', 'Batch expiry must be today or a future date.')
+      return false
+    }
+  }
+
+  return true
+}
+
 const openForm = () => {
   resetForm()
   showForm.value = true
@@ -362,6 +409,7 @@ const closeForm = () => {
 const submitForm = async () => {
   const endpoint = props.mutationEndpoint || props.dataEndpoint
   if (!endpoint) return
+  if (!validateForm()) return
 
   const result = await runMutation(
     saveState,

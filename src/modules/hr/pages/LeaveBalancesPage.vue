@@ -33,8 +33,8 @@
 ]
 
     const fields: CrudField[] = [
-  { key: 'employeeId', label: 'Employee Id', type: 'number', placeholder: "e.g. 1001", required: true, step: "1" },
-  { key: 'leaveTypeId', label: 'Leave Type Id', type: 'number', placeholder: "e.g. 1", required: true, step: "1" },
+  { key: 'employeeId', label: 'Employee', type: 'lookup', lookupKind: 'employee', placeholder: "Search employee", required: true },
+  { key: 'leaveTypeId', label: 'Leave Type', type: 'lookup', lookupKind: 'leaveType', placeholder: "Search leave type", required: true },
   { key: 'openingBalance', label: 'Opening Balance', type: 'number', placeholder: "0", step: "0.01" },
   { key: 'earned', label: 'Earned', type: 'number', placeholder: "0", step: "0.01" },
   { key: 'availed', label: 'Availed', type: 'number', placeholder: "0", step: "0.01" },

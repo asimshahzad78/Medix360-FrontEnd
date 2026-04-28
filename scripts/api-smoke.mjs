@@ -52,8 +52,16 @@ const headers = {
 }
 
 if (token) headers.Authorization = `Bearer ${token}`
-if (tenantId) headers['X-Tenant-ID'] = tenantId
-if (facilityId) headers['X-Facility-ID'] = facilityId
+if (tenantId) {
+  headers['X-Tenant-Id'] = tenantId
+  headers['X-Tenant-ID'] = tenantId
+}
+if (facilityId) {
+  headers['X-Property-Id'] = facilityId
+  headers['X-Property-ID'] = facilityId
+  headers['X-Facility-Id'] = facilityId
+  headers['X-Facility-ID'] = facilityId
+}
 
 let failures = 0
 

@@ -33,7 +33,7 @@
             @click="loadDuplicate(match.Id)"
           >
             <span>{{ match.Title }} {{ match.FirstName }} {{ match.LastName }}</span>
-            <small>{{ match.Phone }} · {{ match.Gender }} · {{ match.AgeDisplay || match.Age || 'Age not set' }}</small>
+            <small>{{ match.Phone }} | {{ match.Gender }} | {{ match.AgeDisplay || match.Age || 'Age not set' }}</small>
           </button>
         </div>
 
@@ -63,7 +63,8 @@
 
             <div>
               <label>{{ ageLabel }}</label>
-              <input type="number" v-model.number="form.age" min="0" />
+              <input type="number" v-model.number="form.age" min="0" max="130" @input="clearOptionalError('age')" />
+              <p v-if="optionalErrors.age" class="field-error">{{ optionalErrors.age }}</p>
             </div>
 
             <div>
@@ -104,10 +105,10 @@
           <div v-if="tab === 'other'" class="grid">
             <div>
               <label>Email</label>
-              <input v-model="form.email" />
+              <input v-model="form.email" type="email" @input="clearOptionalError('email')" />
+              <p v-if="optionalErrors.email" class="field-error">{{ optionalErrors.email }}</p>
             </div>
 
-            <!-- ✅ moved here -->
             <div>
               <label>Marital Status</label>
               <select v-model="form.maritalStatus">
@@ -169,12 +170,14 @@
 
             <div>
               <label>Registration Fee</label>
-              <input type="number" v-model.number="form.registrationFee" />
+              <input type="number" min="0" v-model.number="form.registrationFee" @input="clearOptionalError('registrationFee')" />
+              <p v-if="optionalErrors.registrationFee" class="field-error">{{ optionalErrors.registrationFee }}</p>
             </div>
 
             <div>
               <label>Profile Picture</label>
               <input type="file" accept="image/*" @change="onProfilePictureChange" />
+              <p v-if="optionalErrors.profilePictureDetails" class="field-error">{{ optionalErrors.profilePictureDetails }}</p>
             </div>
 
             <div v-if="profilePicturePreview">
@@ -207,7 +210,9 @@
 
           <!-- ACTIONS -->
           <div class="actions">
-            <button class="btn-primary" type="submit">Save</button>
+            <button class="btn-primary" type="submit" :disabled="saving">
+              {{ saving ? 'Saving...' : 'Save' }}
+            </button>
             <button type="button" class="btn-secondary" @click="$emit('close')">Cancel</button>
           </div>
         </form>
@@ -242,6 +247,7 @@ export default defineComponent({
     const duplicateMatches = ref<PatientApiDto[]>([])
     const duplicateLoading = ref(false)
     const profilePicturePreview = ref('')
+    const saving = ref(false)
 
     const form = reactive({
       title: '',
@@ -278,12 +284,22 @@ export default defineComponent({
       passwordHash: '',
       confirmPassword: '',
     })
+    const optionalErrors = reactive({
+      email: '',
+      age: '',
+      registrationFee: '',
+      profilePictureDetails: '',
+    })
 
     const isEdit = computed(() => !!props.patientId)
     const ageLabel = computed(() => (form.title === 'Baby' ? 'Age (Months)' : 'Age (Years)'))
 
     const clearError = (key: keyof typeof errors) => {
       errors[key] = ''
+    }
+
+    const clearOptionalError = (key: keyof typeof optionalErrors) => {
+      optionalErrors[key] = ''
     }
 
     const loadPatient = async () => {
@@ -345,6 +361,22 @@ export default defineComponent({
 
     const onProfilePictureChange = (event: Event) => {
       const file = (event.target as HTMLInputElement).files?.[0] ?? null
+      optionalErrors.profilePictureDetails = ''
+
+      if (file && file.size > 2 * 1024 * 1024) {
+        form.profilePictureDetails = null
+        profilePicturePreview.value = ''
+        optionalErrors.profilePictureDetails = 'Profile picture must be 2 MB or smaller.'
+        return
+      }
+
+      if (file && !file.type.startsWith('image/')) {
+        form.profilePictureDetails = null
+        profilePicturePreview.value = ''
+        optionalErrors.profilePictureDetails = 'Profile picture must be an image file.'
+        return
+      }
+
       form.profilePictureDetails = file
       profilePicturePreview.value = file ? URL.createObjectURL(file) : ''
     }
@@ -357,10 +389,13 @@ export default defineComponent({
       errors.gender = ''
       errors.passwordHash = ''
       errors.confirmPassword = ''
+      optionalErrors.email = ''
+      optionalErrors.age = ''
+      optionalErrors.registrationFee = ''
+      optionalErrors.profilePictureDetails = ''
 
       let ok = true
 
-      // ✅ required client-side
       if (!form.title) {
         errors.title = 'Title is required.'
         ok = false
@@ -375,6 +410,24 @@ export default defineComponent({
       }
       if (!form.gender) {
         errors.gender = 'Gender is required.'
+        ok = false
+      }
+
+      if (form.age !== null && (!Number.isFinite(Number(form.age)) || Number(form.age) < 0 || Number(form.age) > 130)) {
+        optionalErrors.age = 'Age must be between 0 and 130.'
+        ok = false
+      }
+
+      if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+        optionalErrors.email = 'Enter a valid email address.'
+        ok = false
+      }
+
+      if (
+        form.registrationFee !== null &&
+        (!Number.isFinite(Number(form.registrationFee)) || Number(form.registrationFee) < 0)
+      ) {
+        optionalErrors.registrationFee = 'Registration fee cannot be negative.'
         ok = false
       }
 
@@ -395,7 +448,13 @@ export default defineComponent({
     }*/
 
       // jump to correct tab
-      if (errors.passwordHash || errors.confirmPassword) tab.value = 'other'
+      if (
+        errors.passwordHash ||
+        errors.confirmPassword ||
+        optionalErrors.email ||
+        optionalErrors.registrationFee ||
+        optionalErrors.profilePictureDetails
+      ) tab.value = 'other'
       else if (!ok) tab.value = 'basic'
 
       return ok
@@ -408,6 +467,7 @@ export default defineComponent({
       }
 
       try {
+        saving.value = true
         if (isEdit.value) {
           await patientService.update(props.patientId!, form)
           alertState.value = { type: 'success', message: 'Patient updated successfully.' }
@@ -422,6 +482,8 @@ export default defineComponent({
         }, 1200)
       } catch (e: unknown) {
         alertState.value = { type: 'error', message: getApiErrorMessage(e, 'Operation failed. Please check data.') }
+      } finally {
+        saving.value = false
       }
     }
 
@@ -433,8 +495,11 @@ export default defineComponent({
       profilePicturePreview,
       form,
       errors,
+      optionalErrors,
       clearError,
+      clearOptionalError,
       isEdit,
+      saving,
       save,
       loadDuplicate,
       onProfilePictureChange,

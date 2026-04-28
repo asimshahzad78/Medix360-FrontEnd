@@ -195,7 +195,7 @@
       </div>
 
       <!-- LAB -->
-      <div class="menu-group" v-if="canSee('lab')">
+      <div class="menu-group" v-if="showAdvancedDemoModules && canSee('lab')">
         <div class="menu-title" @click="toggle('lab')">
           Laboratory
           <span>{{ menuOpen.lab ? '▾' : '▸' }}</span>
@@ -232,7 +232,7 @@
       </div>
 
       <!-- PHARMACY -->
-      <div class="menu-group" v-if="canSee('pharmacy')">
+      <div class="menu-group" v-if="showAdvancedDemoModules && canSee('pharmacy')">
         <div class="menu-title" @click="toggle('pharmacy')">
           Pharmacy
           <span>{{ menuOpen.pharmacy ? '▾' : '▸' }}</span>
@@ -272,10 +272,10 @@
       </div>
 
       <!-- IPD -->
-      <div class="menu-group" v-if="canSee('ipd')">
+      <div class="menu-group" v-if="showAdvancedDemoModules && canSee('ipd')">
         <div class="menu-title" @click="toggle('ipd')">
           IPD / Inpatient
-          <span>{{ menuOpen.ipd ? 'â–¾' : 'â–¸' }}</span>
+          <span>{{ menuOpen.ipd ? '▾' : '▸' }}</span>
         </div>
         <div v-if="menuOpen.ipd" class="submenu">
           <RouterLink v-if="canSee('ipd.admissions')" to="/ipd/admissions" @click="onNavigate">Admissions</RouterLink>
@@ -283,45 +283,77 @@
           <RouterLink v-if="canSee('ipd.nursing')" to="/ipd/nursing" @click="onNavigate">Nursing</RouterLink>
           <RouterLink v-if="canSee('ipd.mar')" to="/ipd/mar" @click="onNavigate">MAR</RouterLink>
           <RouterLink v-if="canSee('ipd.discharge')" to="/ipd/discharge" @click="onNavigate">Discharge</RouterLink>
+          <div class="submenu-divider">Emergency / OT / ICU</div>
+          <RouterLink v-if="canSee('ipd.admissions')" to="/emergency/triage" @click="onNavigate">Emergency Triage</RouterLink>
+          <RouterLink v-if="canSee('ipd.admissions')" to="/emergency/encounters" @click="onNavigate">Emergency Encounters</RouterLink>
+          <RouterLink v-if="canSee('ipd.bedBoard')" to="/emergency/observation-beds" @click="onNavigate">Observation Beds</RouterLink>
+          <RouterLink v-if="canSee('ipd.nursing')" to="/ot/procedures" @click="onNavigate">OT Procedures</RouterLink>
+          <RouterLink v-if="canSee('ipd.nursing')" to="/icu/workflows" @click="onNavigate">ICU Workflows</RouterLink>
         </div>
       </div>
 
       <!-- INVENTORY -->
-      <div class="menu-group" v-if="canSee('inventory')">
+      <div class="menu-group" v-if="showAdvancedDemoModules && canSee('inventory')">
         <div class="menu-title" @click="toggle('inventory')">
           Inventory
-          <span>{{ menuOpen.inventory ? 'â–¾' : 'â–¸' }}</span>
+          <span>{{ menuOpen.inventory ? '▾' : '▸' }}</span>
         </div>
         <div v-if="menuOpen.inventory" class="submenu">
           <RouterLink v-if="canSee('inventory.procurement')" to="/inventory/procurement" @click="onNavigate">Procurement</RouterLink>
+          <RouterLink v-if="canSee('inventory.procurement')" to="/inventory/suppliers" @click="onNavigate">Suppliers</RouterLink>
+          <RouterLink v-if="canSee('inventory.procurement')" to="/inventory/requisitions" @click="onNavigate">Requisitions</RouterLink>
+          <RouterLink v-if="canSee('inventory.procurement')" to="/inventory/purchase-orders" @click="onNavigate">Purchase Orders</RouterLink>
+          <RouterLink v-if="canSee('inventory.procurement')" to="/inventory/receiving" @click="onNavigate">Receiving</RouterLink>
+          <RouterLink v-if="canSee('inventory.stockMovements')" to="/inventory/stock-lots" @click="onNavigate">Stock Lots</RouterLink>
+          <RouterLink v-if="canSee('inventory.stockMovements')" to="/inventory/expiry" @click="onNavigate">Expiry</RouterLink>
+          <RouterLink v-if="canSee('inventory.stockMovements')" to="/inventory/adjustments" @click="onNavigate">Adjustments</RouterLink>
           <RouterLink v-if="canSee('inventory.stockMovements')" to="/inventory/stock-movements" @click="onNavigate">Stock Movements</RouterLink>
           <RouterLink v-if="canSee('inventory.reports')" to="/inventory/reports" @click="onNavigate">Inventory Reports</RouterLink>
         </div>
       </div>
 
       <!-- ANALYTICS -->
-      <div class="menu-group" v-if="canSee('analytics')">
+      <div class="menu-group" v-if="showAdvancedDemoModules && canSee('analytics')">
         <div class="menu-title" @click="toggle('analytics')">
           Analytics
-          <span>{{ menuOpen.analytics ? 'â–¾' : 'â–¸' }}</span>
+          <span>{{ menuOpen.analytics ? '▾' : '▸' }}</span>
         </div>
         <div v-if="menuOpen.analytics" class="submenu">
           <RouterLink v-if="canSee('analytics.executive')" to="/analytics/executive" @click="onNavigate">Executive</RouterLink>
           <RouterLink v-if="canSee('analytics.clinical')" to="/analytics/clinical" @click="onNavigate">Clinical</RouterLink>
           <RouterLink v-if="canSee('analytics.finance')" to="/analytics/finance" @click="onNavigate">Finance</RouterLink>
+          <RouterLink v-if="canSee('analytics.finance')" to="/analytics/exports" @click="onNavigate">Exports</RouterLink>
+        </div>
+      </div>
+
+      <!-- PATIENT ENGAGEMENT -->
+      <div class="menu-group" v-if="showAdvancedDemoModules && canSee('patientEngagement')">
+        <div class="menu-title" @click="toggle('patientEngagement')">
+          Patient Engagement
+          <span>{{ menuOpen.patientEngagement ? '▾' : '▸' }}</span>
+        </div>
+        <div v-if="menuOpen.patientEngagement" class="submenu">
+          <RouterLink v-if="canSee('patientEngagement.portal')" to="/patient-engagement/portal-accounts" @click="onNavigate">Portal Accounts</RouterLink>
+          <RouterLink v-if="canSee('patientEngagement.prescriptions')" to="/patient-engagement/prescription-access" @click="onNavigate">Prescription Access</RouterLink>
+          <RouterLink v-if="canSee('patientEngagement.notifications')" to="/patient-engagement/notifications" @click="onNavigate">Notifications</RouterLink>
+          <RouterLink v-if="canSee('patientEngagement.consents')" to="/patient-engagement/consents" @click="onNavigate">Consents</RouterLink>
+          <RouterLink v-if="canSee('patientEngagement.messages')" to="/patient-engagement/messages" @click="onNavigate">Messages</RouterLink>
         </div>
       </div>
 
       <!-- INTEROPERABILITY -->
-      <div class="menu-group" v-if="canSee('interoperability')">
+      <div class="menu-group" v-if="showAdvancedDemoModules && canSee('interoperability')">
         <div class="menu-title" @click="toggle('interoperability')">
           Interoperability
-          <span>{{ menuOpen.interoperability ? 'â–¾' : 'â–¸' }}</span>
+          <span>{{ menuOpen.interoperability ? '▾' : '▸' }}</span>
         </div>
         <div v-if="menuOpen.interoperability" class="submenu">
           <RouterLink v-if="canSee('interoperability.outbox')" to="/interoperability/outbox" @click="onNavigate">Outbox & Retries</RouterLink>
           <RouterLink v-if="canSee('interoperability.fhir')" to="/interoperability/hl7-fhir" @click="onNavigate">HL7 / FHIR</RouterLink>
           <RouterLink v-if="canSee('interoperability.partners')" to="/interoperability/partners" @click="onNavigate">Partners</RouterLink>
+          <RouterLink v-if="canSee('interoperability.fhir')" to="/interoperability/exchange" @click="onNavigate">External Exchange</RouterLink>
+          <RouterLink v-if="canSee('interoperability.fhir')" to="/interoperability/webhooks" @click="onNavigate">Webhooks</RouterLink>
+          <RouterLink v-if="canSee('interoperability.fhir')" to="/interoperability/pacs-dicom" @click="onNavigate">PACS / DICOM</RouterLink>
         </div>
       </div>
 
@@ -398,6 +430,7 @@ const emit = defineEmits<{ (e: 'close'): void }>()
 
 const auth = useAuthStore()
 const route = useRoute()
+const showAdvancedDemoModules = import.meta.env.VITE_SHOW_ADVANCED_DEMO_MODULES === 'true'
 
 /**
  * Rename accordion state to avoid collision with prop `open`
@@ -410,6 +443,7 @@ const menuOpen = reactive({
   ipd: false,
   inventory: false,
   analytics: false,
+  patientEngagement: false,
   interoperability: false,
   billing: false,
   reports: false,

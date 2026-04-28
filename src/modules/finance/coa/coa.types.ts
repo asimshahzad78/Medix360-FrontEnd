@@ -1,4 +1,4 @@
-export type AccountType = 'Asset' | 'Liability' | 'Equity' | 'Income' | 'Expense'
+export type AccountType = 'Asset' | 'Liability' | 'Equity' | 'Income' | 'Expense' | 'Revenue'
 
 export interface ChartOfAccountApiDto {
   Id: string
@@ -20,13 +20,18 @@ export interface ChartOfAccountSaveDto {
 }
 
 export interface ChartOfAccountCreateDto {
+  Code: string
   Name: string
-  ParentId: string
+  Type: AccountType
+  ParentId?: string | null
   IsActive: boolean
 }
 
 export interface ChartOfAccountUpdateDto {
+  Code: string
   Name: string
+  Type: AccountType
+  ParentId?: string | null
   IsActive: boolean
 }
 
@@ -34,7 +39,7 @@ export interface ChartOfAccountUpdateDto {
 // UI ONLY (DO NOT SEND TO BACKEND)
 // =====================================================
 
-export type CoaTypeLabel = 'Asset' | 'Liability' | 'Equity' | 'Income' | 'Expense' | 'Other'
+export type CoaTypeLabel = 'Asset' | 'Liability' | 'Equity' | 'Income' | 'Expense' | 'Revenue' | 'Other'
 
 export interface ChartOfAccountUiDto {
   id: string

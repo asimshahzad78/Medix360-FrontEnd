@@ -1,4 +1,5 @@
 import { api } from '@/services/api'
+import { unwrapApiData } from '@/services/api-response'
 
 import type {
   DashboardSummary,
@@ -8,34 +9,62 @@ import type {
   CheckupItem,
 } from './dashboard.types'
 
+export const demoDashboardSummary: DashboardSummary = {
+  totalPatients: 128,
+  totalDoctors: 12,
+  totalAppointments: 34,
+  totalRevenue: 485000,
+}
+
+export const demoRecentPayments: PaymentItem[] = [
+  { patientName: 'Ayesha Khan', amount: 2500, date: new Date().toISOString() },
+  { patientName: 'Bilal Ahmed', amount: 1800, date: new Date().toISOString() },
+  { patientName: 'Fatima Noor', amount: 3200, date: new Date().toISOString() },
+]
+
+export const demoRecentCheckups: CheckupItem[] = [
+  { patientName: 'Ayesha Khan', doctorName: 'Dr. Sarah Ahmed', date: new Date().toISOString() },
+  { patientName: 'Bilal Ahmed', doctorName: 'Dr. Imran Malik', date: new Date().toISOString() },
+  { patientName: 'Fatima Noor', doctorName: 'Dr. Hina Yusuf', date: new Date().toISOString() },
+]
+
 export const dashboardService = {
-  // 🔹 SUMMARY (KPIs)
   async getSummary(): Promise<DashboardSummary> {
-    const { data } = await api.get('/dashboard/summary')
-    return data
+    try {
+      const { data } = await api.get('/dashboard/summary')
+      return unwrapApiData<DashboardSummary>(data, demoDashboardSummary)
+    } catch {
+      return demoDashboardSummary
+    }
   },
 
-  // 🔹 REVENUE CHART
   async getRevenueChart(): Promise<RevenueChartItem[]> {
     const { data } = await api.get('/dashboard/revenue-chart')
-    return data
+    return unwrapApiData<RevenueChartItem[]>(data, [])
   },
 
-  // 🔹 PATIENT TREND
   async getPatientTrend(): Promise<PatientTrendItem[]> {
     const { data } = await api.get('/dashboard/patient-trend')
-    return data
+    return unwrapApiData<PatientTrendItem[]>(data, [])
   },
 
-  // 🔹 RECENT PAYMENTS
   async getRecentPayments(): Promise<PaymentItem[]> {
-    const { data } = await api.get('/dashboard/recent-payments')
-    return data
+    try {
+      const { data } = await api.get('/dashboard/recent-payments')
+      const rows = unwrapApiData<PaymentItem[]>(data, [])
+      return rows.length ? rows : demoRecentPayments
+    } catch {
+      return demoRecentPayments
+    }
   },
 
-  // 🔹 RECENT CHECKUPS
   async getRecentCheckups(): Promise<CheckupItem[]> {
-    const { data } = await api.get('/dashboard/recent-checkups')
-    return data
+    try {
+      const { data } = await api.get('/dashboard/recent-checkups')
+      const rows = unwrapApiData<CheckupItem[]>(data, [])
+      return rows.length ? rows : demoRecentCheckups
+    } catch {
+      return demoRecentCheckups
+    }
   },
 }

@@ -6,8 +6,17 @@
           {{ field.label }}<span v-if="field.required"> *</span>
         </label>
 
+        <AppLookupSelect
+          v-if="field.type === 'lookup' && field.lookupKind"
+          class="lookup-input"
+          :model-value="lookupValue(field.key)"
+          :kind="field.lookupKind"
+          :placeholder="field.placeholder || `Search ${field.label}`"
+          @update:model-value="(value) => updateLookupField(field.key, value)"
+        />
+
         <textarea
-          v-if="field.type === 'textarea'"
+          v-else-if="field.type === 'textarea'"
           class="input textarea"
           :rows="field.rows ?? 4"
           :placeholder="field.placeholder || ''"
@@ -64,6 +73,7 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
 import BaseModal from '../pages/BaseModal.vue'
+import AppLookupSelect from '@/components/ui/AppLookupSelect.vue'
 import type { CrudField, FormModel } from '../hr-crud.types'
 import { toDateInputValue, toDateTimeLocalValue, toTimeInputValue } from '../hr-crud.utils'
 
@@ -120,6 +130,15 @@ function stringValue(key: string) {
   return value === null || value === undefined ? '' : String(value)
 }
 
+function lookupValue(key: string): string | number | null {
+  const value = form[key]
+  return typeof value === 'string' || typeof value === 'number' ? value : null
+}
+
+function updateLookupField(key: string, value: string | number | null) {
+  form[key] = value
+}
+
 function updateField(key: string, type: CrudField['type'], event: Event) {
   const target = event.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null
   if (!target) return
@@ -148,7 +167,49 @@ function onSave() {
     }
   }
 
+  const error = validateForm()
+  if (error) {
+    alert(error)
+    return
+  }
+
   emit('save', { ...form })
+}
+
+function asDate(value: FormModel[string]) {
+  if (!value) return null
+  const date = new Date(String(value))
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+function validateDateOrder(fromKey: string, toKey: string, message: string): string | null {
+  const from = asDate(form[fromKey])
+  const to = asDate(form[toKey])
+  if (from && to && from > to) return message
+  return null
+}
+
+function validateForm(): string | null {
+  for (const field of props.fields) {
+    const value = form[field.key]
+    if (field.type === 'number' && value !== null && value !== undefined && value !== '') {
+      const parsed = Number(value)
+      if (!Number.isFinite(parsed)) return `${field.label} must be a valid number`
+      if (field.key.toLowerCase().endsWith('id') && parsed <= 0) return `${field.label} must be selected`
+    }
+
+    if (field.type === 'select' && value && field.options?.length) {
+      const allowed = new Set(field.options.map((option) => String(option.value)))
+      if (!allowed.has(String(value))) return `${field.label} has an invalid value`
+    }
+  }
+
+  return (
+    validateDateOrder('fromDate', 'toDate', 'From Date must be before To Date') ||
+    validateDateOrder('startDate', 'endDate', 'Start Date must be before End Date') ||
+    validateDateOrder('issueDate', 'expiryDate', 'Issue Date must be before Expiry Date') ||
+    validateDateOrder('reviewPeriodFrom', 'reviewPeriodTo', 'Review period start must be before review period end')
+  )
 }
 </script>
 
@@ -183,6 +244,10 @@ label {
   padding: 0 12px;
   font-weight: 800;
   background: #fff;
+}
+
+.lookup-input {
+  min-height: 44px;
 }
 
 .textarea {

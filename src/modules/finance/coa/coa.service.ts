@@ -13,6 +13,7 @@ function mapTypeLabel(t: number): CoaTypeLabel {
   if (t === 2) return 'Equity'
   if (t === 3) return 'Expense'
   if (t === 4) return 'Income'
+  if (t === 5) return 'Revenue'
   return 'Other'
 }
 
@@ -72,11 +73,15 @@ export const coaService = {
 
   // CREATE → CreateDto
   async create(payload: ChartOfAccountCreateDto): Promise<void> {
-    await api.post('/ChartOfAccount', payload)
+    await api.post('/ChartOfAccount', payload, {
+      meta: { idempotencyKey: true },
+    })
   },
 
   // UPDATE → UpdateDto ✅
   async update(id: string, payload: ChartOfAccountUpdateDto): Promise<void> {
-    await api.put(`/ChartOfAccount/${id}`, payload)
+    await api.put(`/ChartOfAccount/${id}`, payload, {
+      meta: { idempotencyKey: true },
+    })
   },
 }

@@ -33,14 +33,19 @@
 ]
 
     const fields: CrudField[] = [
-  { key: 'employeeId', label: 'Employee Id', type: 'number', placeholder: "e.g. 1001", required: true, step: "1" },
+  { key: 'employeeId', label: 'Employee', type: 'lookup', lookupKind: 'employee', placeholder: "Search employee", required: true },
   { key: 'code', label: 'Code', type: 'text', placeholder: "e.g. DHA" },
   { key: 'name', label: 'Name', type: 'text', placeholder: "e.g. DHA License", required: true },
   { key: 'credentialNumber', label: 'Credential Number', type: 'text', placeholder: "e.g. ABC-123" },
   { key: 'issuedBy', label: 'Issued By', type: 'text', placeholder: "e.g. DHA" },
   { key: 'issueDate', label: 'Issue Date', type: 'date', placeholder: "" },
   { key: 'expiryDate', label: 'Expiry Date', type: 'date', placeholder: "" },
-  { key: 'status', label: 'Status', type: 'text', placeholder: "e.g. Active" },
+  { key: 'status', label: 'Status', type: 'select', placeholder: "e.g. Active", options: [
+    { value: 'Active', label: 'Active' },
+    { value: 'Expired', label: 'Expired' },
+    { value: 'Suspended', label: 'Suspended' },
+    { value: 'PendingRenewal', label: 'Pending Renewal' },
+  ] },
   { key: 'notes', label: 'Notes', type: 'textarea', placeholder: "Optional notes", rows: 4 }
 ]
 

@@ -50,6 +50,16 @@
           </div>
 
           <div>
+            <label>Visit ID</label>
+            <input v-model="form.visitId" />
+          </div>
+
+          <div>
+            <label>Serial No</label>
+            <input type="number" v-model.number="form.serialNo" />
+          </div>
+
+          <div>
             <label>Doctor</label>
             <AppLookupSelect
               v-model="form.doctorId"
@@ -62,6 +72,16 @@
           <div>
             <label>Checkup Date</label>
             <input type="date" v-model="form.checkupDate" />
+          </div>
+
+          <div>
+            <label>Next Visit Date</label>
+            <input type="date" v-model="form.nextVisitDate" />
+          </div>
+
+          <div class="full">
+            <label>Current URL</label>
+            <input v-model="form.currentURL" readonly />
           </div>
         </div>
 
@@ -85,6 +105,11 @@
           <div>
             <label>Temperature</label>
             <input type="number" v-model="form.temperature" />
+          </div>
+
+          <div class="full">
+            <label>Vital Signs</label>
+            <textarea v-model="form.vitalSigns" :placeholder="vitalSignsSummary"></textarea>
           </div>
         </div>
 
@@ -150,6 +175,11 @@
             </div>
 
             <div>
+              <label>Times / Day</label>
+              <input type="number" v-model.number="newMed.whenToTakeDayCount" />
+            </div>
+
+            <div>
               <label>
                 <input type="checkbox" v-model="newMed.isBeforeMeal" />
                 Before Meal
@@ -166,6 +196,7 @@
               <td>{{ m.name }}</td>
               <td>{{ m.noOfDays }}</td>
               <td>{{ m.whenToTake }}</td>
+              <td>{{ m.whenToTakeDayCount }}</td>
               <td>
                 <button class="btn-danger-sm" @click="removeMedicine(i)">X</button>
               </td>
@@ -208,6 +239,7 @@
 
           <table class="simple-table">
             <tr v-for="(t, i) in form.labTests" :key="i">
+              <td>{{ t.orderType }}</td>
               <td>{{ t.name }}</td>
               <td>{{ t.price }}</td>
               <td>
@@ -227,6 +259,18 @@
               placeholder="Select payment mode"
               @selected="selectPaymentMode"
             />
+          </div>
+
+          <div>
+            <label>Payment Type</label>
+            <select v-model="form.paymentType">
+              <option value="Cash">Cash</option>
+              <option value="Card">Card</option>
+              <option value="Bank">Bank</option>
+              <option value="Online">Online</option>
+              <option value="Insurance">Insurance</option>
+              <option value="Free">Free</option>
+            </select>
           </div>
 
           <div>
@@ -284,26 +328,33 @@ interface MedicineItem {
   name: string
   noOfDays: number
   whenToTake: string
+  whenToTakeDayCount: number | null
   isBeforeMeal: boolean
 }
 
 interface LabTestItem {
   testId: string | number | null
   name: string
+  orderType: 'Lab' | 'Radiology'
   price: number
 }
 
 interface CheckupForm {
+  visitId: string
+  serialNo: number | null
   patientId: number
   doctorId: string | number | null
   patientType: string
   checkupDate: string
+  nextVisitDate: string
   paymentMode: string
+  paymentType: string
 
   bpSystolic: number | null
   bpDiastolic: number | null
   respirationRate: number | null
   temperature: number | null
+  vitalSigns: string
   symptoms: string
   diagnosis: string
   hpi: string
@@ -311,6 +362,7 @@ interface CheckupForm {
   advice: string
   comments: string
   nursingNotes: string
+  currentURL: string
   medicines: MedicineItem[]
   labTests: LabTestItem[]
 }
@@ -333,21 +385,38 @@ export default defineComponent({
     const selectedAccountId = ref<string | null>(null)
     const selectedPaymentAccount = ref<LookupOption | null>(null)
     const selectedDoctorFee = ref<number>(0)
+    const makeVisitId = (): string => `VIS-${Date.now().toString().slice(-8)}`
     const orderTotal = computed(() =>
       form.labTests.reduce((total, order) => total + Number(order.price || 0), 0),
     )
+    const vitalSignsSummary = computed(() =>
+      [
+        form.bpSystolic !== null || form.bpDiastolic !== null
+          ? `BP ${form.bpSystolic ?? '-'}/${form.bpDiastolic ?? '-'}`
+          : '',
+        form.respirationRate !== null ? `RR ${form.respirationRate}` : '',
+        form.temperature !== null ? `Temp ${form.temperature}` : '',
+      ]
+        .filter(Boolean)
+        .join(', '),
+    )
 
     const form = reactive<CheckupForm>({
+      visitId: makeVisitId(),
+      serialNo: null,
       patientId: props.patient.id,
       doctorId: null,
       patientType: 'Out Patient',
       checkupDate: new Date().toISOString().slice(0, 10),
+      nextVisitDate: '',
       paymentMode: 'Cash',
+      paymentType: 'Cash',
 
       bpSystolic: null,
       bpDiastolic: null,
       respirationRate: null,
       temperature: null,
+      vitalSigns: '',
       symptoms: '',
       diagnosis: '',
       hpi: '',
@@ -355,6 +424,7 @@ export default defineComponent({
       advice: '',
       comments: '',
       nursingNotes: '',
+      currentURL: window.location.href,
       medicines: [],
       labTests: [],
     })
@@ -369,12 +439,14 @@ export default defineComponent({
       name: '',
       noOfDays: 1,
       whenToTake: '',
+      whenToTakeDayCount: 1,
       isBeforeMeal: false,
     })
 
     const newTest = reactive<LabTestItem>({
       testId: null,
       name: '',
+      orderType: 'Lab',
       price: 0,
     })
 
@@ -394,11 +466,13 @@ export default defineComponent({
       }
 
       newTest.name = `${type}: ${option.label}`
+      newTest.orderType = type
       newTest.price = option.price ?? 0
     }
 
     const selectPaymentMode = (option: LookupOption | null): void => {
       form.paymentMode = option ? String(option.id) : ''
+      form.paymentType = option?.label ?? form.paymentType
     }
 
     const selectPaymentAccount = (option: LookupOption | null): void => {
@@ -407,6 +481,14 @@ export default defineComponent({
 
     const addMedicine = (): void => {
       form.medicines.push({ ...newMed })
+      Object.assign(newMed, {
+        medicineId: null,
+        name: '',
+        noOfDays: 1,
+        whenToTake: '',
+        whenToTakeDayCount: 1,
+        isBeforeMeal: false,
+      })
     }
 
     const removeMedicine = (i: number): void => {
@@ -415,6 +497,7 @@ export default defineComponent({
 
     const addTest = (): void => {
       form.labTests.push({ ...newTest })
+      Object.assign(newTest, { testId: null, name: '', orderType: 'Lab', price: 0 })
     }
 
     const removeTest = (i: number): void => {
@@ -460,20 +543,25 @@ export default defineComponent({
         }
 
         const res = await checkupService.create({
+          visitId: form.visitId,
+          serialNo: form.serialNo,
           patientId: form.patientId,
           doctorId: Number(form.doctorId),
           patientType: form.patientType,
           checkupDate: form.checkupDate,
+          nextVisitDate: form.nextVisitDate || null,
           paymentMode: form.paymentMode,
+          paymentType: form.paymentType,
           doctorFee: selectedDoctorFee.value,
           symptoms: form.symptoms,
           diagnosis: form.diagnosis,
           hpi: form.hpi,
-          vitalSigns: '',
+          vitalSigns: form.vitalSigns || vitalSignsSummary.value,
           physicalExamination: form.physicalExamination,
           advice: form.advice,
           comments: form.comments,
           nursingNotes: form.nursingNotes,
+          currentURL: form.currentURL,
 
           bpSystolic: form.bpSystolic,
           bpDiastolic: form.bpDiastolic,
@@ -484,15 +572,22 @@ export default defineComponent({
             .filter((m) => m.medicineId !== null)
             .map((m) => ({
               medicineId: Number(m.medicineId),
+              medicineName: m.name,
               noOfDays: m.noOfDays,
               whenToTake: m.whenToTake,
+              whenToTakeDayCount: m.whenToTakeDayCount,
               isBeforeMeal: m.isBeforeMeal,
+              visitId: form.visitId,
+              checkupId: null,
+              paymentId: null,
             })),
 
           labTests: form.labTests
             .filter((t) => t.testId !== null)
             .map((t) => ({
               testId: Number(t.testId),
+              testName: t.name,
+              orderType: t.orderType,
               price: t.price,
             })),
 
@@ -520,6 +615,7 @@ export default defineComponent({
       selectedAccountId,
       selectedDoctorFee,
       orderTotal,
+      vitalSignsSummary,
       form,
       newMed,
       newTest,

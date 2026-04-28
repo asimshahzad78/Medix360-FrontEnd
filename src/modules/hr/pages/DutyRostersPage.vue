@@ -33,8 +33,8 @@
 ]
 
     const fields: CrudField[] = [
-  { key: 'employeeId', label: 'Employee Id', type: 'number', placeholder: "e.g. 1001", required: true, step: "1" },
-  { key: 'shiftId', label: 'Shift Id', type: 'number', placeholder: "e.g. 1", required: true, step: "1" },
+  { key: 'employeeId', label: 'Employee', type: 'lookup', lookupKind: 'employee', placeholder: "Search employee", required: true },
+  { key: 'shiftId', label: 'Shift', type: 'lookup', lookupKind: 'shift', placeholder: "Search shift", required: true },
   { key: 'dutyDate', label: 'Duty Date', type: 'date', placeholder: "", required: true },
   { key: 'isOnCall', label: 'Is On Call', type: 'checkbox', placeholder: "" },
   { key: 'notes', label: 'Notes', type: 'textarea', placeholder: "Optional notes", rows: 4 }
