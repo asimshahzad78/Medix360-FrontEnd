@@ -18,6 +18,10 @@
       <img src="/loader.gif" width="100" />
     </div>
 
+    <div v-else-if="loadError" class="load-error">
+      {{ loadError }}
+    </div>
+
     <!-- Table -->
     <div v-else class="card">
       <div class="table-wrap">
@@ -98,6 +102,7 @@
 import { defineComponent, ref, computed, onMounted, watch } from 'vue'
 import { patientService, type PatientApiDto } from './patient.service'
 import { useRouter } from 'vue-router'
+import { getApiErrorMessage } from '@/services/api-response'
 
 import PatientFormModal from './PatientFormModal.vue'
 import PatientTimelineModal from './PatientTimelineModal.vue'
@@ -129,6 +134,7 @@ export default defineComponent({
     const patients = ref<Patient[]>([])
     const search = ref('')
     const loading = ref(false)
+    const loadError = ref('')
 
     const page = ref(1)
     const pageSize = ref(25)
@@ -142,22 +148,30 @@ export default defineComponent({
 
     const loadPatients = async () => {
       loading.value = true
-      const res = await patientService.getPaged(page.value, pageSize.value, search.value) // ✅ pass search
-      totalCount.value = res.totalCount
-      patients.value = res.items.map((p: PatientApiDto) => ({
-        id: p.Id,
-        title: p.Title ?? '',
-        firstName: p.FirstName ?? '',
-        lastName: p.LastName ?? '',
-        gender: p.Gender ?? '',
-        maritalStatus: p.MaritalStatus ?? '',
-        phone: p.Phone ?? '',
-        panel: p.Panel ?? '',
-        age: p.Age ?? 0,
-        ageDisplay: p.AgeDisplay ?? '',
-        ageUnit: p.AgeUnit ?? '',
-      }))
-      loading.value = false
+      loadError.value = ''
+      try {
+        const res = await patientService.getPaged(page.value, pageSize.value, search.value)
+        totalCount.value = res.totalCount
+        patients.value = res.items.map((p: PatientApiDto) => ({
+          id: p.Id ?? 0,
+          title: p.Title ?? '',
+          firstName: p.FirstName ?? '',
+          lastName: p.LastName ?? '',
+          gender: p.Gender ?? '',
+          maritalStatus: p.MaritalStatus ?? '',
+          phone: p.Phone ?? '',
+          panel: p.Panel ?? '',
+          age: p.Age ?? 0,
+          ageDisplay: p.AgeDisplay ?? '',
+          ageUnit: p.AgeUnit ?? '',
+        }))
+      } catch (error: unknown) {
+        patients.value = []
+        totalCount.value = 0
+        loadError.value = getApiErrorMessage(error, 'Could not load patients.')
+      } finally {
+        loading.value = false
+      }
     }
 
     const buildFullName = (p: Patient) => `${p.title} ${p.firstName} ${p.lastName}`.trim()
@@ -236,6 +250,7 @@ export default defineComponent({
     return {
       search,
       loading,
+      loadError,
       filteredPatients,
       buildFullName,
       page,
@@ -460,6 +475,14 @@ export default defineComponent({
 }
 
 /* ✅ Mobile tuning */
+.load-error {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  color: #9f1239;
+  padding: 14px 16px;
+}
+
 @media (max-width: 640px) {
   .patient-page {
     padding: 14px;

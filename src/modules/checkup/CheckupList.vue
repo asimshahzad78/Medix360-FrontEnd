@@ -15,6 +15,10 @@
       <img src="/loader.gif" width="100" />
     </div>
 
+    <div v-else-if="loadError" class="load-error">
+      {{ loadError }}
+    </div>
+
     <!-- Table -->
     <div v-else class="card">
       <!-- ✅ responsive table wrapper -->
@@ -80,6 +84,7 @@ import { defineComponent, ref, computed, onMounted, watch } from 'vue'
 import { checkupService, type CheckupListDto } from './checkup.service'
 import { useConfirmationStore } from '@/store/confirmation.store'
 import { createMutationState, runMutation } from '@/services/mutations'
+import { getApiErrorMessage } from '@/services/api-response'
 
 export default defineComponent({
   setup() {
@@ -88,6 +93,7 @@ export default defineComponent({
     const checkups = ref<CheckupListDto[]>([])
     const search = ref('')
     const loading = ref(false)
+    const loadError = ref('')
 
     const page = ref(1)
     const pageSize = ref(25)
@@ -95,10 +101,18 @@ export default defineComponent({
 
     const loadCheckups = async () => {
       loading.value = true
-      const res = await checkupService.getPaged(page.value, pageSize.value, search.value)
-      checkups.value = res.items
-      totalCount.value = res.totalCount
-      loading.value = false
+      loadError.value = ''
+      try {
+        const res = await checkupService.getPaged(page.value, pageSize.value, search.value)
+        checkups.value = res.items
+        totalCount.value = res.totalCount
+      } catch (error: unknown) {
+        checkups.value = []
+        totalCount.value = 0
+        loadError.value = getApiErrorMessage(error, 'Could not load checkups.')
+      } finally {
+        loading.value = false
+      }
     }
 
     const filteredCheckups = computed(() => checkups.value)
@@ -152,6 +166,7 @@ export default defineComponent({
       search,
       deleteCheckup,
       loading,
+      loadError,
       filteredCheckups,
       page,
       pageSize,
@@ -333,6 +348,14 @@ export default defineComponent({
 }
 
 /* ✅ Mobile tuning */
+.load-error {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  color: #9f1239;
+  padding: 14px 16px;
+}
+
 @media (max-width: 640px) {
   .checkup-page {
     padding: 14px;

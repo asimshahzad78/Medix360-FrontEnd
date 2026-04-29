@@ -143,6 +143,11 @@ const routePermissionByPath: Record<string, PermissionRule> = {
   '/patients/:id': [PERMISSIONS.PatientsView],
   '/checkups': [PERMISSIONS.OpdCheckupsView],
   '/opd/workflow': [PERMISSIONS.OpdCheckupsView],
+  '/opd/prescriptions': [PERMISSIONS.OpdCheckupsView],
+  '/opd/diagnosis': [PERMISSIONS.OpdCheckupsView],
+  '/opd/vital-signs': [PERMISSIONS.OpdCheckupsView],
+  '/opd/procedures': [PERMISSIONS.OpdCheckupsView],
+  '/opd/follow-ups': [PERMISSIONS.OpdCheckupsView],
   '/appointments': [PERMISSIONS.AppointmentsView],
   '/appointments/calendar': [PERMISSIONS.AppointmentsView],
 

@@ -50,19 +50,19 @@
             OPD Workflow
           </RouterLink>
 
-          <RouterLink v-if="canSee('opd.prescriptions')" to="/opd/workflow" @click="onNavigate">
+          <RouterLink v-if="canSee('opd.prescriptions')" to="/opd/prescriptions" @click="onNavigate">
             Prescriptions
           </RouterLink>
-          <RouterLink v-if="canSee('opd.diagnosis')" to="/opd/workflow" @click="onNavigate">
+          <RouterLink v-if="canSee('opd.diagnosis')" to="/opd/diagnosis" @click="onNavigate">
             Diagnosis
           </RouterLink>
-          <RouterLink v-if="canSee('opd.vitals')" to="/opd/workflow" @click="onNavigate">
+          <RouterLink v-if="canSee('opd.vitals')" to="/opd/vital-signs" @click="onNavigate">
             Vital Signs
           </RouterLink>
-          <RouterLink v-if="canSee('opd.procedures')" to="/opd/workflow" @click="onNavigate">
+          <RouterLink v-if="canSee('opd.procedures')" to="/opd/procedures" @click="onNavigate">
             Procedures
           </RouterLink>
-          <RouterLink v-if="canSee('opd.followups')" to="/opd/workflow" @click="onNavigate">
+          <RouterLink v-if="canSee('opd.followups')" to="/opd/follow-ups" @click="onNavigate">
             Follow-ups
           </RouterLink>
         </div>
@@ -195,7 +195,7 @@
       </div>
 
       <!-- LAB -->
-      <div class="menu-group" v-if="showAdvancedDemoModules && canSee('lab')">
+      <div class="menu-group" v-if="canSee('lab')">
         <div class="menu-title" @click="toggle('lab')">
           Laboratory
           <span>{{ menuOpen.lab ? '▾' : '▸' }}</span>
@@ -232,7 +232,7 @@
       </div>
 
       <!-- PHARMACY -->
-      <div class="menu-group" v-if="showAdvancedDemoModules && canSee('pharmacy')">
+      <div class="menu-group" v-if="canSee('pharmacy')">
         <div class="menu-title" @click="toggle('pharmacy')">
           Pharmacy
           <span>{{ menuOpen.pharmacy ? '▾' : '▸' }}</span>
@@ -272,7 +272,7 @@
       </div>
 
       <!-- IPD -->
-      <div class="menu-group" v-if="showAdvancedDemoModules && canSee('ipd')">
+      <div class="menu-group" v-if="canSee('ipd')">
         <div class="menu-title" @click="toggle('ipd')">
           IPD / Inpatient
           <span>{{ menuOpen.ipd ? '▾' : '▸' }}</span>
@@ -293,7 +293,7 @@
       </div>
 
       <!-- INVENTORY -->
-      <div class="menu-group" v-if="showAdvancedDemoModules && canSee('inventory')">
+      <div class="menu-group" v-if="canSee('inventory')">
         <div class="menu-title" @click="toggle('inventory')">
           Inventory
           <span>{{ menuOpen.inventory ? '▾' : '▸' }}</span>
@@ -313,7 +313,7 @@
       </div>
 
       <!-- ANALYTICS -->
-      <div class="menu-group" v-if="showAdvancedDemoModules && canSee('analytics')">
+      <div class="menu-group" v-if="canSee('analytics')">
         <div class="menu-title" @click="toggle('analytics')">
           Analytics
           <span>{{ menuOpen.analytics ? '▾' : '▸' }}</span>
@@ -327,7 +327,7 @@
       </div>
 
       <!-- PATIENT ENGAGEMENT -->
-      <div class="menu-group" v-if="showAdvancedDemoModules && canSee('patientEngagement')">
+      <div class="menu-group" v-if="canSee('patientEngagement')">
         <div class="menu-title" @click="toggle('patientEngagement')">
           Patient Engagement
           <span>{{ menuOpen.patientEngagement ? '▾' : '▸' }}</span>
@@ -342,7 +342,7 @@
       </div>
 
       <!-- INTEROPERABILITY -->
-      <div class="menu-group" v-if="showAdvancedDemoModules && canSee('interoperability')">
+      <div class="menu-group" v-if="canSee('interoperability')">
         <div class="menu-title" @click="toggle('interoperability')">
           Interoperability
           <span>{{ menuOpen.interoperability ? '▾' : '▸' }}</span>
@@ -430,7 +430,6 @@ const emit = defineEmits<{ (e: 'close'): void }>()
 
 const auth = useAuthStore()
 const route = useRoute()
-const showAdvancedDemoModules = import.meta.env.VITE_SHOW_ADVANCED_DEMO_MODULES === 'true'
 
 /**
  * Rename accordion state to avoid collision with prop `open`

@@ -7,7 +7,6 @@
 
     <div class="main">
       <AppHeader @toggleSidebar="sidebarOpen = !sidebarOpen" />
-      <PlatformContextBar />
 
       <main class="content">
         <router-view :key="$route.name" />
@@ -24,7 +23,6 @@ import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import AppSidebar from '@/components/AppSidebar.vue'
 import AppHeader from '@/components/AppHeader.vue'
-import PlatformContextBar from '@/components/PlatformContextBar.vue'
 
 const sidebarOpen = ref(false)
 const route = useRoute()

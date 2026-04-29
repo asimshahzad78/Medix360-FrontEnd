@@ -4,11 +4,13 @@ import { useRouter } from 'vue-router'
 import { PaymentService } from './payment.service'
 import PaymentFormModal from './PaymentFormModal.vue'
 import type { PaymentApiItem } from './payment.types'
+import { getApiErrorMessage } from '@/services/api-response'
 
 const router = useRouter()
 
 const payments = ref<PaymentApiItem[]>([])
 const loading = ref(false)
+const loadError = ref('')
 const search = ref('')
 
 const page = ref(1)
@@ -22,10 +24,15 @@ const selectedPaymentId = ref<number | null>(null)
 // ---------------- LOAD LIST ----------------
 const loadPayments = async () => {
   loading.value = true
+  loadError.value = ''
   try {
     const res = await PaymentService.getPaged(page.value, pageSize.value, search.value)
-    payments.value = res.data.items
-    totalCount.value = res.data.totalCount
+    payments.value = res.items
+    totalCount.value = res.totalCount
+  } catch (error: unknown) {
+    payments.value = []
+    totalCount.value = 0
+    loadError.value = getApiErrorMessage(error, 'Could not load payments.')
   } finally {
     loading.value = false
   }
@@ -93,6 +100,10 @@ onMounted(loadPayments)
     <!-- LOADER -->
     <div v-if="loading" class="loader-overlay">
       <img src="/loader.gif" width="100" />
+    </div>
+
+    <div v-else-if="loadError" class="load-error">
+      {{ loadError }}
     </div>
 
     <!-- TABLE -->
@@ -332,6 +343,14 @@ onMounted(loadPayments)
 }
 
 /* ✅ mobile */
+.load-error {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  color: #9f1239;
+  padding: 14px 16px;
+}
+
 @media (max-width: 640px) {
   .payment-page {
     padding: 14px;

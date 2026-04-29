@@ -1,5 +1,6 @@
 import { api } from '@/services/api'
 import { unwrapApiData } from '@/services/api-response'
+import { getPlatformContext } from '@/services/systemContext'
 
 export type LookupKind =
   | 'medicine'
@@ -76,28 +77,28 @@ const lookupConfigs: Record<LookupKind, LookupConfig> = {
     priceKeys: ['price', 'Price', 'rate', 'Rate', 'amount', 'Amount'],
   },
   bed: {
-    endpoint: '/lookups/beds',
+    endpoint: '/inpatient/beds',
     labelKeys: ['label', 'Label', 'name', 'Name', 'bedName', 'BedName', 'bedNo', 'BedNo', 'bedNumber', 'BedNumber'],
     idKeys: ['id', 'Id', 'bedId', 'BedId'],
     codeKeys: ['code', 'Code', 'bedCode', 'BedCode'],
     descriptionKeys: ['wardName', 'WardName', 'status', 'Status'],
   },
   ward: {
-    endpoint: '/lookups/wards',
+    endpoint: '/platform/wards',
     labelKeys: ['label', 'Label', 'name', 'Name', 'wardName', 'WardName'],
     idKeys: ['id', 'Id', 'wardId', 'WardId'],
     codeKeys: ['code', 'Code', 'wardCode', 'WardCode'],
     descriptionKeys: ['department', 'Department', 'floor', 'Floor'],
   },
   store: {
-    endpoint: '/lookups/stores',
+    endpoint: '/inventory/stores',
     labelKeys: ['label', 'Label', 'name', 'Name', 'storeName', 'StoreName'],
     idKeys: ['id', 'Id', 'storeId', 'StoreId'],
     codeKeys: ['code', 'Code', 'storeCode', 'StoreCode'],
     descriptionKeys: ['facilityName', 'FacilityName', 'type', 'Type'],
   },
   counter: {
-    endpoint: '/lookups/counters',
+    endpoint: '/platform/counters',
     labelKeys: ['label', 'Label', 'name', 'Name', 'counterName', 'CounterName'],
     idKeys: ['id', 'Id', 'counterId', 'CounterId'],
     codeKeys: ['code', 'Code', 'counterCode', 'CounterCode'],
@@ -133,7 +134,7 @@ const lookupConfigs: Record<LookupKind, LookupConfig> = {
     feeKeys: ['fee', 'Fee', 'doctorFee', 'DoctorFee'],
   },
   facility: {
-    endpoint: '/lookups/facilities',
+    endpoint: '/platform/facilities',
     labelKeys: ['label', 'Label', 'name', 'Name', 'facilityName', 'FacilityName'],
     idKeys: ['id', 'Id', 'facilityId', 'FacilityId', 'propertyId', 'PropertyId'],
     codeKeys: ['code', 'Code', 'facilityCode', 'FacilityCode'],
@@ -154,7 +155,7 @@ const lookupConfigs: Record<LookupKind, LookupConfig> = {
     descriptionKeys: ['accountType', 'AccountType'],
   },
   paymentMode: {
-    endpoint: '/lookups/payment-modes',
+    endpoint: '/pharmacy/payments',
     labelKeys: ['label', 'Label', 'name', 'Name', 'mode', 'Mode'],
     idKeys: ['id', 'Id', 'code', 'Code', 'mode', 'Mode'],
     codeKeys: ['code', 'Code'],
@@ -244,6 +245,23 @@ const normalizeOption = (item: unknown, config: LookupConfig, index: number): Lo
 
 export const lookupService = {
   async search(kind: LookupKind, search = '', params: Record<string, unknown> = {}): Promise<LookupOption[]> {
+    if (kind === 'paymentMode') return staticPaymentModes
+
+    if (kind === 'facility') {
+      const context = getPlatformContext()
+      const facilityId = context.facilityId || context.propertyId
+
+      if (!facilityId) return []
+
+      return [
+        {
+          id: facilityId,
+          label: facilityId,
+          description: context.tenantId ? `Tenant ${context.tenantId}` : undefined,
+        },
+      ]
+    }
+
     const config = lookupConfigs[kind]
     const searchParam = config.searchParam ?? 'search'
     const requestParams = {
@@ -258,13 +276,10 @@ export const lookupService = {
       const payload = unwrapApiData<unknown>(response.data, response.data)
 
       const items = getItems(payload)
-      if (kind === 'paymentMode' && items.length === 0) return staticPaymentModes
-
       return items
         .map((item, index) => normalizeOption(item, config, index))
         .filter((item): item is LookupOption => item !== null)
     } catch (error) {
-      if (kind === 'paymentMode') return staticPaymentModes
       throw error
     }
   },

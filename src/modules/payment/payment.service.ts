@@ -1,4 +1,5 @@
 import { api } from '@/services/api'
+import { unwrapApiData } from '@/services/api-response'
 import type {
   PaymentApiItem,
   PaymentDetailResponse,
@@ -8,6 +9,7 @@ import type {
   PaymentItemCrudRaw,
   PaymentPrintResponse,
 } from './payment.types'
+import type { PagedResult } from '@/services/api-response'
 
 /* =========================
    RAW BACKEND RESPONSE TYPES
@@ -55,13 +57,38 @@ export const PaymentService = {
   /* =========================
      PAGED LIST
   ========================= */
-getPaged(page: number, pageSize: number, search?: string) {
-  return api.get<{
-    items: PaymentApiItem[]
-    totalCount: number
-  }>('/payments', {
+async getPaged(page: number, pageSize: number, search?: string): Promise<PagedResult<PaymentApiItem>> {
+  const { data } = await api.get('/payments', {
     params: { page, pageSize, search: search?.trim() || undefined },
   })
+
+  const result = unwrapApiData<PagedResult<PaymentApiItem>>(data, {
+    items: [],
+    pageNumber: page,
+    pageSize,
+    totalCount: 0,
+  })
+
+  return {
+    items: (result.items ?? []).map((payment) => ({
+      Id: payment.Id ?? payment.id ?? 0,
+      VisitId: payment.VisitId ?? payment.visitId ?? null,
+      PatientName: payment.PatientName ?? payment.patientName ?? '',
+      PatientType: payment.PatientType ?? payment.patientType ?? '',
+      Discount: payment.Discount ?? payment.discount ?? 0,
+      Tax: payment.Tax ?? payment.tax ?? 0,
+      SubTotal: payment.SubTotal ?? payment.subTotal ?? 0,
+      GrandTotal: payment.GrandTotal ?? payment.grandTotal ?? 0,
+      ModeOfPayment: payment.ModeOfPayment ?? payment.modeOfPayment ?? '',
+      CreatedDate: payment.CreatedDate ?? payment.createdDate ?? '',
+    })),
+    pageNumber: result.pageNumber ?? page,
+    pageSize: result.pageSize ?? pageSize,
+    totalCount: result.totalCount ?? 0,
+    totalPages: result.totalPages,
+    hasPreviousPage: result.hasPreviousPage,
+    hasNextPage: result.hasNextPage,
+  }
 },
 
   /* =========================

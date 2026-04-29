@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "6arVdw57+l8=",
+  "success": true,
+  "projectFilePath": "D:\\Dot Net Projects\\JSK\\hmis-ui\\tools\\dbdiag\\dbdiag.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Dell\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.2\\microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.2\\microsoft.extensions.logging.abstractions.8.0.2.nupkg.sha512",
+    "C:\\Users\\Dell\\.nuget\\packages\\npgsql\\9.0.3\\npgsql.9.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

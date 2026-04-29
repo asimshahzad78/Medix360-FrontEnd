@@ -28,6 +28,7 @@
     </div>
 
     <div v-if="loading" class="loader">Loading queue...</div>
+    <div v-else-if="loadError" class="load-error">{{ loadError }}</div>
 
     <div v-else class="queue-list">
       <article v-for="item in queue" :key="item.id" class="queue-card">
@@ -67,12 +68,14 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { checkupService, type CheckupListDto } from '@/modules/checkup/checkup.service'
 import { usePlatformContextStore } from '@/store/platform-context.store'
+import { getApiErrorMessage } from '@/services/api-response'
 
 const contextStore = usePlatformContextStore()
 
 const queue = ref<CheckupListDto[]>([])
 const search = ref('')
 const loading = ref(false)
+const loadError = ref('')
 const page = ref(1)
 const pageSize = ref(25)
 const totalCount = ref(0)
@@ -84,10 +87,15 @@ const endRecord = computed(() => Math.min(page.value * pageSize.value, totalCoun
 
 const loadQueue = async () => {
   loading.value = true
+  loadError.value = ''
   try {
     const result = await checkupService.getPaged(page.value, pageSize.value, search.value)
     queue.value = result.items
     totalCount.value = result.totalCount
+  } catch (error: unknown) {
+    queue.value = []
+    totalCount.value = 0
+    loadError.value = getApiErrorMessage(error, 'Could not load registration queue.')
   } finally {
     loading.value = false
   }
@@ -254,12 +262,18 @@ p {
 }
 
 .loader,
+.load-error,
 .empty {
   background: #fff;
   border-radius: 8px;
   color: #64748b;
   padding: 24px;
   text-align: center;
+}
+
+.load-error {
+  border: 1px solid #fecdd3;
+  color: #9f1239;
 }
 
 .table-footer {

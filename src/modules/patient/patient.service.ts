@@ -3,30 +3,55 @@ import { unwrapApiData, type PagedResult } from '@/services/api-response'
 
 export interface PatientApiDto {
   Id: number
+  id?: number
   Title: string
+  title?: string
   FirstName: string
+  firstName?: string
   LastName: string
+  lastName?: string
   Panel?: string
+  panel?: string
   Gender: string
+  gender?: string
   MaritalStatus: string
+  maritalStatus?: string
   SpouseName?: string
+  spouseName?: string
   Phone: string
+  phone?: string
   Age?: number
+  age?: number
   AgeUnit?: string
+  ageUnit?: string
   AgeDisplay?: string
+  ageDisplay?: string
   Email?: string
+  email?: string
   BloodGroup?: string
+  bloodGroup?: string
   FatherName?: string
+  fatherName?: string
   MotherName?: string
+  motherName?: string
   DateOfBirth?: string | null
+  dateOfBirth?: string | null
   RegistrationFee?: number | null
+  registrationFee?: number | null
   Address?: string
+  address?: string
   Country?: string
+  country?: string
   Agreement?: boolean | null
+  agreement?: boolean | null
   Remarks?: string
+  remarks?: string
   ProfilePicture?: string
+  profilePicture?: string
   UserType?: number | null
+  userType?: number | null
   RoleId?: number | null
+  roleId?: number | null
 }
 
 export interface PatientSaveDto {
@@ -92,6 +117,34 @@ const mapToApiPayload = (payload: PatientSaveDto) => ({
 
 const normalizePhone = (phone?: string) => phone?.replace(/\D/g, '') ?? ''
 
+export const normalizePatient = (patient: PatientApiDto): PatientApiDto => ({
+  Id: patient.Id ?? patient.id ?? 0,
+  Title: patient.Title ?? patient.title ?? '',
+  FirstName: patient.FirstName ?? patient.firstName ?? '',
+  LastName: patient.LastName ?? patient.lastName ?? '',
+  Panel: patient.Panel ?? patient.panel ?? '',
+  Gender: patient.Gender ?? patient.gender ?? '',
+  MaritalStatus: patient.MaritalStatus ?? patient.maritalStatus ?? '',
+  SpouseName: patient.SpouseName ?? patient.spouseName,
+  Phone: patient.Phone ?? patient.phone ?? '',
+  Age: patient.Age ?? patient.age,
+  AgeUnit: patient.AgeUnit ?? patient.ageUnit,
+  AgeDisplay: patient.AgeDisplay ?? patient.ageDisplay,
+  Email: patient.Email ?? patient.email,
+  BloodGroup: patient.BloodGroup ?? patient.bloodGroup,
+  FatherName: patient.FatherName ?? patient.fatherName,
+  MotherName: patient.MotherName ?? patient.motherName,
+  DateOfBirth: patient.DateOfBirth ?? patient.dateOfBirth,
+  RegistrationFee: patient.RegistrationFee ?? patient.registrationFee,
+  Address: patient.Address ?? patient.address,
+  Country: patient.Country ?? patient.country,
+  Agreement: patient.Agreement ?? patient.agreement,
+  Remarks: patient.Remarks ?? patient.remarks,
+  ProfilePicture: patient.ProfilePicture ?? patient.profilePicture,
+  UserType: patient.UserType ?? patient.userType,
+  RoleId: patient.RoleId ?? patient.roleId,
+})
+
 const toRequestBody = (payload: PatientSaveDto) => {
   const dto = mapToApiPayload(payload)
   if (!payload.profilePictureDetails) return dto
@@ -117,14 +170,14 @@ export const patientService = {
     return {
       ...emptyPaged<PatientApiDto>(page, pageSize),
       ...result,
-      items: result.items ?? [],
+      items: (result.items ?? []).map(normalizePatient),
       totalCount: result.totalCount ?? 0,
     }
   },
 
   async getById(id: number): Promise<PatientApiDto> {
     const { data } = await api.get(`/patients/${id}`)
-    return unwrapApiData<PatientApiDto>(data, data as PatientApiDto)
+    return normalizePatient(unwrapApiData<PatientApiDto>(data, data as PatientApiDto))
   },
 
   async create(payload: PatientSaveDto): Promise<void> {
@@ -164,7 +217,7 @@ export const patientService = {
       params: { term },
     })
 
-    return unwrapApiData<PatientApiDto[]>(data, [])
+    return unwrapApiData<PatientApiDto[]>(data, []).map(normalizePatient)
   },
 
   async findDuplicates(payload: Pick<PatientSaveDto, 'firstName' | 'phone'>): Promise<PatientApiDto[]> {

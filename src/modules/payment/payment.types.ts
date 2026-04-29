@@ -23,15 +23,25 @@ export interface PaymentListFilter {
 
 export interface PaymentApiItem {
   Id: number
+  id?: number
   VisitId: string | null
+  visitId?: string | null
   PatientName: string
+  patientName?: string
   PatientType: string
+  patientType?: string
   Discount: number
+  discount?: number
   Tax: number
+  tax?: number
   SubTotal: number
+  subTotal?: number
   GrandTotal: number
-  ModeOfPayment:  string
+  grandTotal?: number
+  ModeOfPayment: string
+  modeOfPayment?: string
   CreatedDate: string
+  createdDate?: string
 }
 
 export interface PaymentListItem {

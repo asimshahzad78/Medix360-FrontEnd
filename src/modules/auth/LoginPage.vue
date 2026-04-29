@@ -58,11 +58,31 @@ import type { AuthUser } from '@/store/auth.store'
 type LoginResponse = {
   ModelObject?: {
     token?: string
-    user?: AuthUser
+    user?: LoginResponseUser
     permissions?: string[]
+    tenantId?: string
+    propertyId?: string
+    facilityId?: string
+  }
+  modelObject?: {
+    token?: string
+    user?: LoginResponseUser
+    permissions?: string[]
+    tenantId?: string
+    propertyId?: string
+    facilityId?: string
   }
   AlertMessage?: string
   alertMessage?: string
+}
+
+type LoginResponseUser = Partial<AuthUser> & {
+  id?: string
+  email?: string
+  jobRoleId?: number
+  tenantId?: string
+  facilityId?: string
+  propertyId?: string
 }
 
 const router = useRouter()
@@ -83,14 +103,24 @@ const submit = async () => {
   try {
     const res = await authService.login(form)
     const data = res.data as LoginResponse
+    const modelObject = data.ModelObject ?? data.modelObject
 
-    const token = data.ModelObject?.token ?? ''
-    const user = data.ModelObject?.user ?? null
-    const permissions = data.ModelObject?.permissions ?? []
+    const token = modelObject?.token ?? ''
+    const responseUser = modelObject?.user ?? null
+    const permissions = modelObject?.permissions ?? []
 
-    if (!token || !user) {
+    if (!token || !responseUser) {
       errorMessage.value = data.AlertMessage ?? data.alertMessage ?? 'Login failed'
       return
+    }
+
+    const user: AuthUser = {
+      Id: responseUser.Id ?? responseUser.id ?? '',
+      Email: responseUser.Email ?? responseUser.email ?? form.email,
+      JobRoleId: responseUser.JobRoleId ?? responseUser.jobRoleId ?? 0,
+      TenantId: responseUser.TenantId ?? responseUser.tenantId ?? modelObject?.tenantId,
+      FacilityId: responseUser.FacilityId ?? responseUser.facilityId ?? modelObject?.facilityId,
+      PropertyId: responseUser.PropertyId ?? responseUser.propertyId ?? modelObject?.propertyId,
     }
 
     authStore.setAuth(token, user, permissions)
@@ -101,7 +131,7 @@ const submit = async () => {
     })
 
     await Promise.resolve()
-    router.push('/dashboard')
+    await router.push('/dashboard')
   } catch (error: unknown) {
     errorMessage.value = getApiErrorMessage(error, 'Invalid email or password')
   }

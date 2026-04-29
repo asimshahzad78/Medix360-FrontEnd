@@ -344,6 +344,8 @@ export default defineComponent({
             firstName: form.firstName,
             phone: form.phone,
           })
+        } catch {
+          duplicateMatches.value = []
         } finally {
           duplicateLoading.value = false
         }

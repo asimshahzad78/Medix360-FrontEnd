@@ -14,6 +14,11 @@ const corePermissionRoutes = [
   '/patients/queue',
   '/checkups',
   '/opd/workflow',
+  '/opd/prescriptions',
+  '/opd/diagnosis',
+  '/opd/vital-signs',
+  '/opd/procedures',
+  '/opd/follow-ups',
   '/payments',
   '/finance/counter-closing',
   '/finance/chartofaccounts',
@@ -28,7 +33,7 @@ const corePermissionRoutes = [
   '/admin/observability',
 ]
 
-const hiddenAdvancedRoutes = [
+const advancedRoutes = [
   '/pharmacy/dispensing',
   '/diagnostics/orders',
   '/ipd/admissions',
@@ -57,22 +62,21 @@ for (const routeModule of [
   'employeeRoutes',
   'auditRoutes',
   'observabilityRoutes',
+  'enterpriseRoutes',
 ]) {
   if (!router.includes(`...${routeModule}`)) failures.push(`Router does not mount ${routeModule}`)
 }
 
-if (!sidebar.includes('VITE_SHOW_ADVANCED_DEMO_MODULES')) {
-  failures.push('Sidebar does not gate advanced demo modules')
+for (const route of advancedRoutes) {
+  if (!permissions.includes(`'${route}'`) && !permissions.includes(`"${route}"`)) {
+    failures.push(`Missing advanced permission mapping for ${route}`)
+  }
+
+  if (!sidebar.includes(route)) failures.push(`Sidebar does not expose advanced route ${route}`)
 }
 
-for (const route of hiddenAdvancedRoutes) {
-  const routeIndex = sidebar.indexOf(route)
-  if (routeIndex === -1) continue
-
-  const nearby = sidebar.slice(Math.max(0, routeIndex - 900), routeIndex)
-  if (!nearby.includes('showAdvancedDemoModules')) {
-    failures.push(`Advanced route is visible without demo gate: ${route}`)
-  }
+if (sidebar.includes('VITE_SHOW_ADVANCED_DEMO_MODULES')) {
+  failures.push('Sidebar still hides advanced modules behind the demo flag')
 }
 
 if (/[Ãâ�]/.test(sidebar)) {
@@ -85,4 +89,4 @@ if (failures.length > 0) {
   process.exit(1)
 }
 
-console.log(`Route smoke passed for ${corePermissionRoutes.length} core routes.`)
+console.log(`Route smoke passed for ${corePermissionRoutes.length} core routes and ${advancedRoutes.length} advanced routes.`)

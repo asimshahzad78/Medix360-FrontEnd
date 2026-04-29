@@ -5,15 +5,24 @@ import { unwrapApiData } from '@/services/api-response'
    API DTO (PascalCase)
 ========================= */
 export interface CheckupApiDto {
-  Id: number
-  VisitId: string
-  SerialNo: number
-  PatientName: string
-  DoctorName: string
-  Symptoms: string
-  Diagnosis: string
-  Advice: string
-  CheckupDate: string
+  Id?: number
+  id?: number
+  VisitId?: string
+  visitId?: string
+  SerialNo?: number
+  serialNo?: number
+  PatientName?: string
+  patientName?: string
+  DoctorName?: string
+  doctorName?: string
+  Symptoms?: string
+  symptoms?: string
+  Diagnosis?: string
+  diagnosis?: string
+  Advice?: string
+  advice?: string
+  CheckupDate?: string
+  checkupDate?: string
 }
 
 /* =========================
@@ -109,15 +118,15 @@ export interface PagedResult<T> {
    Mapper
 ========================= */
 const mapCheckup = (c: CheckupApiDto): CheckupListDto => ({
-  id: c.Id,
-  visitId: c.VisitId,
-  serialNo: c.SerialNo,
-  patientName: c.PatientName,
-  doctorName: c.DoctorName,
-  symptoms: c.Symptoms,
-  diagnosis: c.Diagnosis,
-  advice: c.Advice,
-  checkupDate: c.CheckupDate,
+  id: c.Id ?? c.id ?? 0,
+  visitId: c.VisitId ?? c.visitId ?? '',
+  serialNo: c.SerialNo ?? c.serialNo ?? 0,
+  patientName: c.PatientName ?? c.patientName ?? '',
+  doctorName: c.DoctorName ?? c.doctorName ?? '',
+  symptoms: c.Symptoms ?? c.symptoms ?? '',
+  diagnosis: c.Diagnosis ?? c.diagnosis ?? '',
+  advice: c.Advice ?? c.advice ?? '',
+  checkupDate: c.CheckupDate ?? c.checkupDate ?? '',
 })
 
 /* =========================
