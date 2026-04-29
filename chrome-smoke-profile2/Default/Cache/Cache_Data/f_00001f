@@ -1,0 +1,271 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/modules/auth/LoginPage.vue");/* Injection by vite-plugin-vue-inspector Start */
+import { createElementVNode as __createElementVNode,createElementBlock as __createElementBlock,createVNode as __createVNode } from "/node_modules/.vite/deps/vue.js?v=6936ed99"
+function _interopVNode(vnode) {
+  if (vnode && vnode.props && 'data-v-inspector' in vnode.props) {
+    const data = vnode.props['data-v-inspector']
+    delete vnode.props['data-v-inspector']
+    Object.defineProperty(vnode.props, '__v_inspector', { value: data, enumerable: false })
+  }
+  return vnode
+}
+function _createElementVNode(...args) { return _interopVNode(__createElementVNode(...args)) }
+function _createElementBlock(...args) { return _interopVNode(__createElementBlock(...args)) }
+function _createVNode(...args) { return _interopVNode(__createVNode(...args)) }
+/* Injection by vite-plugin-vue-inspector End */
+import { defineComponent as _defineComponent } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+import { reactive, ref } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+import { useRouter } from "/node_modules/.vite/deps/vue-router.js?v=6936ed99";
+import { authService } from "/src/modules/auth/auth.service.ts";
+import { useAuthStore } from "/src/store/auth.store.ts";
+import { usePlatformContextStore } from "/src/store/platform-context.store.ts";
+import { getApiErrorMessage } from "/src/services/api-response.ts";
+const _sfc_main = /* @__PURE__ */ _defineComponent({
+  __name: "LoginPage",
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const router = useRouter();
+    const authStore = useAuthStore();
+    const platformContext = usePlatformContextStore();
+    const errorMessage = ref("");
+    const form = reactive({
+      email: "",
+      password: "",
+      rememberMe: false
+    });
+    const submit = async () => {
+      errorMessage.value = "";
+      try {
+        const res = await authService.login(form);
+        const data = res.data;
+        const token = data.ModelObject?.token ?? "";
+        const user = data.ModelObject?.user ?? null;
+        const permissions = data.ModelObject?.permissions ?? [];
+        if (!token || !user) {
+          errorMessage.value = data.AlertMessage ?? data.alertMessage ?? "Login failed";
+          return;
+        }
+        authStore.setAuth(token, user, permissions);
+        platformContext.update({
+          tenantId: user.TenantId,
+          facilityId: user.FacilityId ?? user.PropertyId,
+          propertyId: user.PropertyId ?? user.FacilityId
+        });
+        await Promise.resolve();
+        router.push("/dashboard");
+      } catch (error) {
+        errorMessage.value = getApiErrorMessage(error, "Invalid email or password");
+      }
+    };
+    const __returned__ = { router, authStore, platformContext, errorMessage, form, submit };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+import { createCommentVNode as _createCommentVNode,  toDisplayString as _toDisplayString, openBlock as _openBlock,  vModelText as _vModelText, withDirectives as _withDirectives, vModelCheckbox as _vModelCheckbox, createTextVNode as _createTextVNode, resolveComponent as _resolveComponent, withCtx as _withCtx,  withModifiers as _withModifiers } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+const _hoisted_1 = {
+  class: "login-wrapper",
+  "data-v-inspector": "src/modules/auth/LoginPage.vue:2:3"
+};
+const _hoisted_2 = {
+  class: "login-card",
+  "data-v-inspector": "src/modules/auth/LoginPage.vue:3:5"
+};
+const _hoisted_3 = {
+  class: "login-body",
+  "data-v-inspector": "src/modules/auth/LoginPage.vue:11:7"
+};
+const _hoisted_4 = {
+  key: 0,
+  class: "alert",
+  "data-v-inspector": "src/modules/auth/LoginPage.vue:12:9"
+};
+const _hoisted_5 = {
+  class: "field",
+  "data-v-inspector": "src/modules/auth/LoginPage.vue:17:11"
+};
+const _hoisted_6 = {
+  class: "field",
+  "data-v-inspector": "src/modules/auth/LoginPage.vue:22:11"
+};
+const _hoisted_7 = {
+  class: "remember",
+  "data-v-inspector": "src/modules/auth/LoginPage.vue:27:11"
+};
+const _hoisted_8 = {
+  class: "forgot",
+  "data-v-inspector": "src/modules/auth/LoginPage.vue:34:11"
+};
+const _hoisted_9 = {
+  class: "login-footer",
+  "data-v-inspector": "src/modules/auth/LoginPage.vue:42:5"
+};
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_router_link = _resolveComponent("router-link");
+  return _openBlock(), _createElementBlock("div", _hoisted_1, [
+    _createElementVNode("div", _hoisted_2, [
+      _createCommentVNode(" Header "),
+      _cache[8] || (_cache[8] = _createElementVNode(
+        "div",
+        {
+          class: "login-header",
+          "data-v-inspector": "src/modules/auth/LoginPage.vue:5:7"
+        },
+        [
+          _createElementVNode("h2", { "data-v-inspector": "src/modules/auth/LoginPage.vue:6:9" }, "Medix360"),
+          _createElementVNode("p", { "data-v-inspector": "src/modules/auth/LoginPage.vue:7:9" }, "Powering Healthcare Operations")
+        ],
+        -1
+        /* CACHED */
+      )),
+      _createCommentVNode(" Body "),
+      _createElementVNode("div", _hoisted_3, [
+        $setup.errorMessage ? (_openBlock(), _createElementBlock(
+          "div",
+          _hoisted_4,
+          _toDisplayString($setup.errorMessage),
+          1
+          /* TEXT */
+        )) : _createCommentVNode("v-if", true),
+        _createElementVNode(
+          "form",
+          {
+            onSubmit: _withModifiers($setup.submit, ["prevent"]),
+            "data-v-inspector": "src/modules/auth/LoginPage.vue:16:9"
+          },
+          [
+            _createElementVNode("div", _hoisted_5, [
+              _cache[3] || (_cache[3] = _createElementVNode(
+                "label",
+                { "data-v-inspector": "src/modules/auth/LoginPage.vue:18:13" },
+                "Email",
+                -1
+                /* CACHED */
+              )),
+              _withDirectives(_createElementVNode(
+                "input",
+                {
+                  "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.form.email = $event),
+                  type: "email",
+                  placeholder: "admin@gmail.com",
+                  required: "",
+                  "data-v-inspector": "src/modules/auth/LoginPage.vue:19:13"
+                },
+                null,
+                512
+                /* NEED_PATCH */
+              ), [
+                [_vModelText, $setup.form.email]
+              ])
+            ]),
+            _createElementVNode("div", _hoisted_6, [
+              _cache[4] || (_cache[4] = _createElementVNode(
+                "label",
+                { "data-v-inspector": "src/modules/auth/LoginPage.vue:23:13" },
+                "Password",
+                -1
+                /* CACHED */
+              )),
+              _withDirectives(_createElementVNode(
+                "input",
+                {
+                  "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $setup.form.password = $event),
+                  type: "password",
+                  placeholder: "Password",
+                  required: "",
+                  "data-v-inspector": "src/modules/auth/LoginPage.vue:24:13"
+                },
+                null,
+                512
+                /* NEED_PATCH */
+              ), [
+                [_vModelText, $setup.form.password]
+              ])
+            ]),
+            _createElementVNode("div", _hoisted_7, [
+              _withDirectives(_createElementVNode(
+                "input",
+                {
+                  type: "checkbox",
+                  "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $setup.form.rememberMe = $event),
+                  id: "remember",
+                  "data-v-inspector": "src/modules/auth/LoginPage.vue:28:13"
+                },
+                null,
+                512
+                /* NEED_PATCH */
+              ), [
+                [_vModelCheckbox, $setup.form.rememberMe]
+              ]),
+              _cache[5] || (_cache[5] = _createElementVNode(
+                "label",
+                {
+                  for: "remember",
+                  "data-v-inspector": "src/modules/auth/LoginPage.vue:29:13"
+                },
+                "Remember me",
+                -1
+                /* CACHED */
+              ))
+            ]),
+            _cache[7] || (_cache[7] = _createElementVNode(
+              "button",
+              {
+                class: "login-btn",
+                type: "submit",
+                "data-v-inspector": "src/modules/auth/LoginPage.vue:32:11"
+              },
+              "Log In",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode("div", _hoisted_8, [
+              _createVNode(_component_router_link, {
+                to: "/forgot-password",
+                "data-v-inspector": "src/modules/auth/LoginPage.vue:35:13"
+              }, {
+                default: _withCtx(() => [..._cache[6] || (_cache[6] = [
+                  _createTextVNode(
+                    " Forgot your password? ",
+                    -1
+                    /* CACHED */
+                  )
+                ])]),
+                _: 1
+                /* STABLE */
+              })
+            ])
+          ],
+          32
+          /* NEED_HYDRATION */
+        )
+      ])
+    ]),
+    _createCommentVNode(" Footer "),
+    _createElementVNode(
+      "footer",
+      _hoisted_9,
+      " (c) " + _toDisplayString((/* @__PURE__ */ new Date()).getFullYear()) + " Aswad Information Systems ",
+      1
+      /* TEXT */
+    )
+  ]);
+}
+import "/src/modules/auth/LoginPage.vue?vue&type=style&index=0&scoped=c70297fb&lang.css";
+_sfc_main.__hmrId = "c70297fb";
+typeof __VUE_HMR_RUNTIME__ !== "undefined" && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main);
+import.meta.hot.on("file-changed", ({ file }) => {
+  __VUE_HMR_RUNTIME__.CHANGED_FILE = file;
+});
+import.meta.hot.accept((mod) => {
+  if (!mod) return;
+  const { default: updated, _rerender_only } = mod;
+  if (_rerender_only) {
+    __VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render);
+  } else {
+    __VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated);
+  }
+});
+import _export_sfc from "/@id/__x00__plugin-vue:export-helper";
+export default /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-c70297fb"], ["__file", "D:/Dot Net Projects/JSK/hmis-ui/src/modules/auth/LoginPage.vue"]]);
+
+//# sourceMappingURL=data:application/json;base64,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ZUxpc3QiOltdLCJzb3VyY2VzIjpbIkxvZ2luUGFnZS52dWUiXSwic291cmNlc0NvbnRlbnQiOlsiPHRlbXBsYXRlPlxuICA8ZGl2IGNsYXNzPVwibG9naW4td3JhcHBlclwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9hdXRoL0xvZ2luUGFnZS52dWU6MjozXCI+XG4gICAgPGRpdiBjbGFzcz1cImxvZ2luLWNhcmRcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvYXV0aC9Mb2dpblBhZ2UudnVlOjM6NVwiPlxuICAgICAgPCEtLSBIZWFkZXIgLS0+XG4gICAgICA8ZGl2IGNsYXNzPVwibG9naW4taGVhZGVyXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL2F1dGgvTG9naW5QYWdlLnZ1ZTo1OjdcIj5cbiAgICAgICAgPGgyIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9hdXRoL0xvZ2luUGFnZS52dWU6Njo5XCI+TWVkaXgzNjA8L2gyPlxuICAgICAgICA8cCBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvYXV0aC9Mb2dpblBhZ2UudnVlOjc6OVwiPlBvd2VyaW5nIEhlYWx0aGNhcmUgT3BlcmF0aW9uczwvcD5cbiAgICAgIDwvZGl2PlxuXG4gICAgICA8IS0tIEJvZHkgLS0+XG4gICAgICA8ZGl2IGNsYXNzPVwibG9naW4tYm9keVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9hdXRoL0xvZ2luUGFnZS52dWU6MTE6N1wiPlxuICAgICAgICA8ZGl2IHYtaWY9XCJlcnJvck1lc3NhZ2VcIiBjbGFzcz1cImFsZXJ0XCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL2F1dGgvTG9naW5QYWdlLnZ1ZToxMjo5XCI+XG4gICAgICAgICAge3sgZXJyb3JNZXNzYWdlIH19XG4gICAgICAgIDwvZGl2PlxuXG4gICAgICAgIDxmb3JtIEBzdWJtaXQucHJldmVudD1cInN1Ym1pdFwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9hdXRoL0xvZ2luUGFnZS52dWU6MTY6OVwiPlxuICAgICAgICAgIDxkaXYgY2xhc3M9XCJmaWVsZFwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9hdXRoL0xvZ2luUGFnZS52dWU6MTc6MTFcIj5cbiAgICAgICAgICAgIDxsYWJlbCBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvYXV0aC9Mb2dpblBhZ2UudnVlOjE4OjEzXCI+RW1haWw8L2xhYmVsPlxuICAgICAgICAgICAgPGlucHV0IHYtbW9kZWw9XCJmb3JtLmVtYWlsXCIgdHlwZT1cImVtYWlsXCIgcGxhY2Vob2xkZXI9XCJhZG1pbkBnbWFpbC5jb21cIiByZXF1aXJlZCBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvYXV0aC9Mb2dpblBhZ2UudnVlOjE5OjEzXCIgLz5cbiAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgIDxkaXYgY2xhc3M9XCJmaWVsZFwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9hdXRoL0xvZ2luUGFnZS52dWU6MjI6MTFcIj5cbiAgICAgICAgICAgIDxsYWJlbCBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvYXV0aC9Mb2dpblBhZ2UudnVlOjIzOjEzXCI+UGFzc3dvcmQ8L2xhYmVsPlxuICAgICAgICAgICAgPGlucHV0IHYtbW9kZWw9XCJmb3JtLnBhc3N3b3JkXCIgdHlwZT1cInBhc3N3b3JkXCIgcGxhY2Vob2xkZXI9XCJQYXNzd29yZFwiIHJlcXVpcmVkIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9hdXRoL0xvZ2luUGFnZS52dWU6MjQ6MTNcIiAvPlxuICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgPGRpdiBjbGFzcz1cInJlbWVtYmVyXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL2F1dGgvTG9naW5QYWdlLnZ1ZToyNzoxMVwiPlxuICAgICAgICAgICAgPGlucHV0IHR5cGU9XCJjaGVja2JveFwiIHYtbW9kZWw9XCJmb3JtLnJlbWVtYmVyTWVcIiBpZD1cInJlbWVtYmVyXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL2F1dGgvTG9naW5QYWdlLnZ1ZToyODoxM1wiIC8+XG4gICAgICAgICAgICA8bGFiZWwgZm9yPVwicmVtZW1iZXJcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvYXV0aC9Mb2dpblBhZ2UudnVlOjI5OjEzXCI+UmVtZW1iZXIgbWU8L2xhYmVsPlxuICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgPGJ1dHRvbiBjbGFzcz1cImxvZ2luLWJ0blwiIHR5cGU9XCJzdWJtaXRcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvYXV0aC9Mb2dpblBhZ2UudnVlOjMyOjExXCI+TG9nIEluPC9idXR0b24+XG5cbiAgICAgICAgICA8ZGl2IGNsYXNzPVwiZm9yZ290XCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL2F1dGgvTG9naW5QYWdlLnZ1ZTozNDoxMVwiPlxuICAgICAgICAgICAgPHJvdXRlci1saW5rIHRvPVwiL2ZvcmdvdC1wYXNzd29yZFwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9hdXRoL0xvZ2luUGFnZS52dWU6MzU6MTNcIj4gRm9yZ290IHlvdXIgcGFzc3dvcmQ/IDwvcm91dGVyLWxpbms+XG4gICAgICAgICAgPC9kaXY+XG4gICAgICAgIDwvZm9ybT5cbiAgICAgIDwvZGl2PlxuICAgIDwvZGl2PlxuXG4gICAgPCEtLSBGb290ZXIgLS0+XG4gICAgPGZvb3RlciBjbGFzcz1cImxvZ2luLWZvb3RlclwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9hdXRoL0xvZ2luUGFnZS52dWU6NDI6NVwiPlxuICAgICAgKGMpIHt7IG5ldyBEYXRlKCkuZ2V0RnVsbFllYXIoKSB9fSBBc3dhZCBJbmZvcm1hdGlvbiBTeXN0ZW1zXG4gICAgPC9mb290ZXI+XG4gIDwvZGl2PlxuPC90ZW1wbGF0ZT5cblxuPHNjcmlwdCBzZXR1cCBsYW5nPVwidHNcIj5cbmltcG9ydCB7IHJlYWN0aXZlLCByZWYgfSBmcm9tICd2dWUnXG5pbXBvcnQgeyB1c2VSb3V0ZXIgfSBmcm9tICd2dWUtcm91dGVyJ1xuaW1wb3J0IHsgYXV0aFNlcnZpY2UgfSBmcm9tICcuL2F1dGguc2VydmljZSdcbmltcG9ydCB7IHVzZUF1dGhTdG9yZSB9IGZyb20gJ0Avc3RvcmUvYXV0aC5zdG9yZSdcbmltcG9ydCB7IHVzZVBsYXRmb3JtQ29udGV4dFN0b3JlIH0gZnJvbSAnQC9zdG9yZS9wbGF0Zm9ybS1jb250ZXh0LnN0b3JlJ1xuaW1wb3J0IHsgZ2V0QXBpRXJyb3JNZXNzYWdlIH0gZnJvbSAnQC9zZXJ2aWNlcy9hcGktcmVzcG9uc2UnXG5pbXBvcnQgdHlwZSB7IExvZ2luVk0gfSBmcm9tICcuL2F1dGgudHlwZXMnXG5pbXBvcnQgdHlwZSB7IEF1dGhVc2VyIH0gZnJvbSAnQC9zdG9yZS9hdXRoLnN0b3JlJ1xuXG50eXBlIExvZ2luUmVzcG9uc2UgPSB7XG4gIE1vZGVsT2JqZWN0Pzoge1xuICAgIHRva2VuPzogc3RyaW5nXG4gICAgdXNlcj86IEF1dGhVc2VyXG4gICAgcGVybWlzc2lvbnM/OiBzdHJpbmdbXVxuICB9XG4gIEFsZXJ0TWVzc2FnZT86IHN0cmluZ1xuICBhbGVydE1lc3NhZ2U/OiBzdHJpbmdcbn1cblxuY29uc3Qgcm91dGVyID0gdXNlUm91dGVyKClcbmNvbnN0IGF1dGhTdG9yZSA9IHVzZUF1dGhTdG9yZSgpXG5jb25zdCBwbGF0Zm9ybUNvbnRleHQgPSB1c2VQbGF0Zm9ybUNvbnRleHRTdG9yZSgpXG5cbmNvbnN0IGVycm9yTWVzc2FnZSA9IHJlZignJylcblxuY29uc3QgZm9ybSA9IHJlYWN0aXZlPExvZ2luVk0+KHtcbiAgZW1haWw6ICcnLFxuICBwYXNzd29yZDogJycsXG4gIHJlbWVtYmVyTWU6IGZhbHNlLFxufSlcblxuY29uc3Qgc3VibWl0ID0gYXN5bmMgKCkgPT4ge1xuICBlcnJvck1lc3NhZ2UudmFsdWUgPSAnJ1xuXG4gIHRyeSB7XG4gICAgY29uc3QgcmVzID0gYXdhaXQgYXV0aFNlcnZpY2UubG9naW4oZm9ybSlcbiAgICBjb25zdCBkYXRhID0gcmVzLmRhdGEgYXMgTG9naW5SZXNwb25zZVxuXG4gICAgY29uc3QgdG9rZW4gPSBkYXRhLk1vZGVsT2JqZWN0Py50b2tlbiA/PyAnJ1xuICAgIGNvbnN0IHVzZXIgPSBkYXRhLk1vZGVsT2JqZWN0Py51c2VyID8/IG51bGxcbiAgICBjb25zdCBwZXJtaXNzaW9ucyA9IGRhdGEuTW9kZWxPYmplY3Q/LnBlcm1pc3Npb25zID8/IFtdXG5cbiAgICBpZiAoIXRva2VuIHx8ICF1c2VyKSB7XG4gICAgICBlcnJvck1lc3NhZ2UudmFsdWUgPSBkYXRhLkFsZXJ0TWVzc2FnZSA/PyBkYXRhLmFsZXJ0TWVzc2FnZSA/PyAnTG9naW4gZmFpbGVkJ1xuICAgICAgcmV0dXJuXG4gICAgfVxuXG4gICAgYXV0aFN0b3JlLnNldEF1dGgodG9rZW4sIHVzZXIsIHBlcm1pc3Npb25zKVxuICAgIHBsYXRmb3JtQ29udGV4dC51cGRhdGUoe1xuICAgICAgdGVuYW50SWQ6IHVzZXIuVGVuYW50SWQsXG4gICAgICBmYWNpbGl0eUlkOiB1c2VyLkZhY2lsaXR5SWQgPz8gdXNlci5Qcm9wZXJ0eUlkLFxuICAgICAgcHJvcGVydHlJZDogdXNlci5Qcm9wZXJ0eUlkID8/IHVzZXIuRmFjaWxpdHlJZCxcbiAgICB9KVxuXG4gICAgYXdhaXQgUHJvbWlzZS5yZXNvbHZlKClcbiAgICByb3V0ZXIucHVzaCgnL2Rhc2hib2FyZCcpXG4gIH0gY2F0Y2ggKGVycm9yOiB1bmtub3duKSB7XG4gICAgZXJyb3JNZXNzYWdlLnZhbHVlID0gZ2V0QXBpRXJyb3JNZXNzYWdlKGVycm9yLCAnSW52YWxpZCBlbWFpbCBvciBwYXNzd29yZCcpXG4gIH1cbn1cbjwvc2NyaXB0PlxuXG48c3R5bGUgc2NvcGVkPlxuLmxvZ2luLXdyYXBwZXIge1xuICBtaW4taGVpZ2h0OiAxMDB2aDtcbiAgYmFja2dyb3VuZDogI2Y1ZjdmYjtcbiAgZGlzcGxheTogZmxleDtcbiAgZmxleC1kaXJlY3Rpb246IGNvbHVtbjtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbiAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7XG59XG5cbi5sb2dpbi1jYXJkIHtcbiAgd2lkdGg6IDEwMCU7XG4gIG1heC13aWR0aDogNDIwcHg7XG4gIGJhY2tncm91bmQ6IHdoaXRlO1xuICBib3JkZXItcmFkaXVzOiAxNnB4O1xuICBvdmVyZmxvdzogaGlkZGVuO1xuICBib3gtc2hhZG93OiAwIDIwcHggNDBweCByZ2JhKDAsIDAsIDAsIDAuMDgpO1xufVxuXG4ubG9naW4taGVhZGVyIHtcbiAgYmFja2dyb3VuZDogbGluZWFyLWdyYWRpZW50KDEzNWRlZywgIzE2YTM0YSwgIzIyYzU1ZSk7XG4gIGNvbG9yOiB3aGl0ZTtcbiAgcGFkZGluZzogMzJweDtcbn1cblxuLmxvZ2luLWhlYWRlciBoMiB7XG4gIG1hcmdpbjogMDtcbiAgZm9udC1zaXplOiAyNnB4O1xufVxuXG4ubG9naW4taGVhZGVyIHAge1xuICBtYXJnaW4tdG9wOiA2cHg7XG4gIG9wYWNpdHk6IDAuOTtcbiAgZm9udC1zaXplOiAxNHB4O1xufVxuXG4ubG9naW4tYm9keSB7XG4gIHBhZGRpbmc6IDI4cHg7XG59XG5cbi5hbGVydCB7XG4gIGJhY2tncm91bmQ6ICNmZWUyZTI7XG4gIGNvbG9yOiAjOTkxYjFiO1xuICBwYWRkaW5nOiAxMHB4O1xuICBib3JkZXItcmFkaXVzOiA4cHg7XG4gIG1hcmdpbi1ib3R0b206IDE2cHg7XG4gIGZvbnQtc2l6ZTogMTRweDtcbn1cblxuLmZpZWxkIHtcbiAgZGlzcGxheTogZmxleDtcbiAgZmxleC1kaXJlY3Rpb246IGNvbHVtbjtcbiAgbWFyZ2luLWJvdHRvbTogMTZweDtcbn1cblxuLmZpZWxkIGxhYmVsIHtcbiAgZm9udC1zaXplOiAxM3B4O1xuICBjb2xvcjogIzM3NDE1MTtcbiAgbWFyZ2luLWJvdHRvbTogNnB4O1xufVxuXG4uZmllbGQgaW5wdXQge1xuICBwYWRkaW5nOiAxMHB4IDEycHg7XG4gIGJvcmRlci1yYWRpdXM6IDhweDtcbiAgYm9yZGVyOiAxcHggc29saWQgI2QxZDVkYjtcbiAgZm9udC1zaXplOiAxNHB4O1xufVxuXG4uZmllbGQgaW5wdXQ6Zm9jdXMge1xuICBvdXRsaW5lOiBub25lO1xuICBib3JkZXItY29sb3I6ICMxNmEzNGE7XG59XG5cbi5yZW1lbWJlciB7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XG4gIGdhcDogOHB4O1xuICBmb250LXNpemU6IDEzcHg7XG4gIG1hcmdpbi1ib3R0b206IDIwcHg7XG59XG5cbi5sb2dpbi1idG4ge1xuICB3aWR0aDogMTAwJTtcbiAgYmFja2dyb3VuZDogIzE2YTM0YTtcbiAgY29sb3I6IHdoaXRlO1xuICBwYWRkaW5nOiAxMnB4O1xuICBib3JkZXItcmFkaXVzOiAxMHB4O1xuICBib3JkZXI6IG5vbmU7XG4gIGZvbnQtc2l6ZTogMTVweDtcbiAgZm9udC13ZWlnaHQ6IDYwMDtcbiAgY3Vyc29yOiBwb2ludGVyO1xufVxuXG4ubG9naW4tYnRuOmhvdmVyIHtcbiAgYmFja2dyb3VuZDogIzE1ODAzZDtcbn1cblxuLmZvcmdvdCB7XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgbWFyZ2luLXRvcDogMTZweDtcbn1cblxuLmZvcmdvdCBhIHtcbiAgZm9udC1zaXplOiAxM3B4O1xuICBjb2xvcjogIzE2YTM0YTtcbiAgdGV4dC1kZWNvcmF0aW9uOiBub25lO1xufVxuXG4ubG9naW4tZm9vdGVyIHtcbiAgbWFyZ2luLXRvcDogMjRweDtcbiAgZm9udC1zaXplOiAxM3B4O1xuICBjb2xvcjogIzZiNzI4MDtcbn1cbjwvc3R5bGU+XG4iXSwiZmlsZSI6IkQ6L0RvdCBOZXQgUHJvamVjdHMvSlNLL2htaXMtdWkvc3JjL21vZHVsZXMvYXV0aC9Mb2dpblBhZ2UudnVlIn0=

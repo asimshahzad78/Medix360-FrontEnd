@@ -1,0 +1,402 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/modules/finance/coa/ChartOfAccountFormModal.vue");/* Injection by vite-plugin-vue-inspector Start */
+import { createElementVNode as __createElementVNode,createElementBlock as __createElementBlock,createVNode as __createVNode } from "/node_modules/.vite/deps/vue.js?v=6936ed99"
+function _interopVNode(vnode) {
+  if (vnode && vnode.props && 'data-v-inspector' in vnode.props) {
+    const data = vnode.props['data-v-inspector']
+    delete vnode.props['data-v-inspector']
+    Object.defineProperty(vnode.props, '__v_inspector', { value: data, enumerable: false })
+  }
+  return vnode
+}
+function _createElementVNode(...args) { return _interopVNode(__createElementVNode(...args)) }
+function _createElementBlock(...args) { return _interopVNode(__createElementBlock(...args)) }
+function _createVNode(...args) { return _interopVNode(__createVNode(...args)) }
+/* Injection by vite-plugin-vue-inspector End */
+import { defineComponent, reactive, ref, computed, onMounted } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+import Multiselect from "/node_modules/.vite/deps/@vueform_multiselect.js?v=6936ed99";
+import "/node_modules/@vueform/multiselect/themes/default.css";
+import { coaService } from "/src/modules/finance/coa/coa.service.ts";
+const _sfc_main = defineComponent({
+  components: { Multiselect },
+  props: {
+    accountId: {
+      type: String,
+      default: null
+    }
+  },
+  emits: ["saved", "close"],
+  setup(props, { emit }) {
+    const alert = ref(null);
+    const parentAccounts = ref([]);
+    const form = reactive({
+      Code: "",
+      Name: "",
+      ParentId: "",
+      Type: "Expense",
+      IsActive: true
+    });
+    const accountTypeMap = {
+      0: "Asset",
+      1: "Liability",
+      2: "Equity",
+      3: "Expense",
+      4: "Income",
+      5: "Revenue"
+    };
+    const isEdit = computed(() => !!props.accountId);
+    const derivedType = computed(() => {
+      const parent = parentAccounts.value.find((x) => x.Id === form.ParentId);
+      if (!parent) return "";
+      return accountTypeMap[parent.Type];
+    });
+    const loadParents = async () => {
+      const all = await coaService.getAll();
+      parentAccounts.value = all.filter((a) => a.IsActive);
+    };
+    const loadEdit = async () => {
+      if (!props.accountId) return;
+      const a = await coaService.getById(props.accountId);
+      form.Code = a.Code ?? "";
+      form.Name = a.Name;
+      form.ParentId = a.ParentId ?? "";
+      form.Type = accountTypeMap[a.Type] ?? "Expense";
+      form.IsActive = a.IsActive;
+    };
+    const save = async () => {
+      try {
+        if (!form.Code || !form.Name || !form.Type) {
+          alert.value = {
+            type: "error",
+            message: "Code, Name and Type are required."
+          };
+          return;
+        }
+        if (isEdit.value && props.accountId) {
+          const payload = {
+            Code: form.Code,
+            Name: form.Name,
+            Type: form.Type,
+            ParentId: form.ParentId || null,
+            IsActive: form.IsActive
+          };
+          await coaService.update(props.accountId, payload);
+        } else {
+          const payload = {
+            Code: form.Code,
+            Name: form.Name,
+            Type: form.Type,
+            ParentId: form.ParentId || null,
+            IsActive: form.IsActive
+          };
+          await coaService.create(payload);
+        }
+        alert.value = { type: "success", message: "Account saved successfully." };
+        setTimeout(() => {
+          emit("saved");
+          emit("close");
+        }, 600);
+      } catch {
+        alert.value = { type: "error", message: "Operation failed." };
+      }
+    };
+    onMounted(async () => {
+      await loadParents();
+      await loadEdit();
+    });
+    return {
+      form,
+      parentAccounts,
+      derivedType,
+      isEdit,
+      save,
+      alert
+    };
+  }
+});
+import { toDisplayString as _toDisplayString,  createCommentVNode as _createCommentVNode, createTextVNode as _createTextVNode, normalizeClass as _normalizeClass, openBlock as _openBlock,  resolveComponent as _resolveComponent, withCtx as _withCtx,  vModelSelect as _vModelSelect, withDirectives as _withDirectives, vModelText as _vModelText, withModifiers as _withModifiers, createStaticVNode as _createStaticVNode } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+const _hoisted_1 = {
+  class: "modal-backdrop",
+  "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:2:3"
+};
+const _hoisted_2 = {
+  class: "modal-card",
+  "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:3:5"
+};
+const _hoisted_3 = { "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:4:7" };
+const _hoisted_4 = {
+  key: 0,
+  class: "alert-wrapper",
+  "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:7:7"
+};
+const _hoisted_5 = { "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:9:11" };
+const _hoisted_6 = {
+  class: "grid",
+  "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:16:9"
+};
+const _hoisted_7 = { "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:18:11" };
+const _hoisted_8 = { "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:23:17" };
+const _hoisted_9 = { "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:29:11" };
+const _hoisted_10 = { "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:38:11" };
+const _hoisted_11 = { "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:43:11" };
+const _hoisted_12 = { "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:49:11" };
+const _hoisted_13 = {
+  key: 0,
+  "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:61:11"
+};
+const _hoisted_14 = ["value"];
+const _hoisted_15 = {
+  class: "actions",
+  "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:68:9"
+};
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_Multiselect = _resolveComponent("Multiselect");
+  return _openBlock(), _createElementBlock("div", _hoisted_1, [
+    _createElementVNode("div", _hoisted_2, [
+      _createElementVNode(
+        "h2",
+        _hoisted_3,
+        _toDisplayString(_ctx.isEdit ? "Edit Account" : "Add Account"),
+        1
+        /* TEXT */
+      ),
+      _createCommentVNode(" ALERT "),
+      _ctx.alert ? (_openBlock(), _createElementBlock("div", _hoisted_4, [
+        _createElementVNode(
+          "div",
+          {
+            class: _normalizeClass(["alert", _ctx.alert.type === "success" ? "alert-success" : "alert-danger"]),
+            "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:8:9"
+          },
+          [
+            _createElementVNode(
+              "strong",
+              _hoisted_5,
+              _toDisplayString(_ctx.alert.type === "success" ? "Success!" : "Error!"),
+              1
+              /* TEXT */
+            ),
+            _createTextVNode(
+              " " + _toDisplayString(_ctx.alert.message) + " ",
+              1
+              /* TEXT */
+            ),
+            _createElementVNode("button", {
+              class: "btn-close",
+              onClick: _cache[0] || (_cache[0] = ($event) => _ctx.alert = null),
+              "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:11:11"
+            })
+          ],
+          2
+          /* CLASS */
+        )
+      ])) : _createCommentVNode("v-if", true),
+      _createElementVNode(
+        "form",
+        {
+          onSubmit: _cache[7] || (_cache[7] = _withModifiers((...args) => _ctx.save && _ctx.save(...args), ["prevent"])),
+          "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:15:7"
+        },
+        [
+          _createElementVNode("div", _hoisted_6, [
+            _createCommentVNode(" Parent Account "),
+            _createElementVNode("div", _hoisted_7, [
+              _cache[8] || (_cache[8] = _createElementVNode(
+                "label",
+                { "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:19:13" },
+                "Parent Account",
+                -1
+                /* CACHED */
+              )),
+              _createVNode(_component_Multiselect, {
+                modelValue: _ctx.form.ParentId,
+                "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => _ctx.form.ParentId = $event),
+                options: _ctx.parentAccounts,
+                "value-prop": "Id",
+                label: "Name",
+                searchable: "",
+                placeholder: "Search parent account...",
+                "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:20:13"
+              }, {
+                option: _withCtx(({ option }) => [
+                  _createElementVNode(
+                    "span",
+                    _hoisted_8,
+                    _toDisplayString(option.Code) + " — " + _toDisplayString(option.Name),
+                    1
+                    /* TEXT */
+                  )
+                ]),
+                _: 1
+                /* STABLE */
+              }, 8, ["modelValue", "options"])
+            ]),
+            _createCommentVNode(" Status "),
+            _createElementVNode("div", _hoisted_9, [
+              _cache[10] || (_cache[10] = _createElementVNode(
+                "label",
+                { "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:30:13" },
+                "Status",
+                -1
+                /* CACHED */
+              )),
+              _withDirectives(_createElementVNode(
+                "select",
+                {
+                  "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => _ctx.form.IsActive = $event),
+                  "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:31:13"
+                },
+                [..._cache[9] || (_cache[9] = [
+                  _createElementVNode(
+                    "option",
+                    {
+                      value: true,
+                      "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:32:15"
+                    },
+                    "Active",
+                    -1
+                    /* CACHED */
+                  ),
+                  _createElementVNode(
+                    "option",
+                    {
+                      value: false,
+                      "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:33:15"
+                    },
+                    "Inactive",
+                    -1
+                    /* CACHED */
+                  )
+                ])],
+                512
+                /* NEED_PATCH */
+              ), [
+                [_vModelSelect, _ctx.form.IsActive]
+              ])
+            ]),
+            _createCommentVNode(" Account Name "),
+            _createElementVNode("div", _hoisted_10, [
+              _cache[11] || (_cache[11] = _createElementVNode(
+                "label",
+                { "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:39:13" },
+                "Account Name *",
+                -1
+                /* CACHED */
+              )),
+              _withDirectives(_createElementVNode(
+                "input",
+                {
+                  "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => _ctx.form.Name = $event),
+                  "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:40:13"
+                },
+                null,
+                512
+                /* NEED_PATCH */
+              ), [
+                [_vModelText, _ctx.form.Name]
+              ])
+            ]),
+            _createElementVNode("div", _hoisted_11, [
+              _cache[12] || (_cache[12] = _createElementVNode(
+                "label",
+                { "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:44:13" },
+                "Account Code *",
+                -1
+                /* CACHED */
+              )),
+              _withDirectives(_createElementVNode(
+                "input",
+                {
+                  "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => _ctx.form.Code = $event),
+                  "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:45:13"
+                },
+                null,
+                512
+                /* NEED_PATCH */
+              ), [
+                [_vModelText, _ctx.form.Code]
+              ])
+            ]),
+            _createCommentVNode(" Account Type (Derived – UI only) "),
+            _createElementVNode("div", _hoisted_12, [
+              _cache[14] || (_cache[14] = _createElementVNode(
+                "label",
+                { "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:50:13" },
+                "Account Type",
+                -1
+                /* CACHED */
+              )),
+              _withDirectives(_createElementVNode(
+                "select",
+                {
+                  "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => _ctx.form.Type = $event),
+                  "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:51:13"
+                },
+                [..._cache[13] || (_cache[13] = [
+                  _createStaticVNode('<option value="Asset" data-v-inspector="src/modules/finance/coa/ChartOfAccountFormModal.vue:52:15" data-v-8c1695ef>Asset</option><option value="Liability" data-v-inspector="src/modules/finance/coa/ChartOfAccountFormModal.vue:53:15" data-v-8c1695ef>Liability</option><option value="Equity" data-v-inspector="src/modules/finance/coa/ChartOfAccountFormModal.vue:54:15" data-v-8c1695ef>Equity</option><option value="Income" data-v-inspector="src/modules/finance/coa/ChartOfAccountFormModal.vue:55:15" data-v-8c1695ef>Income</option><option value="Expense" data-v-inspector="src/modules/finance/coa/ChartOfAccountFormModal.vue:56:15" data-v-8c1695ef>Expense</option><option value="Revenue" data-v-inspector="src/modules/finance/coa/ChartOfAccountFormModal.vue:57:15" data-v-8c1695ef>Revenue</option>', 6)
+                ])],
+                512
+                /* NEED_PATCH */
+              ), [
+                [_vModelSelect, _ctx.form.Type]
+              ])
+            ]),
+            _ctx.derivedType ? (_openBlock(), _createElementBlock("div", _hoisted_13, [
+              _cache[15] || (_cache[15] = _createElementVNode(
+                "label",
+                { "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:62:13" },
+                "Parent Type",
+                -1
+                /* CACHED */
+              )),
+              _createElementVNode("input", {
+                value: _ctx.derivedType,
+                disabled: "",
+                "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:63:13"
+              }, null, 8, _hoisted_14)
+            ])) : _createCommentVNode("v-if", true)
+          ]),
+          _createCommentVNode(" ACTIONS "),
+          _createElementVNode("div", _hoisted_15, [
+            _cache[16] || (_cache[16] = _createElementVNode(
+              "button",
+              {
+                class: "btn-primary",
+                "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:69:11"
+              },
+              "Save",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode("button", {
+              type: "button",
+              class: "btn-secondary",
+              onClick: _cache[6] || (_cache[6] = ($event) => _ctx.$emit("close")),
+              "data-v-inspector": "src/modules/finance/coa/ChartOfAccountFormModal.vue:70:11"
+            }, "Cancel")
+          ])
+        ],
+        32
+        /* NEED_HYDRATION */
+      )
+    ])
+  ]);
+}
+import "/src/modules/finance/coa/ChartOfAccountFormModal.vue?vue&type=style&index=0&scoped=8c1695ef&lang.css";
+_sfc_main.__hmrId = "8c1695ef";
+typeof __VUE_HMR_RUNTIME__ !== "undefined" && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main);
+import.meta.hot.on("file-changed", ({ file }) => {
+  __VUE_HMR_RUNTIME__.CHANGED_FILE = file;
+});
+import.meta.hot.accept((mod) => {
+  if (!mod) return;
+  const { default: updated, _rerender_only } = mod;
+  if (_rerender_only) {
+    __VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render);
+  } else {
+    __VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated);
+  }
+});
+import _export_sfc from "/@id/__x00__plugin-vue:export-helper";
+export default /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-8c1695ef"], ["__file", "D:/Dot Net Projects/JSK/hmis-ui/src/modules/finance/coa/ChartOfAccountFormModal.vue"]]);
+
+//# sourceMappingURL=data:application/json;base64,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QUFXO0FBQUE7QUFBQTtBQUFBLGNBQy9GLG9CQUFvSDtBQUFBLGdCQUE1RyxPQUFPO0FBQUEsZ0JBQWE7QUFBQSxnQkFBUyxvQkFBaUI7QUFBQTs7O1VBSTFEO0FBQUEsVUFDQSxvQkFHTSxPQUhOLGFBR007QUFBQSx3Q0FGSjtBQUFBLGNBQXNIO0FBQUE7QUFBQSxnQkFBOUcsT0FBTTtBQUFBLGdCQUFjLG9CQUFpQjtBQUFBO2NBQTREO0FBQUEsY0FBSTtBQUFBO0FBQUE7QUFBQSxZQUM3RyxvQkFBZ0s7QUFBQSxjQUF4SixNQUFLO0FBQUEsY0FBUyxPQUFNO0FBQUEsY0FBaUIsU0FBSyxzQ0FBRSxXQUFLO0FBQUEsY0FBVyxvQkFBaUI7QUFBQSxlQUE0RCxRQUFNO0FBQUEiLCJuYW1lcyI6W10sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIkNoYXJ0T2ZBY2NvdW50Rm9ybU1vZGFsLnZ1ZSJdLCJzb3VyY2VzQ29udGVudCI6WyI8dGVtcGxhdGU+XG4gIDxkaXYgY2xhc3M9XCJtb2RhbC1iYWNrZHJvcFwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6MjozXCI+XG4gICAgPGRpdiBjbGFzcz1cIm1vZGFsLWNhcmRcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvZmluYW5jZS9jb2EvQ2hhcnRPZkFjY291bnRGb3JtTW9kYWwudnVlOjM6NVwiPlxuICAgICAgPGgyIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6NDo3XCI+e3sgaXNFZGl0ID8gJ0VkaXQgQWNjb3VudCcgOiAnQWRkIEFjY291bnQnIH19PC9oMj5cblxuICAgICAgPCEtLSBBTEVSVCAtLT5cbiAgICAgIDxkaXYgdi1pZj1cImFsZXJ0XCIgY2xhc3M9XCJhbGVydC13cmFwcGVyXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL2ZpbmFuY2UvY29hL0NoYXJ0T2ZBY2NvdW50Rm9ybU1vZGFsLnZ1ZTo3OjdcIj5cbiAgICAgICAgPGRpdiA6Y2xhc3M9XCJbJ2FsZXJ0JywgYWxlcnQudHlwZSA9PT0gJ3N1Y2Nlc3MnID8gJ2FsZXJ0LXN1Y2Nlc3MnIDogJ2FsZXJ0LWRhbmdlciddXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL2ZpbmFuY2UvY29hL0NoYXJ0T2ZBY2NvdW50Rm9ybU1vZGFsLnZ1ZTo4OjlcIj5cbiAgICAgICAgICA8c3Ryb25nIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6OToxMVwiPnt7IGFsZXJ0LnR5cGUgPT09ICdzdWNjZXNzJyA/ICdTdWNjZXNzIScgOiAnRXJyb3IhJyB9fTwvc3Ryb25nPlxuICAgICAgICAgIHt7IGFsZXJ0Lm1lc3NhZ2UgfX1cbiAgICAgICAgICA8YnV0dG9uIGNsYXNzPVwiYnRuLWNsb3NlXCIgQGNsaWNrPVwiYWxlcnQgPSBudWxsXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL2ZpbmFuY2UvY29hL0NoYXJ0T2ZBY2NvdW50Rm9ybU1vZGFsLnZ1ZToxMToxMVwiPjwvYnV0dG9uPlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvZGl2PlxuXG4gICAgICA8Zm9ybSBAc3VibWl0LnByZXZlbnQ9XCJzYXZlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL2ZpbmFuY2UvY29hL0NoYXJ0T2ZBY2NvdW50Rm9ybU1vZGFsLnZ1ZToxNTo3XCI+XG4gICAgICAgIDxkaXYgY2xhc3M9XCJncmlkXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL2ZpbmFuY2UvY29hL0NoYXJ0T2ZBY2NvdW50Rm9ybU1vZGFsLnZ1ZToxNjo5XCI+XG4gICAgICAgICAgPCEtLSBQYXJlbnQgQWNjb3VudCAtLT5cbiAgICAgICAgICA8ZGl2IGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6MTg6MTFcIj5cbiAgICAgICAgICAgIDxsYWJlbCBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvZmluYW5jZS9jb2EvQ2hhcnRPZkFjY291bnRGb3JtTW9kYWwudnVlOjE5OjEzXCI+UGFyZW50IEFjY291bnQ8L2xhYmVsPlxuICAgICAgICAgICAgPE11bHRpc2VsZWN0IHYtbW9kZWw9XCJmb3JtLlBhcmVudElkXCIgOm9wdGlvbnM9XCJwYXJlbnRBY2NvdW50c1wiIHZhbHVlLXByb3A9XCJJZFwiIGxhYmVsPVwiTmFtZVwiIHNlYXJjaGFibGVcbiAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCJTZWFyY2ggcGFyZW50IGFjY291bnQuLi5cIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvZmluYW5jZS9jb2EvQ2hhcnRPZkFjY291bnRGb3JtTW9kYWwudnVlOjIwOjEzXCI+XG4gICAgICAgICAgICAgIDx0ZW1wbGF0ZSAjb3B0aW9uPVwieyBvcHRpb24gfVwiPlxuICAgICAgICAgICAgICAgIDxzcGFuIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6MjM6MTdcIj4ge3sgb3B0aW9uLkNvZGUgfX0g4oCUIHt7IG9wdGlvbi5OYW1lIH19IDwvc3Bhbj5cbiAgICAgICAgICAgICAgPC90ZW1wbGF0ZT5cbiAgICAgICAgICAgIDwvTXVsdGlzZWxlY3Q+XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICA8IS0tIFN0YXR1cyAtLT5cbiAgICAgICAgICA8ZGl2IGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6Mjk6MTFcIj5cbiAgICAgICAgICAgIDxsYWJlbCBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvZmluYW5jZS9jb2EvQ2hhcnRPZkFjY291bnRGb3JtTW9kYWwudnVlOjMwOjEzXCI+U3RhdHVzPC9sYWJlbD5cbiAgICAgICAgICAgIDxzZWxlY3Qgdi1tb2RlbD1cImZvcm0uSXNBY3RpdmVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvZmluYW5jZS9jb2EvQ2hhcnRPZkFjY291bnRGb3JtTW9kYWwudnVlOjMxOjEzXCI+XG4gICAgICAgICAgICAgIDxvcHRpb24gOnZhbHVlPVwidHJ1ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6MzI6MTVcIj5BY3RpdmU8L29wdGlvbj5cbiAgICAgICAgICAgICAgPG9wdGlvbiA6dmFsdWU9XCJmYWxzZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6MzM6MTVcIj5JbmFjdGl2ZTwvb3B0aW9uPlxuICAgICAgICAgICAgPC9zZWxlY3Q+XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICA8IS0tIEFjY291bnQgTmFtZSAtLT5cbiAgICAgICAgICA8ZGl2IGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6Mzg6MTFcIj5cbiAgICAgICAgICAgIDxsYWJlbCBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvZmluYW5jZS9jb2EvQ2hhcnRPZkFjY291bnRGb3JtTW9kYWwudnVlOjM5OjEzXCI+QWNjb3VudCBOYW1lICo8L2xhYmVsPlxuICAgICAgICAgICAgPGlucHV0IHYtbW9kZWw9XCJmb3JtLk5hbWVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvZmluYW5jZS9jb2EvQ2hhcnRPZkFjY291bnRGb3JtTW9kYWwudnVlOjQwOjEzXCIgLz5cbiAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgIDxkaXYgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL2ZpbmFuY2UvY29hL0NoYXJ0T2ZBY2NvdW50Rm9ybU1vZGFsLnZ1ZTo0MzoxMVwiPlxuICAgICAgICAgICAgPGxhYmVsIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6NDQ6MTNcIj5BY2NvdW50IENvZGUgKjwvbGFiZWw+XG4gICAgICAgICAgICA8aW5wdXQgdi1tb2RlbD1cImZvcm0uQ29kZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6NDU6MTNcIiAvPlxuICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgPCEtLSBBY2NvdW50IFR5cGUgKERlcml2ZWQg4oCTIFVJIG9ubHkpIC0tPlxuICAgICAgICAgIDxkaXYgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL2ZpbmFuY2UvY29hL0NoYXJ0T2ZBY2NvdW50Rm9ybU1vZGFsLnZ1ZTo0OToxMVwiPlxuICAgICAgICAgICAgPGxhYmVsIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6NTA6MTNcIj5BY2NvdW50IFR5cGU8L2xhYmVsPlxuICAgICAgICAgICAgPHNlbGVjdCB2LW1vZGVsPVwiZm9ybS5UeXBlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL2ZpbmFuY2UvY29hL0NoYXJ0T2ZBY2NvdW50Rm9ybU1vZGFsLnZ1ZTo1MToxM1wiPlxuICAgICAgICAgICAgICA8b3B0aW9uIHZhbHVlPVwiQXNzZXRcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvZmluYW5jZS9jb2EvQ2hhcnRPZkFjY291bnRGb3JtTW9kYWwudnVlOjUyOjE1XCI+QXNzZXQ8L29wdGlvbj5cbiAgICAgICAgICAgICAgPG9wdGlvbiB2YWx1ZT1cIkxpYWJpbGl0eVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6NTM6MTVcIj5MaWFiaWxpdHk8L29wdGlvbj5cbiAgICAgICAgICAgICAgPG9wdGlvbiB2YWx1ZT1cIkVxdWl0eVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6NTQ6MTVcIj5FcXVpdHk8L29wdGlvbj5cbiAgICAgICAgICAgICAgPG9wdGlvbiB2YWx1ZT1cIkluY29tZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6NTU6MTVcIj5JbmNvbWU8L29wdGlvbj5cbiAgICAgICAgICAgICAgPG9wdGlvbiB2YWx1ZT1cIkV4cGVuc2VcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvZmluYW5jZS9jb2EvQ2hhcnRPZkFjY291bnRGb3JtTW9kYWwudnVlOjU2OjE1XCI+RXhwZW5zZTwvb3B0aW9uPlxuICAgICAgICAgICAgICA8b3B0aW9uIHZhbHVlPVwiUmV2ZW51ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6NTc6MTVcIj5SZXZlbnVlPC9vcHRpb24+XG4gICAgICAgICAgICA8L3NlbGVjdD5cbiAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgIDxkaXYgdi1pZj1cImRlcml2ZWRUeXBlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL2ZpbmFuY2UvY29hL0NoYXJ0T2ZBY2NvdW50Rm9ybU1vZGFsLnZ1ZTo2MToxMVwiPlxuICAgICAgICAgICAgPGxhYmVsIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6NjI6MTNcIj5QYXJlbnQgVHlwZTwvbGFiZWw+XG4gICAgICAgICAgICA8aW5wdXQgOnZhbHVlPVwiZGVyaXZlZFR5cGVcIiBkaXNhYmxlZCBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvZmluYW5jZS9jb2EvQ2hhcnRPZkFjY291bnRGb3JtTW9kYWwudnVlOjYzOjEzXCIgLz5cbiAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgPCEtLSBBQ1RJT05TIC0tPlxuICAgICAgICA8ZGl2IGNsYXNzPVwiYWN0aW9uc1wiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6Njg6OVwiPlxuICAgICAgICAgIDxidXR0b24gY2xhc3M9XCJidG4tcHJpbWFyeVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy9maW5hbmNlL2NvYS9DaGFydE9mQWNjb3VudEZvcm1Nb2RhbC52dWU6Njk6MTFcIj5TYXZlPC9idXR0b24+XG4gICAgICAgICAgPGJ1dHRvbiB0eXBlPVwiYnV0dG9uXCIgY2xhc3M9XCJidG4tc2Vjb25kYXJ5XCIgQGNsaWNrPVwiJGVtaXQoJ2Nsb3NlJylcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvZmluYW5jZS9jb2EvQ2hhcnRPZkFjY291bnRGb3JtTW9kYWwudnVlOjcwOjExXCI+Q2FuY2VsPC9idXR0b24+XG4gICAgICAgIDwvZGl2PlxuICAgICAgPC9mb3JtPlxuICAgIDwvZGl2PlxuICA8L2Rpdj5cbjwvdGVtcGxhdGU+XG5cbjxzY3JpcHQgbGFuZz1cInRzXCI+XG5pbXBvcnQgeyBkZWZpbmVDb21wb25lbnQsIHJlYWN0aXZlLCByZWYsIGNvbXB1dGVkLCBvbk1vdW50ZWQgfSBmcm9tICd2dWUnXG5pbXBvcnQgTXVsdGlzZWxlY3QgZnJvbSAnQHZ1ZWZvcm0vbXVsdGlzZWxlY3QnXG5pbXBvcnQgJ0B2dWVmb3JtL211bHRpc2VsZWN0L3RoZW1lcy9kZWZhdWx0LmNzcydcblxuaW1wb3J0IHsgY29hU2VydmljZSB9IGZyb20gJy4vY29hLnNlcnZpY2UnXG5pbXBvcnQgdHlwZSB7XG4gIENoYXJ0T2ZBY2NvdW50QXBpRHRvLFxuICBDaGFydE9mQWNjb3VudENyZWF0ZUR0byxcbiAgQ2hhcnRPZkFjY291bnRVcGRhdGVEdG8sXG4gIEFjY291bnRUeXBlLFxufSBmcm9tICcuL2NvYS50eXBlcydcblxuZXhwb3J0IGRlZmF1bHQgZGVmaW5lQ29tcG9uZW50KHtcbiAgY29tcG9uZW50czogeyBNdWx0aXNlbGVjdCB9LFxuXG4gIHByb3BzOiB7XG4gICAgYWNjb3VudElkOiB7XG4gICAgICB0eXBlOiBTdHJpbmcsXG4gICAgICBkZWZhdWx0OiBudWxsLFxuICAgIH0sXG4gIH0sXG5cbiAgZW1pdHM6IFsnc2F2ZWQnLCAnY2xvc2UnXSxcblxuICBzZXR1cChwcm9wcywgeyBlbWl0IH0pIHtcbiAgICBjb25zdCBhbGVydCA9IHJlZjx7IHR5cGU6ICdzdWNjZXNzJyB8ICdlcnJvcic7IG1lc3NhZ2U6IHN0cmluZyB9IHwgbnVsbD4obnVsbClcblxuICAgIGNvbnN0IHBhcmVudEFjY291bnRzID0gcmVmPENoYXJ0T2ZBY2NvdW50QXBpRHRvW10+KFtdKVxuXG4gICAgY29uc3QgZm9ybSA9IHJlYWN0aXZlKHtcbiAgICAgIENvZGU6ICcnLFxuICAgICAgTmFtZTogJycsXG4gICAgICBQYXJlbnRJZDogJycsXG4gICAgICBUeXBlOiAnRXhwZW5zZScgYXMgQWNjb3VudFR5cGUsXG4gICAgICBJc0FjdGl2ZTogdHJ1ZSxcbiAgICB9KVxuXG4gICAgY29uc3QgYWNjb3VudFR5cGVNYXA6IFJlY29yZDxudW1iZXIsIEFjY291bnRUeXBlPiA9IHtcbiAgICAgIDA6ICdBc3NldCcsXG4gICAgICAxOiAnTGlhYmlsaXR5JyxcbiAgICAgIDI6ICdFcXVpdHknLFxuICAgICAgMzogJ0V4cGVuc2UnLFxuICAgICAgNDogJ0luY29tZScsXG4gICAgICA1OiAnUmV2ZW51ZScsXG4gICAgfVxuXG4gICAgY29uc3QgaXNFZGl0ID0gY29tcHV0ZWQoKCkgPT4gISFwcm9wcy5hY2NvdW50SWQpXG5cbiAgICAvLyBVSSBPTkxZIChuZXZlciBzZW50IHRvIGJhY2tlbmQpXG4gICAgY29uc3QgZGVyaXZlZFR5cGUgPSBjb21wdXRlZCgoKSA9PiB7XG4gICAgICBjb25zdCBwYXJlbnQgPSBwYXJlbnRBY2NvdW50cy52YWx1ZS5maW5kKCh4KSA9PiB4LklkID09PSBmb3JtLlBhcmVudElkKVxuICAgICAgaWYgKCFwYXJlbnQpIHJldHVybiAnJ1xuXG4gICAgICByZXR1cm4gYWNjb3VudFR5cGVNYXBbcGFyZW50LlR5cGVdXG4gICAgfSlcbiAgICBjb25zdCBsb2FkUGFyZW50cyA9IGFzeW5jICgpID0+IHtcbiAgICAgIGNvbnN0IGFsbCA9IGF3YWl0IGNvYVNlcnZpY2UuZ2V0QWxsKClcbiAgICAgIHBhcmVudEFjY291bnRzLnZhbHVlID0gYWxsLmZpbHRlcigoYSkgPT4gYS5Jc0FjdGl2ZSlcbiAgICB9XG5cbiAgICBjb25zdCBsb2FkRWRpdCA9IGFzeW5jICgpID0+IHtcbiAgICAgIGlmICghcHJvcHMuYWNjb3VudElkKSByZXR1cm5cbiAgICAgIGNvbnN0IGEgPSBhd2FpdCBjb2FTZXJ2aWNlLmdldEJ5SWQocHJvcHMuYWNjb3VudElkKVxuICAgICAgZm9ybS5Db2RlID0gYS5Db2RlID8/ICcnXG4gICAgICBmb3JtLk5hbWUgPSBhLk5hbWVcbiAgICAgIGZvcm0uUGFyZW50SWQgPSBhLlBhcmVudElkID8/ICcnXG4gICAgICBmb3JtLlR5cGUgPSBhY2NvdW50VHlwZU1hcFthLlR5cGVdID8/ICdFeHBlbnNlJ1xuICAgICAgZm9ybS5Jc0FjdGl2ZSA9IGEuSXNBY3RpdmVcbiAgICB9XG5cbiAgICBjb25zdCBzYXZlID0gYXN5bmMgKCkgPT4ge1xuICAgICAgdHJ5IHtcbiAgICAgICAgaWYgKCFmb3JtLkNvZGUgfHwgIWZvcm0uTmFtZSB8fCAhZm9ybS5UeXBlKSB7XG4gICAgICAgICAgYWxlcnQudmFsdWUgPSB7XG4gICAgICAgICAgICB0eXBlOiAnZXJyb3InLFxuICAgICAgICAgICAgbWVzc2FnZTogJ0NvZGUsIE5hbWUgYW5kIFR5cGUgYXJlIHJlcXVpcmVkLicsXG4gICAgICAgICAgfVxuICAgICAgICAgIHJldHVyblxuICAgICAgICB9XG5cbiAgICAgICAgaWYgKGlzRWRpdC52YWx1ZSAmJiBwcm9wcy5hY2NvdW50SWQpIHtcbiAgICAgICAgICBjb25zdCBwYXlsb2FkOiBDaGFydE9mQWNjb3VudFVwZGF0ZUR0byA9IHtcbiAgICAgICAgICAgIENvZGU6IGZvcm0uQ29kZSxcbiAgICAgICAgICAgIE5hbWU6IGZvcm0uTmFtZSxcbiAgICAgICAgICAgIFR5cGU6IGZvcm0uVHlwZSxcbiAgICAgICAgICAgIFBhcmVudElkOiBmb3JtLlBhcmVudElkIHx8IG51bGwsXG4gICAgICAgICAgICBJc0FjdGl2ZTogZm9ybS5Jc0FjdGl2ZSxcbiAgICAgICAgICB9XG4gICAgICAgICAgYXdhaXQgY29hU2VydmljZS51cGRhdGUocHJvcHMuYWNjb3VudElkLCBwYXlsb2FkKVxuICAgICAgICB9IGVsc2Uge1xuICAgICAgICAgIGNvbnN0IHBheWxvYWQ6IENoYXJ0T2ZBY2NvdW50Q3JlYXRlRHRvID0ge1xuICAgICAgICAgICAgQ29kZTogZm9ybS5Db2RlLFxuICAgICAgICAgICAgTmFtZTogZm9ybS5OYW1lLFxuICAgICAgICAgICAgVHlwZTogZm9ybS5UeXBlLFxuICAgICAgICAgICAgUGFyZW50SWQ6IGZvcm0uUGFyZW50SWQgfHwgbnVsbCxcbiAgICAgICAgICAgIElzQWN0aXZlOiBmb3JtLklzQWN0aXZlLFxuICAgICAgICAgIH1cbiAgICAgICAgICBhd2FpdCBjb2FTZXJ2aWNlLmNyZWF0ZShwYXlsb2FkKVxuICAgICAgICB9XG5cbiAgICAgICAgYWxlcnQudmFsdWUgPSB7IHR5cGU6ICdzdWNjZXNzJywgbWVzc2FnZTogJ0FjY291bnQgc2F2ZWQgc3VjY2Vzc2Z1bGx5LicgfVxuXG4gICAgICAgIHNldFRpbWVvdXQoKCkgPT4ge1xuICAgICAgICAgIGVtaXQoJ3NhdmVkJylcbiAgICAgICAgICBlbWl0KCdjbG9zZScpXG4gICAgICAgIH0sIDYwMClcbiAgICAgIH0gY2F0Y2gge1xuICAgICAgICBhbGVydC52YWx1ZSA9IHsgdHlwZTogJ2Vycm9yJywgbWVzc2FnZTogJ09wZXJhdGlvbiBmYWlsZWQuJyB9XG4gICAgICB9XG4gICAgfVxuXG4gICAgb25Nb3VudGVkKGFzeW5jICgpID0+IHtcbiAgICAgIGF3YWl0IGxvYWRQYXJlbnRzKClcbiAgICAgIGF3YWl0IGxvYWRFZGl0KClcbiAgICB9KVxuXG4gICAgcmV0dXJuIHtcbiAgICAgIGZvcm0sXG4gICAgICBwYXJlbnRBY2NvdW50cyxcbiAgICAgIGRlcml2ZWRUeXBlLFxuICAgICAgaXNFZGl0LFxuICAgICAgc2F2ZSxcbiAgICAgIGFsZXJ0LFxuICAgIH1cbiAgfSxcbn0pXG48L3NjcmlwdD5cblxuPHN0eWxlIHNjb3BlZD5cbi5tb2RhbC1iYWNrZHJvcCB7XG4gIHBvc2l0aW9uOiBmaXhlZDtcbiAgaW5zZXQ6IDA7XG4gIGJhY2tncm91bmQ6IHJnYmEoMCwgMCwgMCwgMC42KTtcbiAgZGlzcGxheTogZmxleDtcbiAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7XG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XG4gIHotaW5kZXg6IDk5OTk5OTtcbn1cblxuLm1vZGFsLWNhcmQge1xuICB3aWR0aDogOTAwcHg7XG4gIG1heC13aWR0aDogOTJ2dztcbiAgYmFja2dyb3VuZDogI2ZmZjtcbiAgYm9yZGVyLXJhZGl1czogMTRweDtcbiAgcGFkZGluZzogMjZweCAzNHB4IDIycHg7XG59XG5cbi5ncmlkIHtcbiAgZGlzcGxheTogZ3JpZDtcbiAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiAxZnIgMWZyO1xuICBnYXA6IDE0cHggMjRweDtcbiAgYWxpZ24taXRlbXM6IGVuZDtcbn1cblxubGFiZWwge1xuICBmb250LXNpemU6IDEycHg7XG4gIGZvbnQtd2VpZ2h0OiA2MDA7XG4gIG1hcmdpbi1ib3R0b206IDRweDtcbiAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xufVxuXG5pbnB1dCxcbnNlbGVjdCB7XG4gIHdpZHRoOiAxMDAlO1xuICBoZWlnaHQ6IDM2cHg7XG4gIGZvbnQtc2l6ZTogMTNweDtcbiAgcGFkZGluZzogNnB4IDEwcHg7XG4gIGJvcmRlci1yYWRpdXM6IDhweDtcbiAgYm9yZGVyOiAxcHggc29saWQgI2QwZDBkMDtcbiAgYm94LXNpemluZzogYm9yZGVyLWJveDtcbn1cblxuOmRlZXAoLm11bHRpc2VsZWN0KSB7XG4gIG1pbi1oZWlnaHQ6IDM2cHg7XG59XG5cbjpkZWVwKC5tdWx0aXNlbGVjdF9fdGFncyksXG46ZGVlcCgubXVsdGlzZWxlY3RfX3NpbmdsZSkge1xuICBtaW4taGVpZ2h0OiAzNnB4O1xuICBwYWRkaW5nOiA0cHggMTBweDtcbiAgZGlzcGxheTogZmxleDtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbiAgZm9udC1zaXplOiAxM3B4O1xufVxuXG46ZGVlcCgubXVsdGlzZWxlY3RfX2lucHV0KSB7XG4gIGZvbnQtc2l6ZTogMTNweDtcbn1cblxuLmFjdGlvbnMge1xuICBtYXJnaW4tdG9wOiAyMnB4O1xuICBwYWRkaW5nLXRvcDogMTRweDtcbiAgYm9yZGVyLXRvcDogMXB4IHNvbGlkICNlZWU7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGp1c3RpZnktY29udGVudDogZmxleC1lbmQ7XG4gIGdhcDogMTJweDtcbn1cblxuLmJ0bi1wcmltYXJ5IHtcbiAgYmFja2dyb3VuZDogbGluZWFyLWdyYWRpZW50KDEzNWRlZywgIzM0Yzc1OSwgIzI4YTc0NSk7XG4gIGNvbG9yOiAjZmZmO1xuICBwYWRkaW5nOiA4cHggMjJweDtcbiAgYm9yZGVyLXJhZGl1czogOHB4O1xuICBib3JkZXI6IG5vbmU7XG4gIGZvbnQtc2l6ZTogMTNweDtcbiAgZm9udC13ZWlnaHQ6IDYwMDtcbiAgY3Vyc29yOiBwb2ludGVyO1xufVxuXG4uYnRuLXNlY29uZGFyeSB7XG4gIGJhY2tncm91bmQ6ICNmM2YzZjM7XG4gIGNvbG9yOiAjMzMzO1xuICBwYWRkaW5nOiA4cHggMjJweDtcbiAgYm9yZGVyLXJhZGl1czogOHB4O1xuICBib3JkZXI6IDFweCBzb2xpZCAjZGRkO1xuICBmb250LXNpemU6IDEzcHg7XG4gIGN1cnNvcjogcG9pbnRlcjtcbn1cblxuLmFsZXJ0LXdyYXBwZXIge1xuICBtYXJnaW46IDEycHggMCAxNnB4O1xufVxuXG4uYWxlcnQge1xuICBwYWRkaW5nOiAxMnB4IDE2cHg7XG4gIGJvcmRlci1yYWRpdXM6IDhweDtcbiAgZm9udC1zaXplOiAxM3B4O1xuICBkaXNwbGF5OiBmbGV4O1xuICBqdXN0aWZ5LWNvbnRlbnQ6IHNwYWNlLWJldHdlZW47XG59XG5cbi5hbGVydC1zdWNjZXNzIHtcbiAgY29sb3I6ICMwZjUxMzI7XG4gIGJhY2tncm91bmQ6ICNkMWU3ZGQ7XG59XG5cbi5hbGVydC1kYW5nZXIge1xuICBjb2xvcjogIzg0MjAyOTtcbiAgYmFja2dyb3VuZDogI2Y4ZDdkYTtcbn1cblxuLmJ0bi1jbG9zZSB7XG4gIGJhY2tncm91bmQ6IHRyYW5zcGFyZW50O1xuICBib3JkZXI6IG5vbmU7XG4gIGZvbnQtc2l6ZTogMjBweDtcbiAgY3Vyc29yOiBwb2ludGVyO1xuICBvcGFjaXR5OiAwLjY7XG59XG5cbi5idG4tY2xvc2U6OmJlZm9yZSB7XG4gIGNvbnRlbnQ6ICfDlyc7XG59XG5cbmxhYmVsIHtcbiAgZm9udC1zaXplOiAxMnB4O1xuICBmb250LXdlaWdodDogNjAwO1xuICBtYXJnaW4tYm90dG9tOiAzcHg7XG4gIC8qIPCflKUgcmVkdWNlZCAqL1xuICBkaXNwbGF5OiBibG9jaztcbn1cbjwvc3R5bGU+XG4iXSwiZmlsZSI6IkQ6L0RvdCBOZXQgUHJvamVjdHMvSlNLL2htaXMtdWkvc3JjL21vZHVsZXMvZmluYW5jZS9jb2EvQ2hhcnRPZkFjY291bnRGb3JtTW9kYWwudnVlIn0=

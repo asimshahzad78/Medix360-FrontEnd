@@ -1,0 +1,303 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/modules/user-management/UserResetPasswordModal.vue");/* Injection by vite-plugin-vue-inspector Start */
+import { createElementVNode as __createElementVNode,createElementBlock as __createElementBlock } from "/node_modules/.vite/deps/vue.js?v=6936ed99"
+function _interopVNode(vnode) {
+  if (vnode && vnode.props && 'data-v-inspector' in vnode.props) {
+    const data = vnode.props['data-v-inspector']
+    delete vnode.props['data-v-inspector']
+    Object.defineProperty(vnode.props, '__v_inspector', { value: data, enumerable: false })
+  }
+  return vnode
+}
+function _createElementVNode(...args) { return _interopVNode(__createElementVNode(...args)) }
+function _createElementBlock(...args) { return _interopVNode(__createElementBlock(...args)) }
+/* Injection by vite-plugin-vue-inspector End */
+import { defineComponent as _defineComponent } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+import { ref } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+import { userManagementService } from "/src/modules/user-management/user-management.service.ts";
+const _sfc_main = /* @__PURE__ */ _defineComponent({
+  __name: "UserResetPasswordModal",
+  props: {
+    userId: { type: String, required: true },
+    email: { type: String, required: true }
+  },
+  emits: ["close", "saved"],
+  setup(__props, { expose: __expose, emit: __emit }) {
+    __expose();
+    const props = __props;
+    const emit = __emit;
+    const password = ref("");
+    const confirm = ref("");
+    const show = ref(false);
+    const saving = ref(false);
+    const error = ref(null);
+    const ok = ref(null);
+    const validate = () => {
+      error.value = null;
+      ok.value = null;
+      const p = password.value.trim();
+      const c = confirm.value.trim();
+      if (!p || p.length < 6) {
+        error.value = "Password must be at least 6 characters.";
+        return false;
+      }
+      if (p !== c) {
+        error.value = "Password and confirm password do not match.";
+        return false;
+      }
+      return true;
+    };
+    const getErrorMessage = (e) => {
+      if (typeof e === "object" && e !== null) {
+        const obj = e;
+        const response = obj["response"];
+        if (typeof response === "object" && response !== null) {
+          const resObj = response;
+          const data = resObj["data"];
+          if (typeof data === "object" && data !== null) {
+            const dataObj = data;
+            const msg2 = dataObj["message"];
+            if (typeof msg2 === "string" && msg2.trim()) return msg2;
+          }
+        }
+        const msg = obj["message"];
+        if (typeof msg === "string" && msg.trim()) return msg;
+      }
+      return "Failed to reset password.";
+    };
+    const save = async () => {
+      if (!validate()) return;
+      saving.value = true;
+      error.value = null;
+      ok.value = null;
+      try {
+        await userManagementService.resetPassword(props.userId, { newPassword: password.value });
+        ok.value = "Password reset successfully.";
+        password.value = "";
+        confirm.value = "";
+        emit("saved");
+      } catch (e) {
+        error.value = getErrorMessage(e);
+      } finally {
+        saving.value = false;
+      }
+    };
+    const __returned__ = { props, emit, password, confirm, show, saving, error, ok, validate, getErrorMessage, save };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+import {  toDisplayString as _toDisplayString, createTextVNode as _createTextVNode, vModelDynamic as _vModelDynamic, withDirectives as _withDirectives, vModelCheckbox as _vModelCheckbox, openBlock as _openBlock,  createCommentVNode as _createCommentVNode, withModifiers as _withModifiers } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+const _hoisted_1 = {
+  class: "head",
+  "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:4:7"
+};
+const _hoisted_2 = { "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:5:9" };
+const _hoisted_3 = {
+  class: "sub",
+  "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:7:11"
+};
+const _hoisted_4 = {
+  class: "mono",
+  "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:8:32"
+};
+const _hoisted_5 = {
+  class: "body",
+  "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:15:7"
+};
+const _hoisted_6 = {
+  class: "grid",
+  "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:16:9"
+};
+const _hoisted_7 = {
+  class: "field",
+  "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:17:11"
+};
+const _hoisted_8 = ["type"];
+const _hoisted_9 = {
+  class: "field",
+  "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:23:11"
+};
+const _hoisted_10 = ["type"];
+const _hoisted_11 = {
+  class: "chk",
+  "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:30:9"
+};
+const _hoisted_12 = {
+  key: 0,
+  class: "error",
+  "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:35:9"
+};
+const _hoisted_13 = {
+  key: 1,
+  class: "ok",
+  "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:36:9"
+};
+const _hoisted_14 = {
+  class: "foot",
+  "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:39:7"
+};
+const _hoisted_15 = ["disabled"];
+const _hoisted_16 = ["disabled"];
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock(), _createElementBlock("div", {
+    class: "backdrop",
+    onClick: _cache[6] || (_cache[6] = ($event) => $setup.emit("close")),
+    "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:2:3"
+  }, [
+    _createElementVNode("div", {
+      class: "modal card",
+      onClick: _cache[5] || (_cache[5] = _withModifiers(() => {
+      }, ["stop"])),
+      "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:3:5"
+    }, [
+      _createElementVNode("div", _hoisted_1, [
+        _createElementVNode("div", _hoisted_2, [
+          _cache[8] || (_cache[8] = _createElementVNode(
+            "h3",
+            {
+              class: "title",
+              "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:6:11"
+            },
+            "Reset Password",
+            -1
+            /* CACHED */
+          )),
+          _createElementVNode("div", _hoisted_3, [
+            _cache[7] || (_cache[7] = _createTextVNode(
+              " Reset password for ",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode(
+              "span",
+              _hoisted_4,
+              _toDisplayString($props.email),
+              1
+              /* TEXT */
+            )
+          ])
+        ]),
+        _createElementVNode("button", {
+          class: "x",
+          type: "button",
+          onClick: _cache[0] || (_cache[0] = ($event) => $setup.emit("close")),
+          "aria-label": "Close",
+          "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:12:9"
+        }, "×")
+      ]),
+      _createElementVNode("div", _hoisted_5, [
+        _createElementVNode("div", _hoisted_6, [
+          _createElementVNode("div", _hoisted_7, [
+            _cache[9] || (_cache[9] = _createElementVNode(
+              "label",
+              { "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:18:13" },
+              "New Password",
+              -1
+              /* CACHED */
+            )),
+            _withDirectives(_createElementVNode("input", {
+              "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $setup.password = $event),
+              class: "input",
+              type: $setup.show ? "text" : "password",
+              placeholder: "Enter new password",
+              autocomplete: "new-password",
+              "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:19:13"
+            }, null, 8, _hoisted_8), [
+              [_vModelDynamic, $setup.password]
+            ])
+          ]),
+          _createElementVNode("div", _hoisted_9, [
+            _cache[10] || (_cache[10] = _createElementVNode(
+              "label",
+              { "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:24:13" },
+              "Confirm Password",
+              -1
+              /* CACHED */
+            )),
+            _withDirectives(_createElementVNode("input", {
+              "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $setup.confirm = $event),
+              class: "input",
+              type: $setup.show ? "text" : "password",
+              placeholder: "Confirm new password",
+              autocomplete: "new-password",
+              "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:25:13"
+            }, null, 8, _hoisted_10), [
+              [_vModelDynamic, $setup.confirm]
+            ])
+          ])
+        ]),
+        _createElementVNode("label", _hoisted_11, [
+          _withDirectives(_createElementVNode(
+            "input",
+            {
+              type: "checkbox",
+              "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => $setup.show = $event),
+              "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:31:11"
+            },
+            null,
+            512
+            /* NEED_PATCH */
+          ), [
+            [_vModelCheckbox, $setup.show]
+          ]),
+          _cache[11] || (_cache[11] = _createElementVNode(
+            "span",
+            { "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:32:11" },
+            "Show password",
+            -1
+            /* CACHED */
+          ))
+        ]),
+        $setup.error ? (_openBlock(), _createElementBlock(
+          "div",
+          _hoisted_12,
+          _toDisplayString($setup.error),
+          1
+          /* TEXT */
+        )) : _createCommentVNode("v-if", true),
+        $setup.ok ? (_openBlock(), _createElementBlock(
+          "div",
+          _hoisted_13,
+          _toDisplayString($setup.ok),
+          1
+          /* TEXT */
+        )) : _createCommentVNode("v-if", true)
+      ]),
+      _createElementVNode("div", _hoisted_14, [
+        _createElementVNode("button", {
+          class: "btn2",
+          type: "button",
+          onClick: _cache[4] || (_cache[4] = ($event) => $setup.emit("close")),
+          disabled: $setup.saving,
+          "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:40:9"
+        }, "Cancel", 8, _hoisted_15),
+        _createElementVNode("button", {
+          class: "btn danger",
+          type: "button",
+          onClick: $setup.save,
+          disabled: $setup.saving,
+          "data-v-inspector": "src/modules/user-management/UserResetPasswordModal.vue:41:9"
+        }, _toDisplayString($setup.saving ? "Saving..." : "Reset Password"), 9, _hoisted_16)
+      ])
+    ])
+  ]);
+}
+import "/src/modules/user-management/UserResetPasswordModal.vue?vue&type=style&index=0&scoped=f9897072&lang.css";
+_sfc_main.__hmrId = "f9897072";
+typeof __VUE_HMR_RUNTIME__ !== "undefined" && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main);
+import.meta.hot.on("file-changed", ({ file }) => {
+  __VUE_HMR_RUNTIME__.CHANGED_FILE = file;
+});
+import.meta.hot.accept((mod) => {
+  if (!mod) return;
+  const { default: updated, _rerender_only } = mod;
+  if (_rerender_only) {
+    __VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render);
+  } else {
+    __VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated);
+  }
+});
+import _export_sfc from "/@id/__x00__plugin-vue:export-helper";
+export default /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-f9897072"], ["__file", "D:/Dot Net Projects/JSK/hmis-ui/src/modules/user-management/UserResetPasswordModal.vue"]]);
+
+//# sourceMappingURL=data:application/json;base64,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LGNBQ3BGLGNBQWE7QUFBQSxjQUFlLG9CQUFpQjtBQUFBOytCQUQvQixjQUFPO0FBQUE7OztRQUszQixvQkFHUSxTQUhSLGFBR1E7QUFBQSwwQkFGTjtBQUFBLFlBQXdIO0FBQUE7QUFBQSxjQUFqSCxNQUFLO0FBQUEsMkVBQW9CLGNBQUk7QUFBQSxjQUFFLG9CQUFpQjtBQUFBOzs7Ozs4QkFBdkIsV0FBSTtBQUFBO3NDQUNwQztBQUFBLFlBQTBHO0FBQUEsY0FBcEcsb0JBQWlCLCtEQUE4RDtBQUFBLFlBQUM7QUFBQSxZQUFhO0FBQUE7QUFBQTtBQUFBO1FBRzFGLDhCQUFYO0FBQUEsVUFBZ0k7QUFBQSxVQUFoSTtBQUFBLFVBQWdJLGlCQUFkLFlBQUs7QUFBQTtBQUFBO0FBQUE7UUFDNUcsMkJBQVg7QUFBQSxVQUF1SDtBQUFBLFVBQXZIO0FBQUEsVUFBdUgsaUJBQVgsU0FBRTtBQUFBO0FBQUE7QUFBQTs7TUFHaEgsb0JBS00sT0FMTixhQUtNO0FBQUEsUUFKSixvQkFBMks7QUFBQSxVQUFuSyxPQUFNO0FBQUEsVUFBTyxNQUFLO0FBQUEsVUFBVSxTQUFLLHNDQUFFLFlBQUk7QUFBQSxVQUFZLFVBQVU7QUFBQSxVQUFRLG9CQUFpQjtBQUFBLFdBQThELFVBQU07QUFBQSxRQUNsSyxvQkFFUztBQUFBLFVBRkQsT0FBTTtBQUFBLFVBQWEsTUFBSztBQUFBLFVBQVUsU0FBTztBQUFBLFVBQU8sVUFBVTtBQUFBLFVBQVEsb0JBQWlCO0FBQUEsNEJBQ3RGLGdCQUFNO0FBQUEiLCJuYW1lcyI6WyJtc2ciXSwiaWdub3JlTGlzdCI6W10sInNvdXJjZXMiOlsiVXNlclJlc2V0UGFzc3dvcmRNb2RhbC52dWUiXSwic291cmNlc0NvbnRlbnQiOlsiPHRlbXBsYXRlPlxuICA8ZGl2IGNsYXNzPVwiYmFja2Ryb3BcIiBAY2xpY2s9XCJlbWl0KCdjbG9zZScpXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL3VzZXItbWFuYWdlbWVudC9Vc2VyUmVzZXRQYXNzd29yZE1vZGFsLnZ1ZToyOjNcIj5cbiAgICA8ZGl2IGNsYXNzPVwibW9kYWwgY2FyZFwiIEBjbGljay5zdG9wIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy91c2VyLW1hbmFnZW1lbnQvVXNlclJlc2V0UGFzc3dvcmRNb2RhbC52dWU6Mzo1XCI+XG4gICAgICA8ZGl2IGNsYXNzPVwiaGVhZFwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy91c2VyLW1hbmFnZW1lbnQvVXNlclJlc2V0UGFzc3dvcmRNb2RhbC52dWU6NDo3XCI+XG4gICAgICAgIDxkaXYgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL3VzZXItbWFuYWdlbWVudC9Vc2VyUmVzZXRQYXNzd29yZE1vZGFsLnZ1ZTo1OjlcIj5cbiAgICAgICAgICA8aDMgY2xhc3M9XCJ0aXRsZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy91c2VyLW1hbmFnZW1lbnQvVXNlclJlc2V0UGFzc3dvcmRNb2RhbC52dWU6NjoxMVwiPlJlc2V0IFBhc3N3b3JkPC9oMz5cbiAgICAgICAgICA8ZGl2IGNsYXNzPVwic3ViXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL3VzZXItbWFuYWdlbWVudC9Vc2VyUmVzZXRQYXNzd29yZE1vZGFsLnZ1ZTo3OjExXCI+XG4gICAgICAgICAgICBSZXNldCBwYXNzd29yZCBmb3IgPHNwYW4gY2xhc3M9XCJtb25vXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL3VzZXItbWFuYWdlbWVudC9Vc2VyUmVzZXRQYXNzd29yZE1vZGFsLnZ1ZTo4OjMyXCI+e3sgZW1haWwgfX08L3NwYW4+XG4gICAgICAgICAgPC9kaXY+XG4gICAgICAgIDwvZGl2PlxuXG4gICAgICAgIDxidXR0b24gY2xhc3M9XCJ4XCIgdHlwZT1cImJ1dHRvblwiIEBjbGljaz1cImVtaXQoJ2Nsb3NlJylcIiBhcmlhLWxhYmVsPVwiQ2xvc2VcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvdXNlci1tYW5hZ2VtZW50L1VzZXJSZXNldFBhc3N3b3JkTW9kYWwudnVlOjEyOjlcIj7DlzwvYnV0dG9uPlxuICAgICAgPC9kaXY+XG5cbiAgICAgIDxkaXYgY2xhc3M9XCJib2R5XCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL3VzZXItbWFuYWdlbWVudC9Vc2VyUmVzZXRQYXNzd29yZE1vZGFsLnZ1ZToxNTo3XCI+XG4gICAgICAgIDxkaXYgY2xhc3M9XCJncmlkXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL3VzZXItbWFuYWdlbWVudC9Vc2VyUmVzZXRQYXNzd29yZE1vZGFsLnZ1ZToxNjo5XCI+XG4gICAgICAgICAgPGRpdiBjbGFzcz1cImZpZWxkXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL3VzZXItbWFuYWdlbWVudC9Vc2VyUmVzZXRQYXNzd29yZE1vZGFsLnZ1ZToxNzoxMVwiPlxuICAgICAgICAgICAgPGxhYmVsIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy91c2VyLW1hbmFnZW1lbnQvVXNlclJlc2V0UGFzc3dvcmRNb2RhbC52dWU6MTg6MTNcIj5OZXcgUGFzc3dvcmQ8L2xhYmVsPlxuICAgICAgICAgICAgPGlucHV0IHYtbW9kZWw9XCJwYXNzd29yZFwiIGNsYXNzPVwiaW5wdXRcIiA6dHlwZT1cInNob3cgPyAndGV4dCcgOiAncGFzc3dvcmQnXCIgcGxhY2Vob2xkZXI9XCJFbnRlciBuZXcgcGFzc3dvcmRcIlxuICAgICAgICAgICAgICBhdXRvY29tcGxldGU9XCJuZXctcGFzc3dvcmRcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvdXNlci1tYW5hZ2VtZW50L1VzZXJSZXNldFBhc3N3b3JkTW9kYWwudnVlOjE5OjEzXCIgLz5cbiAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgIDxkaXYgY2xhc3M9XCJmaWVsZFwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy91c2VyLW1hbmFnZW1lbnQvVXNlclJlc2V0UGFzc3dvcmRNb2RhbC52dWU6MjM6MTFcIj5cbiAgICAgICAgICAgIDxsYWJlbCBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvdXNlci1tYW5hZ2VtZW50L1VzZXJSZXNldFBhc3N3b3JkTW9kYWwudnVlOjI0OjEzXCI+Q29uZmlybSBQYXNzd29yZDwvbGFiZWw+XG4gICAgICAgICAgICA8aW5wdXQgdi1tb2RlbD1cImNvbmZpcm1cIiBjbGFzcz1cImlucHV0XCIgOnR5cGU9XCJzaG93ID8gJ3RleHQnIDogJ3Bhc3N3b3JkJ1wiIHBsYWNlaG9sZGVyPVwiQ29uZmlybSBuZXcgcGFzc3dvcmRcIlxuICAgICAgICAgICAgICBhdXRvY29tcGxldGU9XCJuZXctcGFzc3dvcmRcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvdXNlci1tYW5hZ2VtZW50L1VzZXJSZXNldFBhc3N3b3JkTW9kYWwudnVlOjI1OjEzXCIgLz5cbiAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgPGxhYmVsIGNsYXNzPVwiY2hrXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL3VzZXItbWFuYWdlbWVudC9Vc2VyUmVzZXRQYXNzd29yZE1vZGFsLnZ1ZTozMDo5XCI+XG4gICAgICAgICAgPGlucHV0IHR5cGU9XCJjaGVja2JveFwiIHYtbW9kZWw9XCJzaG93XCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL3VzZXItbWFuYWdlbWVudC9Vc2VyUmVzZXRQYXNzd29yZE1vZGFsLnZ1ZTozMToxMVwiIC8+XG4gICAgICAgICAgPHNwYW4gZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL3VzZXItbWFuYWdlbWVudC9Vc2VyUmVzZXRQYXNzd29yZE1vZGFsLnZ1ZTozMjoxMVwiPlNob3cgcGFzc3dvcmQ8L3NwYW4+XG4gICAgICAgIDwvbGFiZWw+XG5cbiAgICAgICAgPGRpdiB2LWlmPVwiZXJyb3JcIiBjbGFzcz1cImVycm9yXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL3VzZXItbWFuYWdlbWVudC9Vc2VyUmVzZXRQYXNzd29yZE1vZGFsLnZ1ZTozNTo5XCI+e3sgZXJyb3IgfX08L2Rpdj5cbiAgICAgICAgPGRpdiB2LWlmPVwib2tcIiBjbGFzcz1cIm9rXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL3VzZXItbWFuYWdlbWVudC9Vc2VyUmVzZXRQYXNzd29yZE1vZGFsLnZ1ZTozNjo5XCI+e3sgb2sgfX08L2Rpdj5cbiAgICAgIDwvZGl2PlxuXG4gICAgICA8ZGl2IGNsYXNzPVwiZm9vdFwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvbW9kdWxlcy91c2VyLW1hbmFnZW1lbnQvVXNlclJlc2V0UGFzc3dvcmRNb2RhbC52dWU6Mzk6N1wiPlxuICAgICAgICA8YnV0dG9uIGNsYXNzPVwiYnRuMlwiIHR5cGU9XCJidXR0b25cIiBAY2xpY2s9XCJlbWl0KCdjbG9zZScpXCIgOmRpc2FibGVkPVwic2F2aW5nXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9tb2R1bGVzL3VzZXItbWFuYWdlbWVudC9Vc2VyUmVzZXRQYXNzd29yZE1vZGFsLnZ1ZTo0MDo5XCI+Q2FuY2VsPC9idXR0b24+XG4gICAgICAgIDxidXR0b24gY2xhc3M9XCJidG4gZGFuZ2VyXCIgdHlwZT1cImJ1dHRvblwiIEBjbGljaz1cInNhdmVcIiA6ZGlzYWJsZWQ9XCJzYXZpbmdcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL21vZHVsZXMvdXNlci1tYW5hZ2VtZW50L1VzZXJSZXNldFBhc3N3b3JkTW9kYWwudnVlOjQxOjlcIj5cbiAgICAgICAgICB7eyBzYXZpbmcgPyAnU2F2aW5nLi4uJyA6ICdSZXNldCBQYXNzd29yZCcgfX1cbiAgICAgICAgPC9idXR0b24+XG4gICAgICA8L2Rpdj5cbiAgICA8L2Rpdj5cbiAgPC9kaXY+XG48L3RlbXBsYXRlPlxuXG48c2NyaXB0IHNldHVwIGxhbmc9XCJ0c1wiPlxuaW1wb3J0IHsgcmVmIH0gZnJvbSAndnVlJ1xuaW1wb3J0IHsgdXNlck1hbmFnZW1lbnRTZXJ2aWNlIH0gZnJvbSAnLi91c2VyLW1hbmFnZW1lbnQuc2VydmljZSdcblxuY29uc3QgcHJvcHMgPSBkZWZpbmVQcm9wczx7XG4gIHVzZXJJZDogc3RyaW5nXG4gIGVtYWlsOiBzdHJpbmdcbn0+KClcblxuY29uc3QgZW1pdCA9IGRlZmluZUVtaXRzPHtcbiAgKGU6ICdjbG9zZScpOiB2b2lkXG4gIChlOiAnc2F2ZWQnKTogdm9pZFxufT4oKVxuXG5jb25zdCBwYXNzd29yZCA9IHJlZignJylcbmNvbnN0IGNvbmZpcm0gPSByZWYoJycpXG5jb25zdCBzaG93ID0gcmVmKGZhbHNlKVxuXG5jb25zdCBzYXZpbmcgPSByZWYoZmFsc2UpXG5jb25zdCBlcnJvciA9IHJlZjxzdHJpbmcgfCBudWxsPihudWxsKVxuY29uc3Qgb2sgPSByZWY8c3RyaW5nIHwgbnVsbD4obnVsbClcblxuY29uc3QgdmFsaWRhdGUgPSAoKSA9PiB7XG4gIGVycm9yLnZhbHVlID0gbnVsbFxuICBvay52YWx1ZSA9IG51bGxcblxuICBjb25zdCBwID0gcGFzc3dvcmQudmFsdWUudHJpbSgpXG4gIGNvbnN0IGMgPSBjb25maXJtLnZhbHVlLnRyaW0oKVxuXG4gIGlmICghcCB8fCBwLmxlbmd0aCA8IDYpIHtcbiAgICBlcnJvci52YWx1ZSA9ICdQYXNzd29yZCBtdXN0IGJlIGF0IGxlYXN0IDYgY2hhcmFjdGVycy4nXG4gICAgcmV0dXJuIGZhbHNlXG4gIH1cbiAgaWYgKHAgIT09IGMpIHtcbiAgICBlcnJvci52YWx1ZSA9ICdQYXNzd29yZCBhbmQgY29uZmlybSBwYXNzd29yZCBkbyBub3QgbWF0Y2guJ1xuICAgIHJldHVybiBmYWxzZVxuICB9XG4gIHJldHVybiB0cnVlXG59XG5cbmNvbnN0IGdldEVycm9yTWVzc2FnZSA9IChlOiB1bmtub3duKTogc3RyaW5nID0+IHtcbiAgaWYgKHR5cGVvZiBlID09PSAnb2JqZWN0JyAmJiBlICE9PSBudWxsKSB7XG4gICAgY29uc3Qgb2JqID0gZSBhcyBSZWNvcmQ8c3RyaW5nLCB1bmtub3duPlxuXG4gICAgY29uc3QgcmVzcG9uc2UgPSBvYmpbJ3Jlc3BvbnNlJ11cbiAgICBpZiAodHlwZW9mIHJlc3BvbnNlID09PSAnb2JqZWN0JyAmJiByZXNwb25zZSAhPT0gbnVsbCkge1xuICAgICAgY29uc3QgcmVzT2JqID0gcmVzcG9uc2UgYXMgUmVjb3JkPHN0cmluZywgdW5rbm93bj5cbiAgICAgIGNvbnN0IGRhdGEgPSByZXNPYmpbJ2RhdGEnXVxuICAgICAgaWYgKHR5cGVvZiBkYXRhID09PSAnb2JqZWN0JyAmJiBkYXRhICE9PSBudWxsKSB7XG4gICAgICAgIGNvbnN0IGRhdGFPYmogPSBkYXRhIGFzIFJlY29yZDxzdHJpbmcsIHVua25vd24+XG4gICAgICAgIGNvbnN0IG1zZyA9IGRhdGFPYmpbJ21lc3NhZ2UnXVxuICAgICAgICBpZiAodHlwZW9mIG1zZyA9PT0gJ3N0cmluZycgJiYgbXNnLnRyaW0oKSkgcmV0dXJuIG1zZ1xuICAgICAgfVxuICAgIH1cblxuICAgIGNvbnN0IG1zZyA9IG9ialsnbWVzc2FnZSddXG4gICAgaWYgKHR5cGVvZiBtc2cgPT09ICdzdHJpbmcnICYmIG1zZy50cmltKCkpIHJldHVybiBtc2dcbiAgfVxuICByZXR1cm4gJ0ZhaWxlZCB0byByZXNldCBwYXNzd29yZC4nXG59XG5cbmNvbnN0IHNhdmUgPSBhc3luYyAoKSA9PiB7XG4gIGlmICghdmFsaWRhdGUoKSkgcmV0dXJuXG5cbiAgc2F2aW5nLnZhbHVlID0gdHJ1ZVxuICBlcnJvci52YWx1ZSA9IG51bGxcbiAgb2sudmFsdWUgPSBudWxsXG5cbiAgdHJ5IHtcbiAgICBhd2FpdCB1c2VyTWFuYWdlbWVudFNlcnZpY2UucmVzZXRQYXNzd29yZChwcm9wcy51c2VySWQsIHsgbmV3UGFzc3dvcmQ6IHBhc3N3b3JkLnZhbHVlIH0pXG4gICAgb2sudmFsdWUgPSAnUGFzc3dvcmQgcmVzZXQgc3VjY2Vzc2Z1bGx5LidcbiAgICBwYXNzd29yZC52YWx1ZSA9ICcnXG4gICAgY29uZmlybS52YWx1ZSA9ICcnXG4gICAgZW1pdCgnc2F2ZWQnKVxuICB9IGNhdGNoIChlOiB1bmtub3duKSB7XG4gICAgZXJyb3IudmFsdWUgPSBnZXRFcnJvck1lc3NhZ2UoZSlcbiAgfSBmaW5hbGx5IHtcbiAgICBzYXZpbmcudmFsdWUgPSBmYWxzZVxuICB9XG59XG48L3NjcmlwdD5cblxuPHN0eWxlIHNjb3BlZD5cbi5iYWNrZHJvcCB7XG4gIHBvc2l0aW9uOiBmaXhlZDtcbiAgaW5zZXQ6IDA7XG4gIGJhY2tncm91bmQ6IHJnYmEoMCwgMCwgMCwgLjM1KTtcbiAgZGlzcGxheTogZ3JpZDtcbiAgcGxhY2UtaXRlbXM6IGNlbnRlcjtcbiAgei1pbmRleDogOTk5OTtcbn1cblxuLmNhcmQge1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xuICBib3JkZXItcmFkaXVzOiAxNHB4O1xuICBwYWRkaW5nOiAxNHB4O1xuICBib3gtc2hhZG93OiAwIDEwcHggMzBweCByZ2JhKDAsIDAsIDAsIC4xOCk7XG59XG5cbi5tb2RhbCB7XG4gIHdpZHRoOiBtaW4oNzIwcHgsIGNhbGMoMTAwdncgLSAyNHB4KSk7XG59XG5cbi5oZWFkIHtcbiAgZGlzcGxheTogZmxleDtcbiAganVzdGlmeS1jb250ZW50OiBzcGFjZS1iZXR3ZWVuO1xuICBhbGlnbi1pdGVtczogZmxleC1zdGFydDtcbiAgZ2FwOiAxMnB4O1xuICBib3JkZXItYm90dG9tOiAxcHggc29saWQgI2VlZTtcbiAgcGFkZGluZy1ib3R0b206IDEwcHg7XG59XG5cbi50aXRsZSB7XG4gIG1hcmdpbjogMDtcbiAgZm9udC1zaXplOiAxOHB4O1xuICBmb250LXdlaWdodDogOTUwO1xufVxuXG4uc3ViIHtcbiAgbWFyZ2luLXRvcDogNnB4O1xuICBmb250LXNpemU6IDEycHg7XG4gIGZvbnQtd2VpZ2h0OiA4MDA7XG4gIGNvbG9yOiAjNmI3MjgwO1xufVxuXG4ubW9ubyB7XG4gIGZvbnQtZmFtaWx5OiB1aS1tb25vc3BhY2UsIFNGTW9uby1SZWd1bGFyLCBNZW5sbywgTW9uYWNvLCBDb25zb2xhcywgXCJMaWJlcmF0aW9uIE1vbm9cIiwgXCJDb3VyaWVyIE5ld1wiLCBtb25vc3BhY2U7XG59XG5cbi54IHtcbiAgaGVpZ2h0OiAzNHB4O1xuICB3aWR0aDogMzRweDtcbiAgYm9yZGVyLXJhZGl1czogMTBweDtcbiAgYm9yZGVyOiAxcHggc29saWQgI2U1ZTdlYjtcbiAgYmFja2dyb3VuZDogI2ZmZjtcbiAgZm9udC13ZWlnaHQ6IDk1MDtcbiAgY3Vyc29yOiBwb2ludGVyO1xufVxuXG4uYm9keSB7XG4gIHBhZGRpbmc6IDEycHggMDtcbn1cblxuLmdyaWQge1xuICBkaXNwbGF5OiBncmlkO1xuICBncmlkLXRlbXBsYXRlLWNvbHVtbnM6IDFmciAxZnI7XG4gIGdhcDogMTJweDtcbn1cblxuQG1lZGlhIChtYXgtd2lkdGg6IDY4MHB4KSB7XG4gIC5ncmlkIHtcbiAgICBncmlkLXRlbXBsYXRlLWNvbHVtbnM6IDFmcjtcbiAgfVxufVxuXG4uZmllbGQge1xuICBkaXNwbGF5OiBmbGV4O1xuICBmbGV4LWRpcmVjdGlvbjogY29sdW1uO1xufVxuXG5sYWJlbCB7XG4gIGZvbnQtc2l6ZTogMTJweDtcbiAgZm9udC13ZWlnaHQ6IDkwMDtcbiAgbWFyZ2luLWJvdHRvbTogNnB4O1xufVxuXG4uaW5wdXQge1xuICBoZWlnaHQ6IDQycHg7XG4gIGJvcmRlcjogMXB4IHNvbGlkICNkMWQ1ZGI7XG4gIGJvcmRlci1yYWRpdXM6IDEycHg7XG4gIHBhZGRpbmc6IDAgMTJweDtcbiAgZm9udC13ZWlnaHQ6IDgwMDtcbn1cblxuLmNoayB7XG4gIG1hcmdpbi10b3A6IDEwcHg7XG4gIGRpc3BsYXk6IGlubGluZS1mbGV4O1xuICBnYXA6IDhweDtcbiAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbiAgZm9udC13ZWlnaHQ6IDkwMDtcbiAgY29sb3I6ICMzNzQxNTE7XG4gIHVzZXItc2VsZWN0OiBub25lO1xufVxuXG4uZXJyb3Ige1xuICBtYXJnaW4tdG9wOiAxMHB4O1xuICBiYWNrZ3JvdW5kOiAjZmVlMmUyO1xuICBib3JkZXI6IDFweCBzb2xpZCAjZmVjYWNhO1xuICBjb2xvcjogIzk5MWIxYjtcbiAgcGFkZGluZzogMTBweCAxMnB4O1xuICBib3JkZXItcmFkaXVzOiAxMnB4O1xuICBmb250LXdlaWdodDogOTAwO1xufVxuXG4ub2sge1xuICBtYXJnaW4tdG9wOiAxMHB4O1xuICBiYWNrZ3JvdW5kOiAjZGNmY2U3O1xuICBib3JkZXI6IDFweCBzb2xpZCAjYmJmN2QwO1xuICBjb2xvcjogIzE2NjUzNDtcbiAgcGFkZGluZzogMTBweCAxMnB4O1xuICBib3JkZXItcmFkaXVzOiAxMnB4O1xuICBmb250LXdlaWdodDogOTAwO1xufVxuXG4uZm9vdCB7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGp1c3RpZnktY29udGVudDogZmxleC1lbmQ7XG4gIGdhcDogMTBweDtcbiAgYm9yZGVyLXRvcDogMXB4IHNvbGlkICNlZWU7XG4gIHBhZGRpbmctdG9wOiAxMnB4O1xufVxuXG4uYnRuIHtcbiAgaGVpZ2h0OiAzOHB4O1xuICBwYWRkaW5nOiAwIDEycHg7XG4gIGJvcmRlci1yYWRpdXM6IDEycHg7XG4gIGJvcmRlcjogbm9uZTtcbiAgYmFja2dyb3VuZDogIzE3MmQzMDtcbiAgY29sb3I6ICNmZmY7XG4gIGZvbnQtd2VpZ2h0OiA5MDA7XG4gIGN1cnNvcjogcG9pbnRlcjtcbn1cblxuLmJ0bi5kYW5nZXIge1xuICBiYWNrZ3JvdW5kOiAjYjkxYzFjO1xufVxuXG4uYnRuMiB7XG4gIGhlaWdodDogMzhweDtcbiAgcGFkZGluZzogMCAxMnB4O1xuICBib3JkZXItcmFkaXVzOiAxMnB4O1xuICBib3JkZXI6IDFweCBzb2xpZCAjZDFkNWRiO1xuICBiYWNrZ3JvdW5kOiAjZmZmO1xuICBmb250LXdlaWdodDogOTAwO1xuICBjdXJzb3I6IHBvaW50ZXI7XG59XG5cbi5idG46ZGlzYWJsZWQsXG4uYnRuMjpkaXNhYmxlZCB7XG4gIG9wYWNpdHk6IC42O1xuICBjdXJzb3I6IG5vdC1hbGxvd2VkO1xufVxuPC9zdHlsZT5cbiJdLCJmaWxlIjoiRDovRG90IE5ldCBQcm9qZWN0cy9KU0svaG1pcy11aS9zcmMvbW9kdWxlcy91c2VyLW1hbmFnZW1lbnQvVXNlclJlc2V0UGFzc3dvcmRNb2RhbC52dWUifQ==

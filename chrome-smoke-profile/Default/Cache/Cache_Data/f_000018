@@ -1,0 +1,191 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/ui/AppLookupSelect.vue");/* Injection by vite-plugin-vue-inspector Start */
+import { createElementVNode as __createElementVNode,createElementBlock as __createElementBlock,createVNode as __createVNode } from "/node_modules/.vite/deps/vue.js?v=6936ed99"
+function _interopVNode(vnode) {
+  if (vnode && vnode.props && 'data-v-inspector' in vnode.props) {
+    const data = vnode.props['data-v-inspector']
+    delete vnode.props['data-v-inspector']
+    Object.defineProperty(vnode.props, '__v_inspector', { value: data, enumerable: false })
+  }
+  return vnode
+}
+function _createElementVNode(...args) { return _interopVNode(__createElementVNode(...args)) }
+function _createElementBlock(...args) { return _interopVNode(__createElementBlock(...args)) }
+function _createVNode(...args) { return _interopVNode(__createVNode(...args)) }
+/* Injection by vite-plugin-vue-inspector End */
+import { defineComponent as _defineComponent } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+import { onMounted, ref, watch } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+import Multiselect from "/node_modules/.vite/deps/@vueform_multiselect.js?v=6936ed99";
+import "/node_modules/@vueform/multiselect/themes/default.css";
+import { getApiErrorMessage } from "/src/services/api-response.ts";
+import { lookupService } from "/src/services/lookup.service.ts";
+const _sfc_main = /* @__PURE__ */ _defineComponent({
+  __name: "AppLookupSelect",
+  props: {
+    modelValue: { type: [String, Number, null], required: false, default: null },
+    kind: { type: String, required: true },
+    placeholder: { type: String, required: false, default: "Search..." },
+    params: { type: Object, required: false, default: () => ({}) },
+    disabled: { type: Boolean, required: false, default: false },
+    clearable: { type: Boolean, required: false, default: true },
+    minChars: { type: Number, required: false, default: 0 },
+    preload: { type: Boolean, required: false, default: true }
+  },
+  emits: ["update:modelValue", "selected"],
+  setup(__props, { expose: __expose, emit: __emit }) {
+    __expose();
+    const props = __props;
+    const emit = __emit;
+    const options = ref([]);
+    const loading = ref(false);
+    const error = ref("");
+    let searchTimer;
+    const findSelected = (value) => options.value.find((option) => String(option.id) === String(value)) ?? null;
+    const load = async (term = "") => {
+      if (loading.value) return;
+      loading.value = true;
+      error.value = "";
+      try {
+        options.value = await lookupService.search(props.kind, term, props.params);
+      } catch (err) {
+        error.value = getApiErrorMessage(err, "Lookup failed");
+        options.value = [];
+      } finally {
+        loading.value = false;
+      }
+    };
+    const search = (term) => {
+      window.clearTimeout(searchTimer);
+      searchTimer = window.setTimeout(() => load(term), 250);
+    };
+    const loadInitial = () => {
+      if (!options.value.length) void load();
+    };
+    const updateValue = (value) => {
+      emit("update:modelValue", value);
+      emit("selected", findSelected(value));
+    };
+    watch(
+      () => props.params,
+      () => {
+        options.value = [];
+        if (props.preload) void load();
+      },
+      { deep: true }
+    );
+    onMounted(() => {
+      if (props.preload) void load();
+    });
+    const __returned__ = { props, emit, options, loading, error, get searchTimer() {
+      return searchTimer;
+    }, set searchTimer(v) {
+      searchTimer = v;
+    }, findSelected, load, search, loadInitial, updateValue, get Multiselect() {
+      return Multiselect;
+    } };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+import { toDisplayString as _toDisplayString,  openBlock as _openBlock,  createCommentVNode as _createCommentVNode, withCtx as _withCtx,  } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+const _hoisted_1 = {
+  class: "lookup-select",
+  "data-v-inspector": "src/components/ui/AppLookupSelect.vue:2:3"
+};
+const _hoisted_2 = {
+  class: "lookup-option",
+  "data-v-inspector": "src/components/ui/AppLookupSelect.vue:23:9"
+};
+const _hoisted_3 = { "data-v-inspector": "src/components/ui/AppLookupSelect.vue:24:11" };
+const _hoisted_4 = {
+  key: 0,
+  "data-v-inspector": "src/components/ui/AppLookupSelect.vue:25:11"
+};
+const _hoisted_5 = {
+  class: "multiselect-single-label",
+  "data-v-inspector": "src/components/ui/AppLookupSelect.vue:31:9"
+};
+const _hoisted_6 = {
+  key: 0,
+  class: "lookup-error",
+  "data-v-inspector": "src/components/ui/AppLookupSelect.vue:37:5"
+};
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock(), _createElementBlock("div", _hoisted_1, [
+    _createVNode($setup["Multiselect"], {
+      "model-value": $props.modelValue,
+      options: $setup.options,
+      "value-prop": "id",
+      label: "label",
+      "track-by": "label",
+      searchable: true,
+      "filter-results": false,
+      "close-on-select": true,
+      "clear-on-select": true,
+      "can-clear": $props.clearable,
+      disabled: $props.disabled,
+      loading: $setup.loading,
+      placeholder: $props.placeholder,
+      "min-chars": $props.minChars,
+      onSearchChange: $setup.search,
+      onOpen: $setup.loadInitial,
+      "onUpdate:modelValue": $setup.updateValue,
+      "data-v-inspector": "src/components/ui/AppLookupSelect.vue:3:5"
+    }, {
+      option: _withCtx(({ option }) => [
+        _createElementVNode("div", _hoisted_2, [
+          _createElementVNode(
+            "strong",
+            _hoisted_3,
+            _toDisplayString(option.label),
+            1
+            /* TEXT */
+          ),
+          option.code || option.description ? (_openBlock(), _createElementBlock(
+            "small",
+            _hoisted_4,
+            _toDisplayString([option.code, option.description].filter(Boolean).join(" - ")),
+            1
+            /* TEXT */
+          )) : _createCommentVNode("v-if", true)
+        ])
+      ]),
+      singlelabel: _withCtx(({ value }) => [
+        _createElementVNode(
+          "div",
+          _hoisted_5,
+          _toDisplayString(value.label),
+          1
+          /* TEXT */
+        )
+      ]),
+      _: 1
+      /* STABLE */
+    }, 8, ["model-value", "options", "can-clear", "disabled", "loading", "placeholder", "min-chars"]),
+    $setup.error ? (_openBlock(), _createElementBlock(
+      "p",
+      _hoisted_6,
+      _toDisplayString($setup.error),
+      1
+      /* TEXT */
+    )) : _createCommentVNode("v-if", true)
+  ]);
+}
+import "/src/components/ui/AppLookupSelect.vue?vue&type=style&index=0&scoped=96593ec6&lang.css";
+_sfc_main.__hmrId = "96593ec6";
+typeof __VUE_HMR_RUNTIME__ !== "undefined" && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main);
+import.meta.hot.on("file-changed", ({ file }) => {
+  __VUE_HMR_RUNTIME__.CHANGED_FILE = file;
+});
+import.meta.hot.accept((mod) => {
+  if (!mod) return;
+  const { default: updated, _rerender_only } = mod;
+  if (_rerender_only) {
+    __VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render);
+  } else {
+    __VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated);
+  }
+});
+import _export_sfc from "/@id/__x00__plugin-vue:export-helper";
+export default /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-96593ec6"], ["__file", "D:/Dot Net Projects/JSK/hmis-ui/src/components/ui/AppLookupSelect.vue"]]);
+
+//# sourceMappingURL=data:application/json;base64,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UjtBQUFBLFlBRVEsa0JBREYsT0FBTyxNQUFNLE9BQU8sV0FBVyxFQUFFLE9BQU8sT0FBTyxFQUFFLEtBQUk7QUFBQTtBQUFBO0FBQUE7OztNQUlwRCxhQUFXLFNBQ3BCLENBRU0sRUFIa0IsTUFBSztBQUFBLFFBQzdCO0FBQUEsVUFFTTtBQUFBLFVBRk47QUFBQSxVQUVNLGlCQURELE1BQU0sS0FBSztBQUFBO0FBQUE7QUFBQTtBQUFBOzs7O0lBS1gsOEJBQVQ7QUFBQSxNQUFrSDtBQUFBLE1BQWxIO0FBQUEsTUFBa0gsaUJBQVosWUFBSztBQUFBO0FBQUE7QUFBQSIsIm5hbWVzIjpbXSwiaWdub3JlTGlzdCI6W10sInNvdXJjZXMiOlsiQXBwTG9va3VwU2VsZWN0LnZ1ZSJdLCJzb3VyY2VzQ29udGVudCI6WyI8dGVtcGxhdGU+XG4gIDxkaXYgY2xhc3M9XCJsb29rdXAtc2VsZWN0XCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL3VpL0FwcExvb2t1cFNlbGVjdC52dWU6MjozXCI+XG4gICAgPE11bHRpc2VsZWN0XG4gICAgICA6bW9kZWwtdmFsdWU9XCJtb2RlbFZhbHVlXCJcbiAgICAgIDpvcHRpb25zPVwib3B0aW9uc1wiXG4gICAgICB2YWx1ZS1wcm9wPVwiaWRcIlxuICAgICAgbGFiZWw9XCJsYWJlbFwiXG4gICAgICB0cmFjay1ieT1cImxhYmVsXCJcbiAgICAgIDpzZWFyY2hhYmxlPVwidHJ1ZVwiXG4gICAgICA6ZmlsdGVyLXJlc3VsdHM9XCJmYWxzZVwiXG4gICAgICA6Y2xvc2Utb24tc2VsZWN0PVwidHJ1ZVwiXG4gICAgICA6Y2xlYXItb24tc2VsZWN0PVwidHJ1ZVwiXG4gICAgICA6Y2FuLWNsZWFyPVwiY2xlYXJhYmxlXCJcbiAgICAgIDpkaXNhYmxlZD1cImRpc2FibGVkXCJcbiAgICAgIDpsb2FkaW5nPVwibG9hZGluZ1wiXG4gICAgICA6cGxhY2Vob2xkZXI9XCJwbGFjZWhvbGRlclwiXG4gICAgICA6bWluLWNoYXJzPVwibWluQ2hhcnNcIlxuICAgICAgQHNlYXJjaC1jaGFuZ2U9XCJzZWFyY2hcIlxuICAgICAgQG9wZW49XCJsb2FkSW5pdGlhbFwiXG4gICAgICBAdXBkYXRlOm1vZGVsLXZhbHVlPVwidXBkYXRlVmFsdWVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvdWkvQXBwTG9va3VwU2VsZWN0LnZ1ZTozOjVcIlxuICAgID5cbiAgICAgIDx0ZW1wbGF0ZSAjb3B0aW9uPVwieyBvcHRpb24gfVwiPlxuICAgICAgICA8ZGl2IGNsYXNzPVwibG9va3VwLW9wdGlvblwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy91aS9BcHBMb29rdXBTZWxlY3QudnVlOjIzOjlcIj5cbiAgICAgICAgICA8c3Ryb25nIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy91aS9BcHBMb29rdXBTZWxlY3QudnVlOjI0OjExXCI+e3sgb3B0aW9uLmxhYmVsIH19PC9zdHJvbmc+XG4gICAgICAgICAgPHNtYWxsIHYtaWY9XCJvcHRpb24uY29kZSB8fCBvcHRpb24uZGVzY3JpcHRpb25cIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvdWkvQXBwTG9va3VwU2VsZWN0LnZ1ZToyNToxMVwiPlxuICAgICAgICAgICAge3sgW29wdGlvbi5jb2RlLCBvcHRpb24uZGVzY3JpcHRpb25dLmZpbHRlcihCb29sZWFuKS5qb2luKCcgLSAnKSB9fVxuICAgICAgICAgIDwvc21hbGw+XG4gICAgICAgIDwvZGl2PlxuICAgICAgPC90ZW1wbGF0ZT5cbiAgICAgIDx0ZW1wbGF0ZSAjc2luZ2xlbGFiZWw9XCJ7IHZhbHVlIH1cIj5cbiAgICAgICAgPGRpdiBjbGFzcz1cIm11bHRpc2VsZWN0LXNpbmdsZS1sYWJlbFwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy91aS9BcHBMb29rdXBTZWxlY3QudnVlOjMxOjlcIj5cbiAgICAgICAgICB7eyB2YWx1ZS5sYWJlbCB9fVxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvdGVtcGxhdGU+XG4gICAgPC9NdWx0aXNlbGVjdD5cblxuICAgIDxwIHYtaWY9XCJlcnJvclwiIGNsYXNzPVwibG9va3VwLWVycm9yXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL3VpL0FwcExvb2t1cFNlbGVjdC52dWU6Mzc6NVwiPnt7IGVycm9yIH19PC9wPlxuICA8L2Rpdj5cbjwvdGVtcGxhdGU+XG5cbjxzY3JpcHQgc2V0dXAgbGFuZz1cInRzXCI+XG5pbXBvcnQgeyBvbk1vdW50ZWQsIHJlZiwgd2F0Y2ggfSBmcm9tICd2dWUnXG5pbXBvcnQgTXVsdGlzZWxlY3QgZnJvbSAnQHZ1ZWZvcm0vbXVsdGlzZWxlY3QnXG5pbXBvcnQgJ0B2dWVmb3JtL211bHRpc2VsZWN0L3RoZW1lcy9kZWZhdWx0LmNzcydcbmltcG9ydCB7IGdldEFwaUVycm9yTWVzc2FnZSB9IGZyb20gJ0Avc2VydmljZXMvYXBpLXJlc3BvbnNlJ1xuaW1wb3J0IHsgbG9va3VwU2VydmljZSwgdHlwZSBMb29rdXBLaW5kLCB0eXBlIExvb2t1cE9wdGlvbiB9IGZyb20gJ0Avc2VydmljZXMvbG9va3VwLnNlcnZpY2UnXG5cbmNvbnN0IHByb3BzID0gd2l0aERlZmF1bHRzKFxuICBkZWZpbmVQcm9wczx7XG4gICAgbW9kZWxWYWx1ZT86IHN0cmluZyB8IG51bWJlciB8IG51bGxcbiAgICBraW5kOiBMb29rdXBLaW5kXG4gICAgcGxhY2Vob2xkZXI/OiBzdHJpbmdcbiAgICBwYXJhbXM/OiBSZWNvcmQ8c3RyaW5nLCB1bmtub3duPlxuICAgIGRpc2FibGVkPzogYm9vbGVhblxuICAgIGNsZWFyYWJsZT86IGJvb2xlYW5cbiAgICBtaW5DaGFycz86IG51bWJlclxuICAgIHByZWxvYWQ/OiBib29sZWFuXG4gIH0+KCksXG4gIHtcbiAgICBtb2RlbFZhbHVlOiBudWxsLFxuICAgIHBsYWNlaG9sZGVyOiAnU2VhcmNoLi4uJyxcbiAgICBwYXJhbXM6ICgpID0+ICh7fSksXG4gICAgZGlzYWJsZWQ6IGZhbHNlLFxuICAgIGNsZWFyYWJsZTogdHJ1ZSxcbiAgICBtaW5DaGFyczogMCxcbiAgICBwcmVsb2FkOiB0cnVlLFxuICB9LFxuKVxuXG5jb25zdCBlbWl0ID0gZGVmaW5lRW1pdHM8e1xuICAndXBkYXRlOm1vZGVsVmFsdWUnOiBbdmFsdWU6IHN0cmluZyB8IG51bWJlciB8IG51bGxdXG4gIHNlbGVjdGVkOiBbb3B0aW9uOiBMb29rdXBPcHRpb24gfCBudWxsXVxufT4oKVxuXG5jb25zdCBvcHRpb25zID0gcmVmPExvb2t1cE9wdGlvbltdPihbXSlcbmNvbnN0IGxvYWRpbmcgPSByZWYoZmFsc2UpXG5jb25zdCBlcnJvciA9IHJlZignJylcbmxldCBzZWFyY2hUaW1lcjogbnVtYmVyIHwgdW5kZWZpbmVkXG5cbmNvbnN0IGZpbmRTZWxlY3RlZCA9ICh2YWx1ZTogc3RyaW5nIHwgbnVtYmVyIHwgbnVsbCB8IHVuZGVmaW5lZCk6IExvb2t1cE9wdGlvbiB8IG51bGwgPT5cbiAgb3B0aW9ucy52YWx1ZS5maW5kKChvcHRpb24pID0+IFN0cmluZyhvcHRpb24uaWQpID09PSBTdHJpbmcodmFsdWUpKSA/PyBudWxsXG5cbmNvbnN0IGxvYWQgPSBhc3luYyAodGVybSA9ICcnKSA9PiB7XG4gIGlmIChsb2FkaW5nLnZhbHVlKSByZXR1cm5cblxuICBsb2FkaW5nLnZhbHVlID0gdHJ1ZVxuICBlcnJvci52YWx1ZSA9ICcnXG5cbiAgdHJ5IHtcbiAgICBvcHRpb25zLnZhbHVlID0gYXdhaXQgbG9va3VwU2VydmljZS5zZWFyY2gocHJvcHMua2luZCwgdGVybSwgcHJvcHMucGFyYW1zKVxuICB9IGNhdGNoIChlcnIpIHtcbiAgICBlcnJvci52YWx1ZSA9IGdldEFwaUVycm9yTWVzc2FnZShlcnIsICdMb29rdXAgZmFpbGVkJylcbiAgICBvcHRpb25zLnZhbHVlID0gW11cbiAgfSBmaW5hbGx5IHtcbiAgICBsb2FkaW5nLnZhbHVlID0gZmFsc2VcbiAgfVxufVxuXG5jb25zdCBzZWFyY2ggPSAodGVybTogc3RyaW5nKSA9PiB7XG4gIHdpbmRvdy5jbGVhclRpbWVvdXQoc2VhcmNoVGltZXIpXG4gIHNlYXJjaFRpbWVyID0gd2luZG93LnNldFRpbWVvdXQoKCkgPT4gbG9hZCh0ZXJtKSwgMjUwKVxufVxuXG5jb25zdCBsb2FkSW5pdGlhbCA9ICgpID0+IHtcbiAgaWYgKCFvcHRpb25zLnZhbHVlLmxlbmd0aCkgdm9pZCBsb2FkKClcbn1cblxuY29uc3QgdXBkYXRlVmFsdWUgPSAodmFsdWU6IHN0cmluZyB8IG51bWJlciB8IG51bGwpID0+IHtcbiAgZW1pdCgndXBkYXRlOm1vZGVsVmFsdWUnLCB2YWx1ZSlcbiAgZW1pdCgnc2VsZWN0ZWQnLCBmaW5kU2VsZWN0ZWQodmFsdWUpKVxufVxuXG53YXRjaChcbiAgKCkgPT4gcHJvcHMucGFyYW1zLFxuICAoKSA9PiB7XG4gICAgb3B0aW9ucy52YWx1ZSA9IFtdXG4gICAgaWYgKHByb3BzLnByZWxvYWQpIHZvaWQgbG9hZCgpXG4gIH0sXG4gIHsgZGVlcDogdHJ1ZSB9LFxuKVxuXG5vbk1vdW50ZWQoKCkgPT4ge1xuICBpZiAocHJvcHMucHJlbG9hZCkgdm9pZCBsb2FkKClcbn0pXG48L3NjcmlwdD5cblxuPHN0eWxlIHNjb3BlZD5cbi5sb29rdXAtc2VsZWN0IHtcbiAgbWluLXdpZHRoOiAwO1xufVxuXG4ubG9va3VwLW9wdGlvbiB7XG4gIGRpc3BsYXk6IGdyaWQ7XG4gIGdhcDogMnB4O1xuICBtaW4td2lkdGg6IDA7XG59XG5cbi5sb29rdXAtb3B0aW9uIHN0cm9uZyB7XG4gIGNvbG9yOiAjMGYxNzJhO1xuICBmb250LXNpemU6IDEzcHg7XG4gIG92ZXJmbG93OiBoaWRkZW47XG4gIHRleHQtb3ZlcmZsb3c6IGVsbGlwc2lzO1xufVxuXG4ubG9va3VwLW9wdGlvbiBzbWFsbCB7XG4gIGNvbG9yOiAjNjQ3NDhiO1xuICBmb250LXNpemU6IDEycHg7XG4gIG92ZXJmbG93OiBoaWRkZW47XG4gIHRleHQtb3ZlcmZsb3c6IGVsbGlwc2lzO1xufVxuXG4ubG9va3VwLWVycm9yIHtcbiAgbWFyZ2luOiA1cHggMCAwO1xuICBjb2xvcjogI2I5MWMxYztcbiAgZm9udC1zaXplOiAxMnB4O1xufVxuXG46ZGVlcCgubXVsdGlzZWxlY3QpIHtcbiAgbWluLWhlaWdodDogMzRweDtcbiAgYm9yZGVyLWNvbG9yOiAjY2JkNWUxO1xuICBib3JkZXItcmFkaXVzOiA2cHg7XG4gIGJveC1zaGFkb3c6IG5vbmU7XG4gIGNvbG9yOiAjMGYxNzJhO1xuICBmb250LXNpemU6IDEzcHg7XG59XG5cbjpkZWVwKC5tdWx0aXNlbGVjdC5pcy1hY3RpdmUpIHtcbiAgYm9yZGVyLWNvbG9yOiAjMTZhMzRhO1xuICBib3gtc2hhZG93OiAwIDAgMCAycHggcmdiYSgyMiwgMTYzLCA3NCwgMC4xMik7XG59XG5cbjpkZWVwKC5tdWx0aXNlbGVjdC1zZWFyY2gpLFxuOmRlZXAoLm11bHRpc2VsZWN0LXNpbmdsZS1sYWJlbCksXG46ZGVlcCgubXVsdGlzZWxlY3QtcGxhY2Vob2xkZXIpIHtcbiAgZm9udC1zaXplOiAxM3B4O1xufVxuPC9zdHlsZT5cbiJdLCJmaWxlIjoiRDovRG90IE5ldCBQcm9qZWN0cy9KU0svaG1pcy11aS9zcmMvY29tcG9uZW50cy91aS9BcHBMb29rdXBTZWxlY3QudnVlIn0=

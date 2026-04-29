@@ -1,0 +1,256 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/PlatformContextBar.vue");/* Injection by vite-plugin-vue-inspector Start */
+import { createElementVNode as __createElementVNode,createVNode as __createVNode,createElementBlock as __createElementBlock } from "/node_modules/.vite/deps/vue.js?v=6936ed99"
+function _interopVNode(vnode) {
+  if (vnode && vnode.props && 'data-v-inspector' in vnode.props) {
+    const data = vnode.props['data-v-inspector']
+    delete vnode.props['data-v-inspector']
+    Object.defineProperty(vnode.props, '__v_inspector', { value: data, enumerable: false })
+  }
+  return vnode
+}
+function _createElementVNode(...args) { return _interopVNode(__createElementVNode(...args)) }
+function _createVNode(...args) { return _interopVNode(__createVNode(...args)) }
+function _createElementBlock(...args) { return _interopVNode(__createElementBlock(...args)) }
+/* Injection by vite-plugin-vue-inspector End */
+import { defineComponent as _defineComponent } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+import { reactive, watch } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+import AppLookupSelect from "/src/components/ui/AppLookupSelect.vue";
+import { usePlatformContextStore } from "/src/store/platform-context.store.ts";
+const _sfc_main = /* @__PURE__ */ _defineComponent({
+  __name: "PlatformContextBar",
+  setup(__props, { expose: __expose }) {
+    __expose();
+    const contextStore = usePlatformContextStore();
+    const draft = reactive({ ...contextStore.active });
+    const commit = () => {
+      contextStore.update({
+        tenantId: String(draft.tenantId ?? ""),
+        facilityId: String(draft.facilityId ?? ""),
+        propertyId: String(draft.facilityId ?? ""),
+        departmentId: String(draft.departmentId ?? ""),
+        doctorId: String(draft.doctorId ?? ""),
+        wardId: String(draft.wardId ?? ""),
+        storeId: String(draft.storeId ?? ""),
+        counterId: String(draft.counterId ?? ""),
+        shiftId: String(draft.shiftId ?? "")
+      });
+    };
+    watch(
+      () => contextStore.active,
+      (next) => {
+        Object.assign(draft, next);
+      }
+    );
+    const __returned__ = { contextStore, draft, commit, AppLookupSelect };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+import {  vModelText as _vModelText, withDirectives as _withDirectives,  openBlock as _openBlock,  } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+const _hoisted_1 = {
+  class: "context-bar",
+  "aria-label": "Active hospital context",
+  "data-v-inspector": "src/components/PlatformContextBar.vue:2:3"
+};
+const _hoisted_2 = {
+  class: "context-field",
+  "data-v-inspector": "src/components/PlatformContextBar.vue:3:5"
+};
+const _hoisted_3 = {
+  class: "context-field",
+  "data-v-inspector": "src/components/PlatformContextBar.vue:8:5"
+};
+const _hoisted_4 = {
+  class: "context-field optional",
+  "data-v-inspector": "src/components/PlatformContextBar.vue:18:5"
+};
+const _hoisted_5 = {
+  class: "context-field optional",
+  "data-v-inspector": "src/components/PlatformContextBar.vue:28:5"
+};
+const _hoisted_6 = {
+  class: "context-field optional",
+  "data-v-inspector": "src/components/PlatformContextBar.vue:33:5"
+};
+const _hoisted_7 = {
+  class: "context-field optional",
+  "data-v-inspector": "src/components/PlatformContextBar.vue:38:5"
+};
+const _hoisted_8 = {
+  class: "context-field optional",
+  "data-v-inspector": "src/components/PlatformContextBar.vue:43:5"
+};
+const _hoisted_9 = {
+  class: "context-field optional",
+  "data-v-inspector": "src/components/PlatformContextBar.vue:48:5"
+};
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  return _openBlock(), _createElementBlock("section", _hoisted_1, [
+    _createElementVNode("label", _hoisted_2, [
+      _cache[8] || (_cache[8] = _createElementVNode(
+        "span",
+        { "data-v-inspector": "src/components/PlatformContextBar.vue:4:7" },
+        "Tenant",
+        -1
+        /* CACHED */
+      )),
+      _withDirectives(_createElementVNode(
+        "input",
+        {
+          "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.draft.tenantId = $event),
+          placeholder: "Tenant ID",
+          onChange: $setup.commit,
+          "data-v-inspector": "src/components/PlatformContextBar.vue:5:7"
+        },
+        null,
+        544
+        /* NEED_HYDRATION, NEED_PATCH */
+      ), [
+        [
+          _vModelText,
+          $setup.draft.tenantId,
+          void 0,
+          { trim: true }
+        ]
+      ])
+    ]),
+    _createElementVNode("label", _hoisted_3, [
+      _cache[9] || (_cache[9] = _createElementVNode(
+        "span",
+        { "data-v-inspector": "src/components/PlatformContextBar.vue:9:7" },
+        "Facility",
+        -1
+        /* CACHED */
+      )),
+      _createVNode($setup["AppLookupSelect"], {
+        modelValue: $setup.draft.facilityId,
+        "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $setup.draft.facilityId = $event),
+        kind: "facility",
+        placeholder: "Search facility",
+        onSelected: $setup.commit,
+        "data-v-inspector": "src/components/PlatformContextBar.vue:10:7"
+      }, null, 8, ["modelValue"])
+    ]),
+    _createElementVNode("label", _hoisted_4, [
+      _cache[10] || (_cache[10] = _createElementVNode(
+        "span",
+        { "data-v-inspector": "src/components/PlatformContextBar.vue:19:7" },
+        "Department",
+        -1
+        /* CACHED */
+      )),
+      _createVNode($setup["AppLookupSelect"], {
+        modelValue: $setup.draft.departmentId,
+        "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $setup.draft.departmentId = $event),
+        kind: "department",
+        placeholder: "Any department",
+        onSelected: $setup.commit,
+        "data-v-inspector": "src/components/PlatformContextBar.vue:20:7"
+      }, null, 8, ["modelValue"])
+    ]),
+    _createElementVNode("label", _hoisted_5, [
+      _cache[11] || (_cache[11] = _createElementVNode(
+        "span",
+        { "data-v-inspector": "src/components/PlatformContextBar.vue:29:7" },
+        "Doctor",
+        -1
+        /* CACHED */
+      )),
+      _createVNode($setup["AppLookupSelect"], {
+        modelValue: $setup.draft.doctorId,
+        "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => $setup.draft.doctorId = $event),
+        kind: "doctor",
+        placeholder: "Any doctor",
+        onSelected: $setup.commit,
+        "data-v-inspector": "src/components/PlatformContextBar.vue:30:7"
+      }, null, 8, ["modelValue"])
+    ]),
+    _createElementVNode("label", _hoisted_6, [
+      _cache[12] || (_cache[12] = _createElementVNode(
+        "span",
+        { "data-v-inspector": "src/components/PlatformContextBar.vue:34:7" },
+        "Ward",
+        -1
+        /* CACHED */
+      )),
+      _createVNode($setup["AppLookupSelect"], {
+        modelValue: $setup.draft.wardId,
+        "onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => $setup.draft.wardId = $event),
+        kind: "ward",
+        placeholder: "Any ward",
+        onSelected: $setup.commit,
+        "data-v-inspector": "src/components/PlatformContextBar.vue:35:7"
+      }, null, 8, ["modelValue"])
+    ]),
+    _createElementVNode("label", _hoisted_7, [
+      _cache[13] || (_cache[13] = _createElementVNode(
+        "span",
+        { "data-v-inspector": "src/components/PlatformContextBar.vue:39:7" },
+        "Store",
+        -1
+        /* CACHED */
+      )),
+      _createVNode($setup["AppLookupSelect"], {
+        modelValue: $setup.draft.storeId,
+        "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => $setup.draft.storeId = $event),
+        kind: "store",
+        placeholder: "Any store",
+        onSelected: $setup.commit,
+        "data-v-inspector": "src/components/PlatformContextBar.vue:40:7"
+      }, null, 8, ["modelValue"])
+    ]),
+    _createElementVNode("label", _hoisted_8, [
+      _cache[14] || (_cache[14] = _createElementVNode(
+        "span",
+        { "data-v-inspector": "src/components/PlatformContextBar.vue:44:7" },
+        "Counter",
+        -1
+        /* CACHED */
+      )),
+      _createVNode($setup["AppLookupSelect"], {
+        modelValue: $setup.draft.counterId,
+        "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => $setup.draft.counterId = $event),
+        kind: "counter",
+        placeholder: "Any counter",
+        onSelected: $setup.commit,
+        "data-v-inspector": "src/components/PlatformContextBar.vue:45:7"
+      }, null, 8, ["modelValue"])
+    ]),
+    _createElementVNode("label", _hoisted_9, [
+      _cache[15] || (_cache[15] = _createElementVNode(
+        "span",
+        { "data-v-inspector": "src/components/PlatformContextBar.vue:49:7" },
+        "Shift",
+        -1
+        /* CACHED */
+      )),
+      _createVNode($setup["AppLookupSelect"], {
+        modelValue: $setup.draft.shiftId,
+        "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => $setup.draft.shiftId = $event),
+        kind: "shift",
+        placeholder: "Any shift",
+        onSelected: $setup.commit,
+        "data-v-inspector": "src/components/PlatformContextBar.vue:50:7"
+      }, null, 8, ["modelValue"])
+    ])
+  ]);
+}
+import "/src/components/PlatformContextBar.vue?vue&type=style&index=0&scoped=d2df8f00&lang.css";
+_sfc_main.__hmrId = "d2df8f00";
+typeof __VUE_HMR_RUNTIME__ !== "undefined" && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main);
+import.meta.hot.on("file-changed", ({ file }) => {
+  __VUE_HMR_RUNTIME__.CHANGED_FILE = file;
+});
+import.meta.hot.accept((mod) => {
+  if (!mod) return;
+  const { default: updated, _rerender_only } = mod;
+  if (_rerender_only) {
+    __VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render);
+  } else {
+    __VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated);
+  }
+});
+import _export_sfc from "/@id/__x00__plugin-vue:export-helper";
+export default /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-d2df8f00"], ["__file", "D:/Dot Net Projects/JSK/hmis-ui/src/components/PlatformContextBar.vue"]]);
+
+//# sourceMappingURL=data:application/json;base64,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RUFBTixhQUFNLFVBQU87QUFBQSxRQUFFLE1BQUs7QUFBQSxRQUFRLGFBQVk7QUFBQSxRQUFhLFlBQVU7QUFBQSxRQUFRLG9CQUFpQjtBQUFBIiwibmFtZXMiOltdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJQbGF0Zm9ybUNvbnRleHRCYXIudnVlIl0sInNvdXJjZXNDb250ZW50IjpbIjx0ZW1wbGF0ZT5cbiAgPHNlY3Rpb24gY2xhc3M9XCJjb250ZXh0LWJhclwiIGFyaWEtbGFiZWw9XCJBY3RpdmUgaG9zcGl0YWwgY29udGV4dFwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9QbGF0Zm9ybUNvbnRleHRCYXIudnVlOjI6M1wiPlxuICAgIDxsYWJlbCBjbGFzcz1cImNvbnRleHQtZmllbGRcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvUGxhdGZvcm1Db250ZXh0QmFyLnZ1ZTozOjVcIj5cbiAgICAgIDxzcGFuIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9QbGF0Zm9ybUNvbnRleHRCYXIudnVlOjQ6N1wiPlRlbmFudDwvc3Bhbj5cbiAgICAgIDxpbnB1dCB2LW1vZGVsLnRyaW09XCJkcmFmdC50ZW5hbnRJZFwiIHBsYWNlaG9sZGVyPVwiVGVuYW50IElEXCIgQGNoYW5nZT1cImNvbW1pdFwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9QbGF0Zm9ybUNvbnRleHRCYXIudnVlOjU6N1wiIC8+XG4gICAgPC9sYWJlbD5cblxuICAgIDxsYWJlbCBjbGFzcz1cImNvbnRleHQtZmllbGRcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvUGxhdGZvcm1Db250ZXh0QmFyLnZ1ZTo4OjVcIj5cbiAgICAgIDxzcGFuIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9QbGF0Zm9ybUNvbnRleHRCYXIudnVlOjk6N1wiPkZhY2lsaXR5PC9zcGFuPlxuICAgICAgPEFwcExvb2t1cFNlbGVjdFxuICAgICAgICB2LW1vZGVsPVwiZHJhZnQuZmFjaWxpdHlJZFwiXG4gICAgICAgIGtpbmQ9XCJmYWNpbGl0eVwiXG4gICAgICAgIHBsYWNlaG9sZGVyPVwiU2VhcmNoIGZhY2lsaXR5XCJcbiAgICAgICAgQHNlbGVjdGVkPVwiY29tbWl0XCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL1BsYXRmb3JtQ29udGV4dEJhci52dWU6MTA6N1wiXG4gICAgICAvPlxuICAgIDwvbGFiZWw+XG5cbiAgICA8bGFiZWwgY2xhc3M9XCJjb250ZXh0LWZpZWxkIG9wdGlvbmFsXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL1BsYXRmb3JtQ29udGV4dEJhci52dWU6MTg6NVwiPlxuICAgICAgPHNwYW4gZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL1BsYXRmb3JtQ29udGV4dEJhci52dWU6MTk6N1wiPkRlcGFydG1lbnQ8L3NwYW4+XG4gICAgICA8QXBwTG9va3VwU2VsZWN0XG4gICAgICAgIHYtbW9kZWw9XCJkcmFmdC5kZXBhcnRtZW50SWRcIlxuICAgICAgICBraW5kPVwiZGVwYXJ0bWVudFwiXG4gICAgICAgIHBsYWNlaG9sZGVyPVwiQW55IGRlcGFydG1lbnRcIlxuICAgICAgICBAc2VsZWN0ZWQ9XCJjb21taXRcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvUGxhdGZvcm1Db250ZXh0QmFyLnZ1ZToyMDo3XCJcbiAgICAgIC8+XG4gICAgPC9sYWJlbD5cblxuICAgIDxsYWJlbCBjbGFzcz1cImNvbnRleHQtZmllbGQgb3B0aW9uYWxcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvUGxhdGZvcm1Db250ZXh0QmFyLnZ1ZToyODo1XCI+XG4gICAgICA8c3BhbiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvUGxhdGZvcm1Db250ZXh0QmFyLnZ1ZToyOTo3XCI+RG9jdG9yPC9zcGFuPlxuICAgICAgPEFwcExvb2t1cFNlbGVjdCB2LW1vZGVsPVwiZHJhZnQuZG9jdG9ySWRcIiBraW5kPVwiZG9jdG9yXCIgcGxhY2Vob2xkZXI9XCJBbnkgZG9jdG9yXCIgQHNlbGVjdGVkPVwiY29tbWl0XCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL1BsYXRmb3JtQ29udGV4dEJhci52dWU6MzA6N1wiIC8+XG4gICAgPC9sYWJlbD5cblxuICAgIDxsYWJlbCBjbGFzcz1cImNvbnRleHQtZmllbGQgb3B0aW9uYWxcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvUGxhdGZvcm1Db250ZXh0QmFyLnZ1ZTozMzo1XCI+XG4gICAgICA8c3BhbiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvUGxhdGZvcm1Db250ZXh0QmFyLnZ1ZTozNDo3XCI+V2FyZDwvc3Bhbj5cbiAgICAgIDxBcHBMb29rdXBTZWxlY3Qgdi1tb2RlbD1cImRyYWZ0LndhcmRJZFwiIGtpbmQ9XCJ3YXJkXCIgcGxhY2Vob2xkZXI9XCJBbnkgd2FyZFwiIEBzZWxlY3RlZD1cImNvbW1pdFwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9QbGF0Zm9ybUNvbnRleHRCYXIudnVlOjM1OjdcIiAvPlxuICAgIDwvbGFiZWw+XG5cbiAgICA8bGFiZWwgY2xhc3M9XCJjb250ZXh0LWZpZWxkIG9wdGlvbmFsXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL1BsYXRmb3JtQ29udGV4dEJhci52dWU6Mzg6NVwiPlxuICAgICAgPHNwYW4gZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL1BsYXRmb3JtQ29udGV4dEJhci52dWU6Mzk6N1wiPlN0b3JlPC9zcGFuPlxuICAgICAgPEFwcExvb2t1cFNlbGVjdCB2LW1vZGVsPVwiZHJhZnQuc3RvcmVJZFwiIGtpbmQ9XCJzdG9yZVwiIHBsYWNlaG9sZGVyPVwiQW55IHN0b3JlXCIgQHNlbGVjdGVkPVwiY29tbWl0XCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL1BsYXRmb3JtQ29udGV4dEJhci52dWU6NDA6N1wiIC8+XG4gICAgPC9sYWJlbD5cblxuICAgIDxsYWJlbCBjbGFzcz1cImNvbnRleHQtZmllbGQgb3B0aW9uYWxcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvUGxhdGZvcm1Db250ZXh0QmFyLnZ1ZTo0Mzo1XCI+XG4gICAgICA8c3BhbiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvUGxhdGZvcm1Db250ZXh0QmFyLnZ1ZTo0NDo3XCI+Q291bnRlcjwvc3Bhbj5cbiAgICAgIDxBcHBMb29rdXBTZWxlY3Qgdi1tb2RlbD1cImRyYWZ0LmNvdW50ZXJJZFwiIGtpbmQ9XCJjb3VudGVyXCIgcGxhY2Vob2xkZXI9XCJBbnkgY291bnRlclwiIEBzZWxlY3RlZD1cImNvbW1pdFwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9QbGF0Zm9ybUNvbnRleHRCYXIudnVlOjQ1OjdcIiAvPlxuICAgIDwvbGFiZWw+XG5cbiAgICA8bGFiZWwgY2xhc3M9XCJjb250ZXh0LWZpZWxkIG9wdGlvbmFsXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL1BsYXRmb3JtQ29udGV4dEJhci52dWU6NDg6NVwiPlxuICAgICAgPHNwYW4gZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL1BsYXRmb3JtQ29udGV4dEJhci52dWU6NDk6N1wiPlNoaWZ0PC9zcGFuPlxuICAgICAgPEFwcExvb2t1cFNlbGVjdCB2LW1vZGVsPVwiZHJhZnQuc2hpZnRJZFwiIGtpbmQ9XCJzaGlmdFwiIHBsYWNlaG9sZGVyPVwiQW55IHNoaWZ0XCIgQHNlbGVjdGVkPVwiY29tbWl0XCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL1BsYXRmb3JtQ29udGV4dEJhci52dWU6NTA6N1wiIC8+XG4gICAgPC9sYWJlbD5cbiAgPC9zZWN0aW9uPlxuPC90ZW1wbGF0ZT5cblxuPHNjcmlwdCBzZXR1cCBsYW5nPVwidHNcIj5cbmltcG9ydCB7IHJlYWN0aXZlLCB3YXRjaCB9IGZyb20gJ3Z1ZSdcbmltcG9ydCBBcHBMb29rdXBTZWxlY3QgZnJvbSAnQC9jb21wb25lbnRzL3VpL0FwcExvb2t1cFNlbGVjdC52dWUnXG5pbXBvcnQgeyB1c2VQbGF0Zm9ybUNvbnRleHRTdG9yZSB9IGZyb20gJ0Avc3RvcmUvcGxhdGZvcm0tY29udGV4dC5zdG9yZSdcblxuY29uc3QgY29udGV4dFN0b3JlID0gdXNlUGxhdGZvcm1Db250ZXh0U3RvcmUoKVxuXG5jb25zdCBkcmFmdCA9IHJlYWN0aXZlKHsgLi4uY29udGV4dFN0b3JlLmFjdGl2ZSB9KVxuXG5jb25zdCBjb21taXQgPSAoKSA9PiB7XG4gIGNvbnRleHRTdG9yZS51cGRhdGUoe1xuICAgIHRlbmFudElkOiBTdHJpbmcoZHJhZnQudGVuYW50SWQgPz8gJycpLFxuICAgIGZhY2lsaXR5SWQ6IFN0cmluZyhkcmFmdC5mYWNpbGl0eUlkID8/ICcnKSxcbiAgICBwcm9wZXJ0eUlkOiBTdHJpbmcoZHJhZnQuZmFjaWxpdHlJZCA/PyAnJyksXG4gICAgZGVwYXJ0bWVudElkOiBTdHJpbmcoZHJhZnQuZGVwYXJ0bWVudElkID8/ICcnKSxcbiAgICBkb2N0b3JJZDogU3RyaW5nKGRyYWZ0LmRvY3RvcklkID8/ICcnKSxcbiAgICB3YXJkSWQ6IFN0cmluZyhkcmFmdC53YXJkSWQgPz8gJycpLFxuICAgIHN0b3JlSWQ6IFN0cmluZyhkcmFmdC5zdG9yZUlkID8/ICcnKSxcbiAgICBjb3VudGVySWQ6IFN0cmluZyhkcmFmdC5jb3VudGVySWQgPz8gJycpLFxuICAgIHNoaWZ0SWQ6IFN0cmluZyhkcmFmdC5zaGlmdElkID8/ICcnKSxcbiAgfSlcbn1cblxud2F0Y2goXG4gICgpID0+IGNvbnRleHRTdG9yZS5hY3RpdmUsXG4gIChuZXh0KSA9PiB7XG4gICAgT2JqZWN0LmFzc2lnbihkcmFmdCwgbmV4dClcbiAgfSxcbilcbjwvc2NyaXB0PlxuXG48c3R5bGUgc2NvcGVkPlxuLmNvbnRleHQtYmFyIHtcbiAgZGlzcGxheTogZ3JpZDtcbiAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiByZXBlYXQoNCwgbWlubWF4KDEzMHB4LCAxZnIpKTtcbiAgZ2FwOiAxMHB4O1xuICBwYWRkaW5nOiAxMHB4IDI0cHg7XG4gIGJhY2tncm91bmQ6ICNmOGZhZmM7XG4gIGJvcmRlci1ib3R0b206IDFweCBzb2xpZCAjZTVlN2ViO1xufVxuXG4uY29udGV4dC1maWVsZCB7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XG4gIGdhcDogNHB4O1xuICBtaW4td2lkdGg6IDA7XG59XG5cbi5jb250ZXh0LWZpZWxkIHNwYW4ge1xuICBjb2xvcjogIzQ3NTU2OTtcbiAgZm9udC1zaXplOiAxMXB4O1xuICBmb250LXdlaWdodDogNzAwO1xuICB0ZXh0LXRyYW5zZm9ybTogdXBwZXJjYXNlO1xufVxuXG4uY29udGV4dC1maWVsZCBpbnB1dCB7XG4gIHdpZHRoOiAxMDAlO1xuICBoZWlnaHQ6IDM0cHg7XG4gIGJvcmRlcjogMXB4IHNvbGlkICNjYmQ1ZTE7XG4gIGJvcmRlci1yYWRpdXM6IDZweDtcbiAgY29sb3I6ICMwZjE3MmE7XG4gIGZvbnQtc2l6ZTogMTNweDtcbiAgcGFkZGluZzogMCA5cHg7XG59XG5cbi5jb250ZXh0LWZpZWxkIGlucHV0OmZvY3VzIHtcbiAgYm9yZGVyLWNvbG9yOiAjMTZhMzRhO1xuICBvdXRsaW5lOiAycHggc29saWQgcmdiYSgyMiwgMTYzLCA3NCwgMC4xMik7XG59XG5cbkBtZWRpYSAobWF4LXdpZHRoOiAxMjgwcHgpIHtcbiAgLmNvbnRleHQtYmFyIHtcbiAgICBncmlkLXRlbXBsYXRlLWNvbHVtbnM6IHJlcGVhdCgzLCBtaW5tYXgoMTQwcHgsIDFmcikpO1xuICB9XG59XG5cbkBtZWRpYSAobWF4LXdpZHRoOiA3NjBweCkge1xuICAuY29udGV4dC1iYXIge1xuICAgIGdyaWQtdGVtcGxhdGUtY29sdW1uczogMWZyIDFmcjtcbiAgICBwYWRkaW5nOiAxMHB4IDE0cHg7XG4gIH1cblxuICAuY29udGV4dC1maWVsZC5vcHRpb25hbCB7XG4gICAgZGlzcGxheTogbm9uZTtcbiAgfVxufVxuPC9zdHlsZT5cbiJdLCJmaWxlIjoiRDovRG90IE5ldCBQcm9qZWN0cy9KU0svaG1pcy11aS9zcmMvY29tcG9uZW50cy9QbGF0Zm9ybUNvbnRleHRCYXIudnVlIn0=

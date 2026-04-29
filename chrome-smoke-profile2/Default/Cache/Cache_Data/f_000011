@@ -1,0 +1,2255 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/AppSidebar.vue");import.meta.env = {"BASE_URL": "/", "DEV": true, "MODE": "development", "PROD": false, "SSR": false, "VITE_API_ORIGIN": "https://localhost:5008"};/* Injection by vite-plugin-vue-inspector Start */
+import { createElementVNode as __createElementVNode,createVNode as __createVNode,createElementBlock as __createElementBlock,createBlock as __createBlock } from "/node_modules/.vite/deps/vue.js?v=6936ed99"
+function _interopVNode(vnode) {
+  if (vnode && vnode.props && 'data-v-inspector' in vnode.props) {
+    const data = vnode.props['data-v-inspector']
+    delete vnode.props['data-v-inspector']
+    Object.defineProperty(vnode.props, '__v_inspector', { value: data, enumerable: false })
+  }
+  return vnode
+}
+function _createElementVNode(...args) { return _interopVNode(__createElementVNode(...args)) }
+function _createVNode(...args) { return _interopVNode(__createVNode(...args)) }
+function _createElementBlock(...args) { return _interopVNode(__createElementBlock(...args)) }
+function _createBlock(...args) { return _interopVNode(__createBlock(...args)) }
+/* Injection by vite-plugin-vue-inspector End */
+import { defineComponent as _defineComponent } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+import { reactive, watch } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+import { useRoute } from "/node_modules/.vite/deps/vue-router.js?v=6936ed99";
+import { useAuthStore } from "/src/store/auth.store.ts";
+import { canSeeMenuItem } from "/src/security/permissions.ts";
+const _sfc_main = /* @__PURE__ */ _defineComponent({
+  __name: "AppSidebar",
+  props: {
+    open: { type: Boolean, required: true }
+  },
+  emits: ["close"],
+  setup(__props, { expose: __expose, emit: __emit }) {
+    __expose();
+    const props = __props;
+    const emit = __emit;
+    const auth = useAuthStore();
+    const route = useRoute();
+    const showAdvancedDemoModules = import.meta.env.VITE_SHOW_ADVANCED_DEMO_MODULES === "true";
+    const menuOpen = reactive({
+      patients: false,
+      hr: false,
+      lab: false,
+      pharmacy: false,
+      ipd: false,
+      inventory: false,
+      analytics: false,
+      patientEngagement: false,
+      interoperability: false,
+      billing: false,
+      reports: false,
+      admin: false
+    });
+    function toggle(key) {
+      Object.keys(menuOpen).forEach((k) => {
+        menuOpen[k] = false;
+      });
+      menuOpen[key] = true;
+    }
+    function onNavigate() {
+      emit("close");
+    }
+    const canSee = (key) => canSeeMenuItem(key, auth.permissions);
+    watch(
+      () => route.fullPath,
+      () => {
+        if (props.open) emit("close");
+      }
+    );
+    const __returned__ = { props, emit, auth, route, showAdvancedDemoModules, menuOpen, toggle, onNavigate, canSee };
+    Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+    return __returned__;
+  }
+});
+import {  createCommentVNode as _createCommentVNode, createTextVNode as _createTextVNode, resolveComponent as _resolveComponent, withCtx as _withCtx,  openBlock as _openBlock,  toDisplayString as _toDisplayString,  normalizeClass as _normalizeClass } from "/node_modules/.vite/deps/vue.js?v=6936ed99";
+const _hoisted_1 = {
+  class: "brand-row",
+  "data-v-inspector": "src/components/AppSidebar.vue:3:5"
+};
+const _hoisted_2 = { "data-v-inspector": "src/components/AppSidebar.vue:11:5" };
+const _hoisted_3 = {
+  key: 0,
+  class: "menu-group",
+  "data-v-inspector": "src/components/AppSidebar.vue:13:7"
+};
+const _hoisted_4 = {
+  key: 1,
+  class: "menu-group",
+  "data-v-inspector": "src/components/AppSidebar.vue:20:7"
+};
+const _hoisted_5 = { "data-v-inspector": "src/components/AppSidebar.vue:23:11" };
+const _hoisted_6 = {
+  key: 0,
+  class: "submenu",
+  "data-v-inspector": "src/components/AppSidebar.vue:25:9"
+};
+const _hoisted_7 = {
+  key: 6,
+  class: "submenu-divider",
+  "data-v-inspector": "src/components/AppSidebar.vue:47:11"
+};
+const _hoisted_8 = {
+  key: 2,
+  class: "menu-group",
+  "data-v-inspector": "src/components/AppSidebar.vue:73:7"
+};
+const _hoisted_9 = { "data-v-inspector": "src/components/AppSidebar.vue:76:11" };
+const _hoisted_10 = {
+  key: 0,
+  class: "submenu",
+  "data-v-inspector": "src/components/AppSidebar.vue:79:9"
+};
+const _hoisted_11 = {
+  key: 3,
+  class: "menu-group",
+  "data-v-inspector": "src/components/AppSidebar.vue:158:7"
+};
+const _hoisted_12 = { "data-v-inspector": "src/components/AppSidebar.vue:161:11" };
+const _hoisted_13 = {
+  key: 0,
+  class: "submenu",
+  "data-v-inspector": "src/components/AppSidebar.vue:163:9"
+};
+const _hoisted_14 = {
+  key: 4,
+  class: "menu-group",
+  "data-v-inspector": "src/components/AppSidebar.vue:198:7"
+};
+const _hoisted_15 = { "data-v-inspector": "src/components/AppSidebar.vue:201:11" };
+const _hoisted_16 = {
+  key: 0,
+  class: "submenu",
+  "data-v-inspector": "src/components/AppSidebar.vue:203:9"
+};
+const _hoisted_17 = {
+  key: 5,
+  class: "menu-group",
+  "data-v-inspector": "src/components/AppSidebar.vue:235:7"
+};
+const _hoisted_18 = { "data-v-inspector": "src/components/AppSidebar.vue:238:11" };
+const _hoisted_19 = {
+  key: 0,
+  class: "submenu",
+  "data-v-inspector": "src/components/AppSidebar.vue:240:9"
+};
+const _hoisted_20 = {
+  key: 6,
+  class: "menu-group",
+  "data-v-inspector": "src/components/AppSidebar.vue:275:7"
+};
+const _hoisted_21 = { "data-v-inspector": "src/components/AppSidebar.vue:278:11" };
+const _hoisted_22 = {
+  key: 0,
+  class: "submenu",
+  "data-v-inspector": "src/components/AppSidebar.vue:280:9"
+};
+const _hoisted_23 = {
+  key: 7,
+  class: "menu-group",
+  "data-v-inspector": "src/components/AppSidebar.vue:296:7"
+};
+const _hoisted_24 = { "data-v-inspector": "src/components/AppSidebar.vue:299:11" };
+const _hoisted_25 = {
+  key: 0,
+  class: "submenu",
+  "data-v-inspector": "src/components/AppSidebar.vue:301:9"
+};
+const _hoisted_26 = {
+  key: 8,
+  class: "menu-group",
+  "data-v-inspector": "src/components/AppSidebar.vue:316:7"
+};
+const _hoisted_27 = { "data-v-inspector": "src/components/AppSidebar.vue:319:11" };
+const _hoisted_28 = {
+  key: 0,
+  class: "submenu",
+  "data-v-inspector": "src/components/AppSidebar.vue:321:9"
+};
+const _hoisted_29 = {
+  key: 9,
+  class: "menu-group",
+  "data-v-inspector": "src/components/AppSidebar.vue:330:7"
+};
+const _hoisted_30 = { "data-v-inspector": "src/components/AppSidebar.vue:333:11" };
+const _hoisted_31 = {
+  key: 0,
+  class: "submenu",
+  "data-v-inspector": "src/components/AppSidebar.vue:335:9"
+};
+const _hoisted_32 = {
+  key: 10,
+  class: "menu-group",
+  "data-v-inspector": "src/components/AppSidebar.vue:345:7"
+};
+const _hoisted_33 = { "data-v-inspector": "src/components/AppSidebar.vue:348:11" };
+const _hoisted_34 = {
+  key: 0,
+  class: "submenu",
+  "data-v-inspector": "src/components/AppSidebar.vue:350:9"
+};
+const _hoisted_35 = {
+  key: 11,
+  class: "menu-group",
+  "data-v-inspector": "src/components/AppSidebar.vue:361:7"
+};
+const _hoisted_36 = { "data-v-inspector": "src/components/AppSidebar.vue:364:11" };
+const _hoisted_37 = {
+  key: 0,
+  class: "submenu",
+  "data-v-inspector": "src/components/AppSidebar.vue:366:9"
+};
+const _hoisted_38 = {
+  key: 12,
+  class: "menu-group",
+  "data-v-inspector": "src/components/AppSidebar.vue:380:7"
+};
+const _hoisted_39 = { "data-v-inspector": "src/components/AppSidebar.vue:383:11" };
+const _hoisted_40 = {
+  key: 0,
+  class: "submenu",
+  "data-v-inspector": "src/components/AppSidebar.vue:385:9"
+};
+function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_RouterLink = _resolveComponent("RouterLink");
+  return _openBlock(), _createElementBlock(
+    "aside",
+    {
+      class: _normalizeClass(["sidebar", { open: $props.open }]),
+      "data-v-inspector": "src/components/AppSidebar.vue:2:3"
+    },
+    [
+      _createElementVNode("div", _hoisted_1, [
+        _cache[13] || (_cache[13] = _createElementVNode(
+          "div",
+          {
+            class: "brand",
+            "data-v-inspector": "src/components/AppSidebar.vue:4:7"
+          },
+          "HMIS",
+          -1
+          /* CACHED */
+        )),
+        _createElementVNode("button", {
+          class: "close",
+          type: "button",
+          onClick: _cache[0] || (_cache[0] = ($event) => $setup.emit("close")),
+          "aria-label": "Close menu",
+          "data-v-inspector": "src/components/AppSidebar.vue:6:7"
+        }, " × ")
+      ]),
+      _createElementVNode("nav", _hoisted_2, [
+        _createCommentVNode(" DASHBOARD "),
+        $setup.canSee("dashboard") ? (_openBlock(), _createElementBlock("div", _hoisted_3, [
+          _createVNode(_component_RouterLink, {
+            to: "/dashboard",
+            class: "menu-title single-link",
+            onClick: $setup.onNavigate,
+            "data-v-inspector": "src/components/AppSidebar.vue:14:9"
+          }, {
+            default: _withCtx(() => [..._cache[14] || (_cache[14] = [
+              _createTextVNode(
+                " Dashboard ",
+                -1
+                /* CACHED */
+              )
+            ])]),
+            _: 1
+            /* STABLE */
+          })
+        ])) : _createCommentVNode("v-if", true),
+        _createCommentVNode(" PATIENT MANAGEMENT "),
+        $setup.canSee("patients") ? (_openBlock(), _createElementBlock("div", _hoisted_4, [
+          _createElementVNode("div", {
+            class: "menu-title",
+            onClick: _cache[1] || (_cache[1] = ($event) => $setup.toggle("patients")),
+            "data-v-inspector": "src/components/AppSidebar.vue:21:9"
+          }, [
+            _cache[15] || (_cache[15] = _createTextVNode(
+              " Patient Management ",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode(
+              "span",
+              _hoisted_5,
+              _toDisplayString($setup.menuOpen.patients ? "▾" : "▸"),
+              1
+              /* TEXT */
+            )
+          ]),
+          $setup.menuOpen.patients ? (_openBlock(), _createElementBlock("div", _hoisted_6, [
+            $setup.canSee("patients.list") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 0,
+              to: "/patients",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:26:11"
+            }, {
+              default: _withCtx(() => [..._cache[16] || (_cache[16] = [
+                _createTextVNode(
+                  " Patient List ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("patients.queue") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 1,
+              to: "/patients/queue",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:29:11"
+            }, {
+              default: _withCtx(() => [..._cache[17] || (_cache[17] = [
+                _createTextVNode(
+                  " Registration Queue ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("patients.checkups") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 2,
+              to: "/checkups",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:32:11"
+            }, {
+              default: _withCtx(() => [..._cache[18] || (_cache[18] = [
+                _createTextVNode(
+                  " Checkups / Visits ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("patients.appointments") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 3,
+              to: "/appointments",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:35:11"
+            }, {
+              default: _withCtx(() => [..._cache[19] || (_cache[19] = [
+                _createTextVNode(
+                  " Appointments ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("patients.payments") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 4,
+              to: "/payments",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:39:11"
+            }, {
+              default: _withCtx(() => [..._cache[20] || (_cache[20] = [
+                _createTextVNode(
+                  " Payment ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("patients.counterClosing") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 5,
+              to: "/finance/counter-closing",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:43:11"
+            }, {
+              default: _withCtx(() => [..._cache[21] || (_cache[21] = [
+                _createTextVNode(
+                  " Counter Closing ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("opd") ? (_openBlock(), _createElementBlock("div", _hoisted_7, "Visits / OPD")) : _createCommentVNode("v-if", true),
+            $setup.canSee("opd.workflow") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 7,
+              to: "/opd/workflow",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:49:11"
+            }, {
+              default: _withCtx(() => [..._cache[22] || (_cache[22] = [
+                _createTextVNode(
+                  " OPD Workflow ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("opd.prescriptions") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 8,
+              to: "/opd/workflow",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:53:11"
+            }, {
+              default: _withCtx(() => [..._cache[23] || (_cache[23] = [
+                _createTextVNode(
+                  " Prescriptions ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("opd.diagnosis") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 9,
+              to: "/opd/workflow",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:56:11"
+            }, {
+              default: _withCtx(() => [..._cache[24] || (_cache[24] = [
+                _createTextVNode(
+                  " Diagnosis ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("opd.vitals") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 10,
+              to: "/opd/workflow",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:59:11"
+            }, {
+              default: _withCtx(() => [..._cache[25] || (_cache[25] = [
+                _createTextVNode(
+                  " Vital Signs ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("opd.procedures") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 11,
+              to: "/opd/workflow",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:62:11"
+            }, {
+              default: _withCtx(() => [..._cache[26] || (_cache[26] = [
+                _createTextVNode(
+                  " Procedures ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("opd.followups") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 12,
+              to: "/opd/workflow",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:65:11"
+            }, {
+              default: _withCtx(() => [..._cache[27] || (_cache[27] = [
+                _createTextVNode(
+                  " Follow-ups ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true)
+          ])) : _createCommentVNode("v-if", true)
+        ])) : _createCommentVNode("v-if", true),
+        _createCommentVNode(" HUMAN RESOURCE "),
+        _createCommentVNode(" HUMAN RESOURCE "),
+        $setup.canSee("hr") ? (_openBlock(), _createElementBlock("div", _hoisted_8, [
+          _createElementVNode("div", {
+            class: "menu-title",
+            onClick: _cache[2] || (_cache[2] = ($event) => $setup.toggle("hr")),
+            "data-v-inspector": "src/components/AppSidebar.vue:74:9"
+          }, [
+            _cache[28] || (_cache[28] = _createTextVNode(
+              " Human Resource ",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode(
+              "span",
+              _hoisted_9,
+              _toDisplayString($setup.menuOpen.hr ? "▾" : "▸"),
+              1
+              /* TEXT */
+            )
+          ]),
+          $setup.menuOpen.hr ? (_openBlock(), _createElementBlock("div", _hoisted_10, [
+            _cache[46] || (_cache[46] = _createElementVNode(
+              "div",
+              {
+                class: "submenu-divider",
+                "data-v-inspector": "src/components/AppSidebar.vue:80:11"
+              },
+              "Masters",
+              -1
+              /* CACHED */
+            )),
+            $setup.canSee("hr.departments") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 0,
+              to: "/hr/departments",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:82:11"
+            }, {
+              default: _withCtx(() => [..._cache[29] || (_cache[29] = [
+                _createTextVNode(
+                  " Departments ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("hr.designations") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 1,
+              to: "/hr/designations",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:86:11"
+            }, {
+              default: _withCtx(() => [..._cache[30] || (_cache[30] = [
+                _createTextVNode(
+                  " Designations ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("hr.shifts") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 2,
+              to: "/hr/shifts",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:90:11"
+            }, {
+              default: _withCtx(() => [..._cache[31] || (_cache[31] = [
+                _createTextVNode(
+                  " Shifts ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("hr.leaveTypes") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 3,
+              to: "/hr/leave-types",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:94:11"
+            }, {
+              default: _withCtx(() => [..._cache[32] || (_cache[32] = [
+                _createTextVNode(
+                  " Leave Types ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("hr.permissions") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 4,
+              to: "/hr/permissions",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:98:11"
+            }, {
+              default: _withCtx(() => [..._cache[33] || (_cache[33] = [
+                _createTextVNode(
+                  " Permissions ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("hr.onboardingChecklistItems") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 5,
+              to: "/hr/onboarding-checklist-items",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:102:11"
+            }, {
+              default: _withCtx(() => [..._cache[34] || (_cache[34] = [
+                _createTextVNode(
+                  " Onboarding Checklist ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            _cache[47] || (_cache[47] = _createElementVNode(
+              "div",
+              {
+                class: "submenu-divider",
+                "data-v-inspector": "src/components/AppSidebar.vue:107:11"
+              },
+              "Operations",
+              -1
+              /* CACHED */
+            )),
+            $setup.canSee("hr.workforce") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 6,
+              to: "/employees",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:109:11"
+            }, {
+              default: _withCtx(() => [..._cache[35] || (_cache[35] = [
+                _createTextVNode(
+                  " Workforce ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("hr.attendanceLogs") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 7,
+              to: "/hr/attendance-logs",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:113:11"
+            }, {
+              default: _withCtx(() => [..._cache[36] || (_cache[36] = [
+                _createTextVNode(
+                  " Attendance Logs ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("hr.dutyRosters") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 8,
+              to: "/hr/duty-rosters",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:117:11"
+            }, {
+              default: _withCtx(() => [..._cache[37] || (_cache[37] = [
+                _createTextVNode(
+                  " Duty Rosters ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("hr.leaveBalances") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 9,
+              to: "/hr/leave-balances",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:121:11"
+            }, {
+              default: _withCtx(() => [..._cache[38] || (_cache[38] = [
+                _createTextVNode(
+                  " Leave Balances ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("hr.leaveRequests") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 10,
+              to: "/hr/leave-requests",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:125:11"
+            }, {
+              default: _withCtx(() => [..._cache[39] || (_cache[39] = [
+                _createTextVNode(
+                  " Leave Requests ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("hr.payrolls") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 11,
+              to: "/hr/payrolls",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:129:11"
+            }, {
+              default: _withCtx(() => [..._cache[40] || (_cache[40] = [
+                _createTextVNode(
+                  " Payrolls ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            _cache[48] || (_cache[48] = _createElementVNode(
+              "div",
+              {
+                class: "submenu-divider",
+                "data-v-inspector": "src/components/AppSidebar.vue:133:11"
+              },
+              "Compliance",
+              -1
+              /* CACHED */
+            )),
+            $setup.canSee("hr.credentials") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 12,
+              to: "/hr/credentials",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:135:11"
+            }, {
+              default: _withCtx(() => [..._cache[41] || (_cache[41] = [
+                _createTextVNode(
+                  " Credentials ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("hr.trainingEnrollments") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 13,
+              to: "/hr/training-enrollments",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:139:11"
+            }, {
+              default: _withCtx(() => [..._cache[42] || (_cache[42] = [
+                _createTextVNode(
+                  " Training Enrollments ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("hr.performanceAppraisals") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 14,
+              to: "/hr/performance-appraisals",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:143:11"
+            }, {
+              default: _withCtx(() => [..._cache[43] || (_cache[43] = [
+                _createTextVNode(
+                  " Performance Appraisals ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("hr.disciplinaryIncidents") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 15,
+              to: "/hr/disciplinary-incidents",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:147:11"
+            }, {
+              default: _withCtx(() => [..._cache[44] || (_cache[44] = [
+                _createTextVNode(
+                  " Disciplinary Incidents ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("hr.employmentProfileTags") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 16,
+              to: "/hr/employment-profile-tags",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:151:11"
+            }, {
+              default: _withCtx(() => [..._cache[45] || (_cache[45] = [
+                _createTextVNode(
+                  " Employment Profile Tags ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true)
+          ])) : _createCommentVNode("v-if", true)
+        ])) : _createCommentVNode("v-if", true),
+        _createCommentVNode(" BILLING & FINANCE "),
+        $setup.canSee("finance") ? (_openBlock(), _createElementBlock("div", _hoisted_11, [
+          _createElementVNode("div", {
+            class: "menu-title",
+            onClick: _cache[3] || (_cache[3] = ($event) => $setup.toggle("billing")),
+            "data-v-inspector": "src/components/AppSidebar.vue:159:9"
+          }, [
+            _cache[49] || (_cache[49] = _createTextVNode(
+              " Billing & Finance ",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode(
+              "span",
+              _hoisted_12,
+              _toDisplayString($setup.menuOpen.billing ? "▾" : "▸"),
+              1
+              /* TEXT */
+            )
+          ]),
+          $setup.menuOpen.billing ? (_openBlock(), _createElementBlock("div", _hoisted_13, [
+            $setup.canSee("finance.receipts") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 0,
+              to: "/payments",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:164:11"
+            }, {
+              default: _withCtx(() => [..._cache[50] || (_cache[50] = [
+                _createTextVNode(
+                  " Receipts ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("finance.refunds") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 1,
+              to: "/finance/refunds",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:167:11"
+            }, {
+              default: _withCtx(() => [..._cache[51] || (_cache[51] = [
+                _createTextVNode(
+                  " Refunds ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("finance.claims") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 2,
+              to: "/finance/claims",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:170:11"
+            }, {
+              default: _withCtx(() => [..._cache[52] || (_cache[52] = [
+                _createTextVNode(
+                  " Insurance Claims ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("finance.posting") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 3,
+              to: "/finance/posting-dashboard",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:173:11"
+            }, {
+              default: _withCtx(() => [..._cache[53] || (_cache[53] = [
+                _createTextVNode(
+                  " Posting Dashboard ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("finance.doctorShare") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 4,
+              to: "/finance/doctor-share",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:176:11"
+            }, {
+              default: _withCtx(() => [..._cache[54] || (_cache[54] = [
+                _createTextVNode(
+                  " Doctor Share ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("finance.leakage") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 5,
+              to: "/finance/leakage-dashboard",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:179:11"
+            }, {
+              default: _withCtx(() => [..._cache[55] || (_cache[55] = [
+                _createTextVNode(
+                  " Leakage Dashboard ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("finance.coa") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 6,
+              to: "/finance/chartofaccounts",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:182:11"
+            }, {
+              default: _withCtx(() => [..._cache[56] || (_cache[56] = [
+                _createTextVNode(
+                  " Chart Of Account ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("finance.posting") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 7,
+              to: "/finance/revenue-vouchers",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:185:11"
+            }, {
+              default: _withCtx(() => [..._cache[57] || (_cache[57] = [
+                _createTextVNode(
+                  " Revenue Vouchers ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("finance.expenseVouchers") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 8,
+              to: "/finance/expense-vouchers",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:188:11"
+            }, {
+              default: _withCtx(() => [..._cache[58] || (_cache[58] = [
+                _createTextVNode(
+                  " Expense Voucher ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("finance.dailyClosing") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 9,
+              to: "/finance/daily-closing",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:191:11"
+            }, {
+              default: _withCtx(() => [..._cache[59] || (_cache[59] = [
+                _createTextVNode(
+                  " Daily Closing ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true)
+          ])) : _createCommentVNode("v-if", true)
+        ])) : _createCommentVNode("v-if", true),
+        _createCommentVNode(" LAB "),
+        $setup.showAdvancedDemoModules && $setup.canSee("lab") ? (_openBlock(), _createElementBlock("div", _hoisted_14, [
+          _createElementVNode("div", {
+            class: "menu-title",
+            onClick: _cache[4] || (_cache[4] = ($event) => $setup.toggle("lab")),
+            "data-v-inspector": "src/components/AppSidebar.vue:199:9"
+          }, [
+            _cache[60] || (_cache[60] = _createTextVNode(
+              " Laboratory ",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode(
+              "span",
+              _hoisted_15,
+              _toDisplayString($setup.menuOpen.lab ? "▾" : "▸"),
+              1
+              /* TEXT */
+            )
+          ]),
+          $setup.menuOpen.lab ? (_openBlock(), _createElementBlock("div", _hoisted_16, [
+            $setup.canSee("lab.orders") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 0,
+              to: "/diagnostics/orders",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:204:11"
+            }, {
+              default: _withCtx(() => [..._cache[61] || (_cache[61] = [
+                _createTextVNode(
+                  " Diagnostic Orders ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("lab.tests") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 1,
+              to: "/diagnostics/orders",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:207:11"
+            }, {
+              default: _withCtx(() => [..._cache[62] || (_cache[62] = [
+                _createTextVNode(
+                  " Lab Tests ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("lab.categories") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 2,
+              to: "/diagnostics/orders",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:210:11"
+            }, {
+              default: _withCtx(() => [..._cache[63] || (_cache[63] = [
+                _createTextVNode(
+                  " Categories ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("lab.sample") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 3,
+              to: "/diagnostics/sample-collection",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:213:11"
+            }, {
+              default: _withCtx(() => [..._cache[64] || (_cache[64] = [
+                _createTextVNode(
+                  " Sample Collection ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("lab.results") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 4,
+              to: "/diagnostics/results",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:216:11"
+            }, {
+              default: _withCtx(() => [..._cache[65] || (_cache[65] = [
+                _createTextVNode(
+                  " Result Entry ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("lab.reports") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 5,
+              to: "/diagnostics/reports",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:219:11"
+            }, {
+              default: _withCtx(() => [..._cache[66] || (_cache[66] = [
+                _createTextVNode(
+                  " Reports ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("lab.approvals") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 6,
+              to: "/diagnostics/approvals",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:222:11"
+            }, {
+              default: _withCtx(() => [..._cache[67] || (_cache[67] = [
+                _createTextVNode(
+                  " Approvals ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("radiology.worklist") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 7,
+              to: "/radiology/worklist",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:225:11"
+            }, {
+              default: _withCtx(() => [..._cache[68] || (_cache[68] = [
+                _createTextVNode(
+                  " Radiology Worklist ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("radiology.reporting") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 8,
+              to: "/radiology/reporting",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:228:11"
+            }, {
+              default: _withCtx(() => [..._cache[69] || (_cache[69] = [
+                _createTextVNode(
+                  " Radiology Reporting ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true)
+          ])) : _createCommentVNode("v-if", true)
+        ])) : _createCommentVNode("v-if", true),
+        _createCommentVNode(" PHARMACY "),
+        $setup.showAdvancedDemoModules && $setup.canSee("pharmacy") ? (_openBlock(), _createElementBlock("div", _hoisted_17, [
+          _createElementVNode("div", {
+            class: "menu-title",
+            onClick: _cache[5] || (_cache[5] = ($event) => $setup.toggle("pharmacy")),
+            "data-v-inspector": "src/components/AppSidebar.vue:236:9"
+          }, [
+            _cache[70] || (_cache[70] = _createTextVNode(
+              " Pharmacy ",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode(
+              "span",
+              _hoisted_18,
+              _toDisplayString($setup.menuOpen.pharmacy ? "▾" : "▸"),
+              1
+              /* TEXT */
+            )
+          ]),
+          $setup.menuOpen.pharmacy ? (_openBlock(), _createElementBlock("div", _hoisted_19, [
+            $setup.canSee("pharmacy.dispensing") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 0,
+              to: "/pharmacy/dispensing",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:241:11"
+            }, {
+              default: _withCtx(() => [..._cache[71] || (_cache[71] = [
+                _createTextVNode(
+                  " Dispensing ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("pharmacy.batches") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 1,
+              to: "/pharmacy/batches",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:244:11"
+            }, {
+              default: _withCtx(() => [..._cache[72] || (_cache[72] = [
+                _createTextVNode(
+                  " Batch & Expiry ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("pharmacy.sales") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 2,
+              to: "/pharmacy/unit-box-sales",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:247:11"
+            }, {
+              default: _withCtx(() => [..._cache[73] || (_cache[73] = [
+                _createTextVNode(
+                  " Unit / Box Sales ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("pharmacy.freeMedicine") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 3,
+              to: "/pharmacy/free-medicine",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:250:11"
+            }, {
+              default: _withCtx(() => [..._cache[74] || (_cache[74] = [
+                _createTextVNode(
+                  " Free Medicine ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("pharmacy.paymentModes") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 4,
+              to: "/pharmacy/payment-modes",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:253:11"
+            }, {
+              default: _withCtx(() => [..._cache[75] || (_cache[75] = [
+                _createTextVNode(
+                  " Payment Modes ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("pharmacy.reports") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 5,
+              to: "/pharmacy/reports",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:256:11"
+            }, {
+              default: _withCtx(() => [..._cache[76] || (_cache[76] = [
+                _createTextVNode(
+                  " Reports ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("pharmacy.medicines") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 6,
+              to: "/pharmacy/dispensing",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:259:11"
+            }, {
+              default: _withCtx(() => [..._cache[77] || (_cache[77] = [
+                _createTextVNode(
+                  " Medicines ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("pharmacy.categories") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 7,
+              to: "/pharmacy/dispensing",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:262:11"
+            }, {
+              default: _withCtx(() => [..._cache[78] || (_cache[78] = [
+                _createTextVNode(
+                  " Categories ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("pharmacy.stock") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 8,
+              to: "/pharmacy/batches",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:265:11"
+            }, {
+              default: _withCtx(() => [..._cache[79] || (_cache[79] = [
+                _createTextVNode(
+                  " Stock ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("pharmacy.issue") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 9,
+              to: "/pharmacy/dispensing",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:268:11"
+            }, {
+              default: _withCtx(() => [..._cache[80] || (_cache[80] = [
+                _createTextVNode(
+                  " Medicine Issue ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true)
+          ])) : _createCommentVNode("v-if", true)
+        ])) : _createCommentVNode("v-if", true),
+        _createCommentVNode(" IPD "),
+        $setup.showAdvancedDemoModules && $setup.canSee("ipd") ? (_openBlock(), _createElementBlock("div", _hoisted_20, [
+          _createElementVNode("div", {
+            class: "menu-title",
+            onClick: _cache[6] || (_cache[6] = ($event) => $setup.toggle("ipd")),
+            "data-v-inspector": "src/components/AppSidebar.vue:276:9"
+          }, [
+            _cache[81] || (_cache[81] = _createTextVNode(
+              " IPD / Inpatient ",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode(
+              "span",
+              _hoisted_21,
+              _toDisplayString($setup.menuOpen.ipd ? "▾" : "▸"),
+              1
+              /* TEXT */
+            )
+          ]),
+          $setup.menuOpen.ipd ? (_openBlock(), _createElementBlock("div", _hoisted_22, [
+            $setup.canSee("ipd.admissions") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 0,
+              to: "/ipd/admissions",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:281:11"
+            }, {
+              default: _withCtx(() => [..._cache[82] || (_cache[82] = [
+                _createTextVNode(
+                  "Admissions",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("ipd.bedBoard") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 1,
+              to: "/ipd/bed-board",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:282:11"
+            }, {
+              default: _withCtx(() => [..._cache[83] || (_cache[83] = [
+                _createTextVNode(
+                  "Bed Board",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("ipd.nursing") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 2,
+              to: "/ipd/nursing",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:283:11"
+            }, {
+              default: _withCtx(() => [..._cache[84] || (_cache[84] = [
+                _createTextVNode(
+                  "Nursing",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("ipd.mar") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 3,
+              to: "/ipd/mar",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:284:11"
+            }, {
+              default: _withCtx(() => [..._cache[85] || (_cache[85] = [
+                _createTextVNode(
+                  "MAR",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("ipd.discharge") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 4,
+              to: "/ipd/discharge",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:285:11"
+            }, {
+              default: _withCtx(() => [..._cache[86] || (_cache[86] = [
+                _createTextVNode(
+                  "Discharge",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            _cache[92] || (_cache[92] = _createElementVNode(
+              "div",
+              {
+                class: "submenu-divider",
+                "data-v-inspector": "src/components/AppSidebar.vue:286:11"
+              },
+              "Emergency / OT / ICU",
+              -1
+              /* CACHED */
+            )),
+            $setup.canSee("ipd.admissions") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 5,
+              to: "/emergency/triage",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:287:11"
+            }, {
+              default: _withCtx(() => [..._cache[87] || (_cache[87] = [
+                _createTextVNode(
+                  "Emergency Triage",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("ipd.admissions") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 6,
+              to: "/emergency/encounters",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:288:11"
+            }, {
+              default: _withCtx(() => [..._cache[88] || (_cache[88] = [
+                _createTextVNode(
+                  "Emergency Encounters",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("ipd.bedBoard") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 7,
+              to: "/emergency/observation-beds",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:289:11"
+            }, {
+              default: _withCtx(() => [..._cache[89] || (_cache[89] = [
+                _createTextVNode(
+                  "Observation Beds",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("ipd.nursing") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 8,
+              to: "/ot/procedures",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:290:11"
+            }, {
+              default: _withCtx(() => [..._cache[90] || (_cache[90] = [
+                _createTextVNode(
+                  "OT Procedures",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("ipd.nursing") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 9,
+              to: "/icu/workflows",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:291:11"
+            }, {
+              default: _withCtx(() => [..._cache[91] || (_cache[91] = [
+                _createTextVNode(
+                  "ICU Workflows",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true)
+          ])) : _createCommentVNode("v-if", true)
+        ])) : _createCommentVNode("v-if", true),
+        _createCommentVNode(" INVENTORY "),
+        $setup.showAdvancedDemoModules && $setup.canSee("inventory") ? (_openBlock(), _createElementBlock("div", _hoisted_23, [
+          _createElementVNode("div", {
+            class: "menu-title",
+            onClick: _cache[7] || (_cache[7] = ($event) => $setup.toggle("inventory")),
+            "data-v-inspector": "src/components/AppSidebar.vue:297:9"
+          }, [
+            _cache[93] || (_cache[93] = _createTextVNode(
+              " Inventory ",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode(
+              "span",
+              _hoisted_24,
+              _toDisplayString($setup.menuOpen.inventory ? "▾" : "▸"),
+              1
+              /* TEXT */
+            )
+          ]),
+          $setup.menuOpen.inventory ? (_openBlock(), _createElementBlock("div", _hoisted_25, [
+            $setup.canSee("inventory.procurement") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 0,
+              to: "/inventory/procurement",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:302:11"
+            }, {
+              default: _withCtx(() => [..._cache[94] || (_cache[94] = [
+                _createTextVNode(
+                  "Procurement",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("inventory.procurement") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 1,
+              to: "/inventory/suppliers",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:303:11"
+            }, {
+              default: _withCtx(() => [..._cache[95] || (_cache[95] = [
+                _createTextVNode(
+                  "Suppliers",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("inventory.procurement") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 2,
+              to: "/inventory/requisitions",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:304:11"
+            }, {
+              default: _withCtx(() => [..._cache[96] || (_cache[96] = [
+                _createTextVNode(
+                  "Requisitions",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("inventory.procurement") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 3,
+              to: "/inventory/purchase-orders",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:305:11"
+            }, {
+              default: _withCtx(() => [..._cache[97] || (_cache[97] = [
+                _createTextVNode(
+                  "Purchase Orders",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("inventory.procurement") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 4,
+              to: "/inventory/receiving",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:306:11"
+            }, {
+              default: _withCtx(() => [..._cache[98] || (_cache[98] = [
+                _createTextVNode(
+                  "Receiving",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("inventory.stockMovements") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 5,
+              to: "/inventory/stock-lots",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:307:11"
+            }, {
+              default: _withCtx(() => [..._cache[99] || (_cache[99] = [
+                _createTextVNode(
+                  "Stock Lots",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("inventory.stockMovements") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 6,
+              to: "/inventory/expiry",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:308:11"
+            }, {
+              default: _withCtx(() => [..._cache[100] || (_cache[100] = [
+                _createTextVNode(
+                  "Expiry",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("inventory.stockMovements") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 7,
+              to: "/inventory/adjustments",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:309:11"
+            }, {
+              default: _withCtx(() => [..._cache[101] || (_cache[101] = [
+                _createTextVNode(
+                  "Adjustments",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("inventory.stockMovements") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 8,
+              to: "/inventory/stock-movements",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:310:11"
+            }, {
+              default: _withCtx(() => [..._cache[102] || (_cache[102] = [
+                _createTextVNode(
+                  "Stock Movements",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("inventory.reports") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 9,
+              to: "/inventory/reports",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:311:11"
+            }, {
+              default: _withCtx(() => [..._cache[103] || (_cache[103] = [
+                _createTextVNode(
+                  "Inventory Reports",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true)
+          ])) : _createCommentVNode("v-if", true)
+        ])) : _createCommentVNode("v-if", true),
+        _createCommentVNode(" ANALYTICS "),
+        $setup.showAdvancedDemoModules && $setup.canSee("analytics") ? (_openBlock(), _createElementBlock("div", _hoisted_26, [
+          _createElementVNode("div", {
+            class: "menu-title",
+            onClick: _cache[8] || (_cache[8] = ($event) => $setup.toggle("analytics")),
+            "data-v-inspector": "src/components/AppSidebar.vue:317:9"
+          }, [
+            _cache[104] || (_cache[104] = _createTextVNode(
+              " Analytics ",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode(
+              "span",
+              _hoisted_27,
+              _toDisplayString($setup.menuOpen.analytics ? "▾" : "▸"),
+              1
+              /* TEXT */
+            )
+          ]),
+          $setup.menuOpen.analytics ? (_openBlock(), _createElementBlock("div", _hoisted_28, [
+            $setup.canSee("analytics.executive") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 0,
+              to: "/analytics/executive",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:322:11"
+            }, {
+              default: _withCtx(() => [..._cache[105] || (_cache[105] = [
+                _createTextVNode(
+                  "Executive",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("analytics.clinical") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 1,
+              to: "/analytics/clinical",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:323:11"
+            }, {
+              default: _withCtx(() => [..._cache[106] || (_cache[106] = [
+                _createTextVNode(
+                  "Clinical",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("analytics.finance") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 2,
+              to: "/analytics/finance",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:324:11"
+            }, {
+              default: _withCtx(() => [..._cache[107] || (_cache[107] = [
+                _createTextVNode(
+                  "Finance",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("analytics.finance") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 3,
+              to: "/analytics/exports",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:325:11"
+            }, {
+              default: _withCtx(() => [..._cache[108] || (_cache[108] = [
+                _createTextVNode(
+                  "Exports",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true)
+          ])) : _createCommentVNode("v-if", true)
+        ])) : _createCommentVNode("v-if", true),
+        _createCommentVNode(" PATIENT ENGAGEMENT "),
+        $setup.showAdvancedDemoModules && $setup.canSee("patientEngagement") ? (_openBlock(), _createElementBlock("div", _hoisted_29, [
+          _createElementVNode("div", {
+            class: "menu-title",
+            onClick: _cache[9] || (_cache[9] = ($event) => $setup.toggle("patientEngagement")),
+            "data-v-inspector": "src/components/AppSidebar.vue:331:9"
+          }, [
+            _cache[109] || (_cache[109] = _createTextVNode(
+              " Patient Engagement ",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode(
+              "span",
+              _hoisted_30,
+              _toDisplayString($setup.menuOpen.patientEngagement ? "▾" : "▸"),
+              1
+              /* TEXT */
+            )
+          ]),
+          $setup.menuOpen.patientEngagement ? (_openBlock(), _createElementBlock("div", _hoisted_31, [
+            $setup.canSee("patientEngagement.portal") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 0,
+              to: "/patient-engagement/portal-accounts",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:336:11"
+            }, {
+              default: _withCtx(() => [..._cache[110] || (_cache[110] = [
+                _createTextVNode(
+                  "Portal Accounts",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("patientEngagement.prescriptions") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 1,
+              to: "/patient-engagement/prescription-access",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:337:11"
+            }, {
+              default: _withCtx(() => [..._cache[111] || (_cache[111] = [
+                _createTextVNode(
+                  "Prescription Access",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("patientEngagement.notifications") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 2,
+              to: "/patient-engagement/notifications",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:338:11"
+            }, {
+              default: _withCtx(() => [..._cache[112] || (_cache[112] = [
+                _createTextVNode(
+                  "Notifications",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("patientEngagement.consents") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 3,
+              to: "/patient-engagement/consents",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:339:11"
+            }, {
+              default: _withCtx(() => [..._cache[113] || (_cache[113] = [
+                _createTextVNode(
+                  "Consents",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("patientEngagement.messages") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 4,
+              to: "/patient-engagement/messages",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:340:11"
+            }, {
+              default: _withCtx(() => [..._cache[114] || (_cache[114] = [
+                _createTextVNode(
+                  "Messages",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true)
+          ])) : _createCommentVNode("v-if", true)
+        ])) : _createCommentVNode("v-if", true),
+        _createCommentVNode(" INTEROPERABILITY "),
+        $setup.showAdvancedDemoModules && $setup.canSee("interoperability") ? (_openBlock(), _createElementBlock("div", _hoisted_32, [
+          _createElementVNode("div", {
+            class: "menu-title",
+            onClick: _cache[10] || (_cache[10] = ($event) => $setup.toggle("interoperability")),
+            "data-v-inspector": "src/components/AppSidebar.vue:346:9"
+          }, [
+            _cache[115] || (_cache[115] = _createTextVNode(
+              " Interoperability ",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode(
+              "span",
+              _hoisted_33,
+              _toDisplayString($setup.menuOpen.interoperability ? "▾" : "▸"),
+              1
+              /* TEXT */
+            )
+          ]),
+          $setup.menuOpen.interoperability ? (_openBlock(), _createElementBlock("div", _hoisted_34, [
+            $setup.canSee("interoperability.outbox") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 0,
+              to: "/interoperability/outbox",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:351:11"
+            }, {
+              default: _withCtx(() => [..._cache[116] || (_cache[116] = [
+                _createTextVNode(
+                  "Outbox & Retries",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("interoperability.fhir") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 1,
+              to: "/interoperability/hl7-fhir",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:352:11"
+            }, {
+              default: _withCtx(() => [..._cache[117] || (_cache[117] = [
+                _createTextVNode(
+                  "HL7 / FHIR",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("interoperability.partners") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 2,
+              to: "/interoperability/partners",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:353:11"
+            }, {
+              default: _withCtx(() => [..._cache[118] || (_cache[118] = [
+                _createTextVNode(
+                  "Partners",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("interoperability.fhir") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 3,
+              to: "/interoperability/exchange",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:354:11"
+            }, {
+              default: _withCtx(() => [..._cache[119] || (_cache[119] = [
+                _createTextVNode(
+                  "External Exchange",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("interoperability.fhir") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 4,
+              to: "/interoperability/webhooks",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:355:11"
+            }, {
+              default: _withCtx(() => [..._cache[120] || (_cache[120] = [
+                _createTextVNode(
+                  "Webhooks",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("interoperability.fhir") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 5,
+              to: "/interoperability/pacs-dicom",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:356:11"
+            }, {
+              default: _withCtx(() => [..._cache[121] || (_cache[121] = [
+                _createTextVNode(
+                  "PACS / DICOM",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true)
+          ])) : _createCommentVNode("v-if", true)
+        ])) : _createCommentVNode("v-if", true),
+        _createCommentVNode(" REPORTS "),
+        $setup.canSee("reports") ? (_openBlock(), _createElementBlock("div", _hoisted_35, [
+          _createElementVNode("div", {
+            class: "menu-title",
+            onClick: _cache[11] || (_cache[11] = ($event) => $setup.toggle("reports")),
+            "data-v-inspector": "src/components/AppSidebar.vue:362:9"
+          }, [
+            _cache[122] || (_cache[122] = _createTextVNode(
+              " Reports ",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode(
+              "span",
+              _hoisted_36,
+              _toDisplayString($setup.menuOpen.reports ? "▾" : "▸"),
+              1
+              /* TEXT */
+            )
+          ]),
+          $setup.menuOpen.reports ? (_openBlock(), _createElementBlock("div", _hoisted_37, [
+            $setup.canSee("reports.patient") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 0,
+              to: "/dashboard",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:367:11"
+            }, {
+              default: _withCtx(() => [..._cache[123] || (_cache[123] = [
+                _createTextVNode(
+                  " Patient Reports ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("reports.finance") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 1,
+              to: "/dashboard",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:370:11"
+            }, {
+              default: _withCtx(() => [..._cache[124] || (_cache[124] = [
+                _createTextVNode(
+                  " Financial Reports ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("reports.lab") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 2,
+              to: "/dashboard",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:373:11"
+            }, {
+              default: _withCtx(() => [..._cache[125] || (_cache[125] = [
+                _createTextVNode(
+                  " Lab Reports ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true)
+          ])) : _createCommentVNode("v-if", true)
+        ])) : _createCommentVNode("v-if", true),
+        _createCommentVNode(" ADMIN "),
+        $setup.canSee("admin") ? (_openBlock(), _createElementBlock("div", _hoisted_38, [
+          _createElementVNode("div", {
+            class: "menu-title",
+            onClick: _cache[12] || (_cache[12] = ($event) => $setup.toggle("admin")),
+            "data-v-inspector": "src/components/AppSidebar.vue:381:9"
+          }, [
+            _cache[126] || (_cache[126] = _createTextVNode(
+              " Administration ",
+              -1
+              /* CACHED */
+            )),
+            _createElementVNode(
+              "span",
+              _hoisted_39,
+              _toDisplayString($setup.menuOpen.admin ? "▾" : "▸"),
+              1
+              /* TEXT */
+            )
+          ]),
+          $setup.menuOpen.admin ? (_openBlock(), _createElementBlock("div", _hoisted_40, [
+            $setup.canSee("admin.company") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 0,
+              to: "/company-info",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:386:11"
+            }, {
+              default: _withCtx(() => [..._cache[127] || (_cache[127] = [
+                _createTextVNode(
+                  " Company Info ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("admin.paymentCategories") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 1,
+              to: "/admin/payment-categories",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:390:11"
+            }, {
+              default: _withCtx(() => [..._cache[128] || (_cache[128] = [
+                _createTextVNode(
+                  " Payment Categories ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("admin.users") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 2,
+              to: "/admin/users",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:394:11"
+            }, {
+              default: _withCtx(() => [..._cache[129] || (_cache[129] = [
+                _createTextVNode(
+                  " Users ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("admin.audit") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 3,
+              to: "/admin/audit",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:398:11"
+            }, {
+              default: _withCtx(() => [..._cache[130] || (_cache[130] = [
+                _createTextVNode(
+                  " Audit Viewer ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("admin.permissionSync") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 4,
+              to: "/admin/permission-sync",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:402:11"
+            }, {
+              default: _withCtx(() => [..._cache[131] || (_cache[131] = [
+                _createTextVNode(
+                  " Permission Sync ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("admin.observability") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 5,
+              to: "/admin/observability",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:406:11"
+            }, {
+              default: _withCtx(() => [..._cache[132] || (_cache[132] = [
+                _createTextVNode(
+                  " Observability ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true),
+            $setup.canSee("admin.roles") ? (_openBlock(), _createBlock(_component_RouterLink, {
+              key: 6,
+              to: "/dashboard",
+              onClick: $setup.onNavigate,
+              "data-v-inspector": "src/components/AppSidebar.vue:410:11"
+            }, {
+              default: _withCtx(() => [..._cache[133] || (_cache[133] = [
+                _createTextVNode(
+                  " Roles & Permissions ",
+                  -1
+                  /* CACHED */
+                )
+              ])]),
+              _: 1
+              /* STABLE */
+            })) : _createCommentVNode("v-if", true)
+          ])) : _createCommentVNode("v-if", true)
+        ])) : _createCommentVNode("v-if", true)
+      ])
+    ],
+    2
+    /* CLASS */
+  );
+}
+import "/src/components/AppSidebar.vue?vue&type=style&index=0&scoped=53430c37&lang.css";
+_sfc_main.__hmrId = "53430c37";
+typeof __VUE_HMR_RUNTIME__ !== "undefined" && __VUE_HMR_RUNTIME__.createRecord(_sfc_main.__hmrId, _sfc_main);
+import.meta.hot.on("file-changed", ({ file }) => {
+  __VUE_HMR_RUNTIME__.CHANGED_FILE = file;
+});
+import.meta.hot.accept((mod) => {
+  if (!mod) return;
+  const { default: updated, _rerender_only } = mod;
+  if (_rerender_only) {
+    __VUE_HMR_RUNTIME__.rerender(updated.__hmrId, updated.render);
+  } else {
+    __VUE_HMR_RUNTIME__.reload(updated.__hmrId, updated);
+  }
+});
+import _export_sfc from "/@id/__x00__plugin-vue:export-helper";
+export default /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-53430c37"], ["__file", "D:/Dot Net Projects/JSK/hmis-ui/src/components/AppSidebar.vue"]]);
+
+//# sourceMappingURL=data:application/json;base64,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Y2VzQ29udGVudCI6WyI8dGVtcGxhdGU+XG4gIDxhc2lkZSBjbGFzcz1cInNpZGViYXJcIiA6Y2xhc3M9XCJ7IG9wZW46IG9wZW4gfVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToyOjNcIj5cbiAgICA8ZGl2IGNsYXNzPVwiYnJhbmQtcm93XCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjM6NVwiPlxuICAgICAgPGRpdiBjbGFzcz1cImJyYW5kXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjQ6N1wiPkhNSVM8L2Rpdj5cblxuICAgICAgPGJ1dHRvbiBjbGFzcz1cImNsb3NlXCIgdHlwZT1cImJ1dHRvblwiIEBjbGljaz1cImVtaXQoJ2Nsb3NlJylcIiBhcmlhLWxhYmVsPVwiQ2xvc2UgbWVudVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTo2OjdcIj5cbiAgICAgICAgw5dcbiAgICAgIDwvYnV0dG9uPlxuICAgIDwvZGl2PlxuXG4gICAgPG5hdiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MTE6NVwiPlxuICAgICAgPCEtLSBEQVNIQk9BUkQgLS0+XG4gICAgICA8ZGl2IGNsYXNzPVwibWVudS1ncm91cFwiIHYtaWY9XCJjYW5TZWUoJ2Rhc2hib2FyZCcpXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjEzOjdcIj5cbiAgICAgICAgPFJvdXRlckxpbmsgdG89XCIvZGFzaGJvYXJkXCIgY2xhc3M9XCJtZW51LXRpdGxlIHNpbmdsZS1saW5rXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxNDo5XCI+XG4gICAgICAgICAgRGFzaGJvYXJkXG4gICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgIDwvZGl2PlxuXG4gICAgICA8IS0tIFBBVElFTlQgTUFOQUdFTUVOVCAtLT5cbiAgICAgIDxkaXYgY2xhc3M9XCJtZW51LWdyb3VwXCIgdi1pZj1cImNhblNlZSgncGF0aWVudHMnKVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToyMDo3XCI+XG4gICAgICAgIDxkaXYgY2xhc3M9XCJtZW51LXRpdGxlXCIgQGNsaWNrPVwidG9nZ2xlKCdwYXRpZW50cycpXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjIxOjlcIj5cbiAgICAgICAgICBQYXRpZW50IE1hbmFnZW1lbnRcbiAgICAgICAgICA8c3BhbiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MjM6MTFcIj57eyBtZW51T3Blbi5wYXRpZW50cyA/ICfilr4nIDogJ+KWuCcgfX08L3NwYW4+XG4gICAgICAgIDwvZGl2PlxuICAgICAgICA8ZGl2IHYtaWY9XCJtZW51T3Blbi5wYXRpZW50c1wiIGNsYXNzPVwic3VibWVudVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToyNTo5XCI+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgncGF0aWVudHMubGlzdCcpXCIgdG89XCIvcGF0aWVudHNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjI2OjExXCI+XG4gICAgICAgICAgICBQYXRpZW50IExpc3RcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgncGF0aWVudHMucXVldWUnKVwiIHRvPVwiL3BhdGllbnRzL3F1ZXVlXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToyOToxMVwiPlxuICAgICAgICAgICAgUmVnaXN0cmF0aW9uIFF1ZXVlXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ3BhdGllbnRzLmNoZWNrdXBzJylcIiB0bz1cIi9jaGVja3Vwc1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MzI6MTFcIj5cbiAgICAgICAgICAgIENoZWNrdXBzIC8gVmlzaXRzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ3BhdGllbnRzLmFwcG9pbnRtZW50cycpXCIgdG89XCIvYXBwb2ludG1lbnRzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTozNToxMVwiPlxuICAgICAgICAgICAgQXBwb2ludG1lbnRzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuXG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgncGF0aWVudHMucGF5bWVudHMnKVwiIHRvPVwiL3BheW1lbnRzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTozOToxMVwiPlxuICAgICAgICAgICAgUGF5bWVudFxuICAgICAgICAgIDwvUm91dGVyTGluaz5cblxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ3BhdGllbnRzLmNvdW50ZXJDbG9zaW5nJylcIiB0bz1cIi9maW5hbmNlL2NvdW50ZXItY2xvc2luZ1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6NDM6MTFcIj5cbiAgICAgICAgICAgIENvdW50ZXIgQ2xvc2luZ1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cblxuICAgICAgICAgIDxkaXYgY2xhc3M9XCJzdWJtZW51LWRpdmlkZXJcIiB2LWlmPVwiY2FuU2VlKCdvcGQnKVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTo0NzoxMVwiPlZpc2l0cyAvIE9QRDwvZGl2PlxuXG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnb3BkLndvcmtmbG93JylcIiB0bz1cIi9vcGQvd29ya2Zsb3dcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjQ5OjExXCI+XG4gICAgICAgICAgICBPUEQgV29ya2Zsb3dcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdvcGQucHJlc2NyaXB0aW9ucycpXCIgdG89XCIvb3BkL3dvcmtmbG93XCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTo1MzoxMVwiPlxuICAgICAgICAgICAgUHJlc2NyaXB0aW9uc1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdvcGQuZGlhZ25vc2lzJylcIiB0bz1cIi9vcGQvd29ya2Zsb3dcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjU2OjExXCI+XG4gICAgICAgICAgICBEaWFnbm9zaXNcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnb3BkLnZpdGFscycpXCIgdG89XCIvb3BkL3dvcmtmbG93XCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTo1OToxMVwiPlxuICAgICAgICAgICAgVml0YWwgU2lnbnNcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnb3BkLnByb2NlZHVyZXMnKVwiIHRvPVwiL29wZC93b3JrZmxvd1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6NjI6MTFcIj5cbiAgICAgICAgICAgIFByb2NlZHVyZXNcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnb3BkLmZvbGxvd3VwcycpXCIgdG89XCIvb3BkL3dvcmtmbG93XCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTo2NToxMVwiPlxuICAgICAgICAgICAgRm9sbG93LXVwc1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgPC9kaXY+XG4gICAgICA8L2Rpdj5cblxuICAgICAgPCEtLSBIVU1BTiBSRVNPVVJDRSAtLT5cbiAgICAgIDwhLS0gSFVNQU4gUkVTT1VSQ0UgLS0+XG4gICAgICA8ZGl2IGNsYXNzPVwibWVudS1ncm91cFwiIHYtaWY9XCJjYW5TZWUoJ2hyJylcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6NzM6N1wiPlxuICAgICAgICA8ZGl2IGNsYXNzPVwibWVudS10aXRsZVwiIEBjbGljaz1cInRvZ2dsZSgnaHInKVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTo3NDo5XCI+XG4gICAgICAgICAgSHVtYW4gUmVzb3VyY2VcbiAgICAgICAgICA8c3BhbiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6NzY6MTFcIj57eyBtZW51T3Blbi5ociA/ICfilr4nIDogJ+KWuCcgfX08L3NwYW4+XG4gICAgICAgIDwvZGl2PlxuXG4gICAgICAgIDxkaXYgdi1pZj1cIm1lbnVPcGVuLmhyXCIgY2xhc3M9XCJzdWJtZW51XCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjc5OjlcIj5cbiAgICAgICAgICA8ZGl2IGNsYXNzPVwic3VibWVudS1kaXZpZGVyXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjgwOjExXCI+TWFzdGVyczwvZGl2PlxuXG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnaHIuZGVwYXJ0bWVudHMnKVwiIHRvPVwiL2hyL2RlcGFydG1lbnRzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTo4MjoxMVwiPlxuICAgICAgICAgICAgRGVwYXJ0bWVudHNcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdoci5kZXNpZ25hdGlvbnMnKVwiIHRvPVwiL2hyL2Rlc2lnbmF0aW9uc1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6ODY6MTFcIj5cbiAgICAgICAgICAgIERlc2lnbmF0aW9uc1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cblxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2hyLnNoaWZ0cycpXCIgdG89XCIvaHIvc2hpZnRzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTo5MDoxMVwiPlxuICAgICAgICAgICAgU2hpZnRzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuXG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnaHIubGVhdmVUeXBlcycpXCIgdG89XCIvaHIvbGVhdmUtdHlwZXNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjk0OjExXCI+XG4gICAgICAgICAgICBMZWF2ZSBUeXBlc1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cblxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2hyLnBlcm1pc3Npb25zJylcIiB0bz1cIi9oci9wZXJtaXNzaW9uc1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6OTg6MTFcIj5cbiAgICAgICAgICAgIFBlcm1pc3Npb25zXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuXG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnaHIub25ib2FyZGluZ0NoZWNrbGlzdEl0ZW1zJylcIiB0bz1cIi9oci9vbmJvYXJkaW5nLWNoZWNrbGlzdC1pdGVtc1wiXG4gICAgICAgICAgICBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjEwMjoxMVwiPlxuICAgICAgICAgICAgT25ib2FyZGluZyBDaGVja2xpc3RcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG5cbiAgICAgICAgICA8ZGl2IGNsYXNzPVwic3VibWVudS1kaXZpZGVyXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjEwNzoxMVwiPk9wZXJhdGlvbnM8L2Rpdj5cblxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2hyLndvcmtmb3JjZScpXCIgdG89XCIvZW1wbG95ZWVzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxMDk6MTFcIj5cbiAgICAgICAgICAgIFdvcmtmb3JjZVxuICAgICAgICAgIDwvUm91dGVyTGluaz5cblxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2hyLmF0dGVuZGFuY2VMb2dzJylcIiB0bz1cIi9oci9hdHRlbmRhbmNlLWxvZ3NcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjExMzoxMVwiPlxuICAgICAgICAgICAgQXR0ZW5kYW5jZSBMb2dzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuXG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnaHIuZHV0eVJvc3RlcnMnKVwiIHRvPVwiL2hyL2R1dHktcm9zdGVyc1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MTE3OjExXCI+XG4gICAgICAgICAgICBEdXR5IFJvc3RlcnNcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdoci5sZWF2ZUJhbGFuY2VzJylcIiB0bz1cIi9oci9sZWF2ZS1iYWxhbmNlc1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MTIxOjExXCI+XG4gICAgICAgICAgICBMZWF2ZSBCYWxhbmNlc1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cblxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2hyLmxlYXZlUmVxdWVzdHMnKVwiIHRvPVwiL2hyL2xlYXZlLXJlcXVlc3RzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxMjU6MTFcIj5cbiAgICAgICAgICAgIExlYXZlIFJlcXVlc3RzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuXG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnaHIucGF5cm9sbHMnKVwiIHRvPVwiL2hyL3BheXJvbGxzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxMjk6MTFcIj5cbiAgICAgICAgICAgIFBheXJvbGxzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuXG4gICAgICAgICAgPGRpdiBjbGFzcz1cInN1Ym1lbnUtZGl2aWRlclwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxMzM6MTFcIj5Db21wbGlhbmNlPC9kaXY+XG5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdoci5jcmVkZW50aWFscycpXCIgdG89XCIvaHIvY3JlZGVudGlhbHNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjEzNToxMVwiPlxuICAgICAgICAgICAgQ3JlZGVudGlhbHNcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdoci50cmFpbmluZ0Vucm9sbG1lbnRzJylcIiB0bz1cIi9oci90cmFpbmluZy1lbnJvbGxtZW50c1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MTM5OjExXCI+XG4gICAgICAgICAgICBUcmFpbmluZyBFbnJvbGxtZW50c1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cblxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2hyLnBlcmZvcm1hbmNlQXBwcmFpc2FscycpXCIgdG89XCIvaHIvcGVyZm9ybWFuY2UtYXBwcmFpc2Fsc1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MTQzOjExXCI+XG4gICAgICAgICAgICBQZXJmb3JtYW5jZSBBcHByYWlzYWxzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuXG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnaHIuZGlzY2lwbGluYXJ5SW5jaWRlbnRzJylcIiB0bz1cIi9oci9kaXNjaXBsaW5hcnktaW5jaWRlbnRzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxNDc6MTFcIj5cbiAgICAgICAgICAgIERpc2NpcGxpbmFyeSBJbmNpZGVudHNcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdoci5lbXBsb3ltZW50UHJvZmlsZVRhZ3MnKVwiIHRvPVwiL2hyL2VtcGxveW1lbnQtcHJvZmlsZS10YWdzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxNTE6MTFcIj5cbiAgICAgICAgICAgIEVtcGxveW1lbnQgUHJvZmlsZSBUYWdzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvZGl2PlxuXG4gICAgICA8IS0tIEJJTExJTkcgJiBGSU5BTkNFIC0tPlxuICAgICAgPGRpdiBjbGFzcz1cIm1lbnUtZ3JvdXBcIiB2LWlmPVwiY2FuU2VlKCdmaW5hbmNlJylcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MTU4OjdcIj5cbiAgICAgICAgPGRpdiBjbGFzcz1cIm1lbnUtdGl0bGVcIiBAY2xpY2s9XCJ0b2dnbGUoJ2JpbGxpbmcnKVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxNTk6OVwiPlxuICAgICAgICAgIEJpbGxpbmcgJiBGaW5hbmNlXG4gICAgICAgICAgPHNwYW4gZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjE2MToxMVwiPnt7IG1lbnVPcGVuLmJpbGxpbmcgPyAn4pa+JyA6ICfilrgnIH19PC9zcGFuPlxuICAgICAgICA8L2Rpdj5cbiAgICAgICAgPGRpdiB2LWlmPVwibWVudU9wZW4uYmlsbGluZ1wiIGNsYXNzPVwic3VibWVudVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxNjM6OVwiPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2ZpbmFuY2UucmVjZWlwdHMnKVwiIHRvPVwiL3BheW1lbnRzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxNjQ6MTFcIj5cbiAgICAgICAgICAgIFJlY2VpcHRzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2ZpbmFuY2UucmVmdW5kcycpXCIgdG89XCIvZmluYW5jZS9yZWZ1bmRzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxNjc6MTFcIj5cbiAgICAgICAgICAgIFJlZnVuZHNcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnZmluYW5jZS5jbGFpbXMnKVwiIHRvPVwiL2ZpbmFuY2UvY2xhaW1zXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxNzA6MTFcIj5cbiAgICAgICAgICAgIEluc3VyYW5jZSBDbGFpbXNcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnZmluYW5jZS5wb3N0aW5nJylcIiB0bz1cIi9maW5hbmNlL3Bvc3RpbmctZGFzaGJvYXJkXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxNzM6MTFcIj5cbiAgICAgICAgICAgIFBvc3RpbmcgRGFzaGJvYXJkXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2ZpbmFuY2UuZG9jdG9yU2hhcmUnKVwiIHRvPVwiL2ZpbmFuY2UvZG9jdG9yLXNoYXJlXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxNzY6MTFcIj5cbiAgICAgICAgICAgIERvY3RvciBTaGFyZVxuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdmaW5hbmNlLmxlYWthZ2UnKVwiIHRvPVwiL2ZpbmFuY2UvbGVha2FnZS1kYXNoYm9hcmRcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjE3OToxMVwiPlxuICAgICAgICAgICAgTGVha2FnZSBEYXNoYm9hcmRcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnZmluYW5jZS5jb2EnKVwiIHRvPVwiL2ZpbmFuY2UvY2hhcnRvZmFjY291bnRzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxODI6MTFcIj5cbiAgICAgICAgICAgIENoYXJ0IE9mIEFjY291bnRcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnZmluYW5jZS5wb3N0aW5nJylcIiB0bz1cIi9maW5hbmNlL3JldmVudWUtdm91Y2hlcnNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjE4NToxMVwiPlxuICAgICAgICAgICAgUmV2ZW51ZSBWb3VjaGVyc1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdmaW5hbmNlLmV4cGVuc2VWb3VjaGVycycpXCIgdG89XCIvZmluYW5jZS9leHBlbnNlLXZvdWNoZXJzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxODg6MTFcIj5cbiAgICAgICAgICAgIEV4cGVuc2UgVm91Y2hlclxuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdmaW5hbmNlLmRhaWx5Q2xvc2luZycpXCIgdG89XCIvZmluYW5jZS9kYWlseS1jbG9zaW5nXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxOTE6MTFcIj5cbiAgICAgICAgICAgIERhaWx5IENsb3NpbmdcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG4gICAgICAgIDwvZGl2PlxuICAgICAgPC9kaXY+XG5cbiAgICAgIDwhLS0gTEFCIC0tPlxuICAgICAgPGRpdiBjbGFzcz1cIm1lbnUtZ3JvdXBcIiB2LWlmPVwic2hvd0FkdmFuY2VkRGVtb01vZHVsZXMgJiYgY2FuU2VlKCdsYWInKVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToxOTg6N1wiPlxuICAgICAgICA8ZGl2IGNsYXNzPVwibWVudS10aXRsZVwiIEBjbGljaz1cInRvZ2dsZSgnbGFiJylcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MTk5OjlcIj5cbiAgICAgICAgICBMYWJvcmF0b3J5XG4gICAgICAgICAgPHNwYW4gZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjIwMToxMVwiPnt7IG1lbnVPcGVuLmxhYiA/ICfilr4nIDogJ+KWuCcgfX08L3NwYW4+XG4gICAgICAgIDwvZGl2PlxuICAgICAgICA8ZGl2IHYtaWY9XCJtZW51T3Blbi5sYWJcIiBjbGFzcz1cInN1Ym1lbnVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MjAzOjlcIj5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdsYWIub3JkZXJzJylcIiB0bz1cIi9kaWFnbm9zdGljcy9vcmRlcnNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjIwNDoxMVwiPlxuICAgICAgICAgICAgRGlhZ25vc3RpYyBPcmRlcnNcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnbGFiLnRlc3RzJylcIiB0bz1cIi9kaWFnbm9zdGljcy9vcmRlcnNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjIwNzoxMVwiPlxuICAgICAgICAgICAgTGFiIFRlc3RzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2xhYi5jYXRlZ29yaWVzJylcIiB0bz1cIi9kaWFnbm9zdGljcy9vcmRlcnNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjIxMDoxMVwiPlxuICAgICAgICAgICAgQ2F0ZWdvcmllc1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdsYWIuc2FtcGxlJylcIiB0bz1cIi9kaWFnbm9zdGljcy9zYW1wbGUtY29sbGVjdGlvblwiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MjEzOjExXCI+XG4gICAgICAgICAgICBTYW1wbGUgQ29sbGVjdGlvblxuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdsYWIucmVzdWx0cycpXCIgdG89XCIvZGlhZ25vc3RpY3MvcmVzdWx0c1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MjE2OjExXCI+XG4gICAgICAgICAgICBSZXN1bHQgRW50cnlcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnbGFiLnJlcG9ydHMnKVwiIHRvPVwiL2RpYWdub3N0aWNzL3JlcG9ydHNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjIxOToxMVwiPlxuICAgICAgICAgICAgUmVwb3J0c1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdsYWIuYXBwcm92YWxzJylcIiB0bz1cIi9kaWFnbm9zdGljcy9hcHByb3ZhbHNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjIyMjoxMVwiPlxuICAgICAgICAgICAgQXBwcm92YWxzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ3JhZGlvbG9neS53b3JrbGlzdCcpXCIgdG89XCIvcmFkaW9sb2d5L3dvcmtsaXN0XCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToyMjU6MTFcIj5cbiAgICAgICAgICAgIFJhZGlvbG9neSBXb3JrbGlzdFxuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdyYWRpb2xvZ3kucmVwb3J0aW5nJylcIiB0bz1cIi9yYWRpb2xvZ3kvcmVwb3J0aW5nXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToyMjg6MTFcIj5cbiAgICAgICAgICAgIFJhZGlvbG9neSBSZXBvcnRpbmdcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG4gICAgICAgIDwvZGl2PlxuICAgICAgPC9kaXY+XG5cbiAgICAgIDwhLS0gUEhBUk1BQ1kgLS0+XG4gICAgICA8ZGl2IGNsYXNzPVwibWVudS1ncm91cFwiIHYtaWY9XCJzaG93QWR2YW5jZWREZW1vTW9kdWxlcyAmJiBjYW5TZWUoJ3BoYXJtYWN5JylcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MjM1OjdcIj5cbiAgICAgICAgPGRpdiBjbGFzcz1cIm1lbnUtdGl0bGVcIiBAY2xpY2s9XCJ0b2dnbGUoJ3BoYXJtYWN5JylcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MjM2OjlcIj5cbiAgICAgICAgICBQaGFybWFjeVxuICAgICAgICAgIDxzcGFuIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToyMzg6MTFcIj57eyBtZW51T3Blbi5waGFybWFjeSA/ICfilr4nIDogJ+KWuCcgfX08L3NwYW4+XG4gICAgICAgIDwvZGl2PlxuICAgICAgICA8ZGl2IHYtaWY9XCJtZW51T3Blbi5waGFybWFjeVwiIGNsYXNzPVwic3VibWVudVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToyNDA6OVwiPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ3BoYXJtYWN5LmRpc3BlbnNpbmcnKVwiIHRvPVwiL3BoYXJtYWN5L2Rpc3BlbnNpbmdcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjI0MToxMVwiPlxuICAgICAgICAgICAgRGlzcGVuc2luZ1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdwaGFybWFjeS5iYXRjaGVzJylcIiB0bz1cIi9waGFybWFjeS9iYXRjaGVzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToyNDQ6MTFcIj5cbiAgICAgICAgICAgIEJhdGNoICYgRXhwaXJ5XG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ3BoYXJtYWN5LnNhbGVzJylcIiB0bz1cIi9waGFybWFjeS91bml0LWJveC1zYWxlc1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MjQ3OjExXCI+XG4gICAgICAgICAgICBVbml0IC8gQm94IFNhbGVzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ3BoYXJtYWN5LmZyZWVNZWRpY2luZScpXCIgdG89XCIvcGhhcm1hY3kvZnJlZS1tZWRpY2luZVwiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MjUwOjExXCI+XG4gICAgICAgICAgICBGcmVlIE1lZGljaW5lXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ3BoYXJtYWN5LnBheW1lbnRNb2RlcycpXCIgdG89XCIvcGhhcm1hY3kvcGF5bWVudC1tb2Rlc1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MjUzOjExXCI+XG4gICAgICAgICAgICBQYXltZW50IE1vZGVzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ3BoYXJtYWN5LnJlcG9ydHMnKVwiIHRvPVwiL3BoYXJtYWN5L3JlcG9ydHNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjI1NjoxMVwiPlxuICAgICAgICAgICAgUmVwb3J0c1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdwaGFybWFjeS5tZWRpY2luZXMnKVwiIHRvPVwiL3BoYXJtYWN5L2Rpc3BlbnNpbmdcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjI1OToxMVwiPlxuICAgICAgICAgICAgTWVkaWNpbmVzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ3BoYXJtYWN5LmNhdGVnb3JpZXMnKVwiIHRvPVwiL3BoYXJtYWN5L2Rpc3BlbnNpbmdcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjI2MjoxMVwiPlxuICAgICAgICAgICAgQ2F0ZWdvcmllc1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdwaGFybWFjeS5zdG9jaycpXCIgdG89XCIvcGhhcm1hY3kvYmF0Y2hlc1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MjY1OjExXCI+XG4gICAgICAgICAgICBTdG9ja1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdwaGFybWFjeS5pc3N1ZScpXCIgdG89XCIvcGhhcm1hY3kvZGlzcGVuc2luZ1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MjY4OjExXCI+XG4gICAgICAgICAgICBNZWRpY2luZSBJc3N1ZVxuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgPC9kaXY+XG4gICAgICA8L2Rpdj5cblxuICAgICAgPCEtLSBJUEQgLS0+XG4gICAgICA8ZGl2IGNsYXNzPVwibWVudS1ncm91cFwiIHYtaWY9XCJzaG93QWR2YW5jZWREZW1vTW9kdWxlcyAmJiBjYW5TZWUoJ2lwZCcpXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjI3NTo3XCI+XG4gICAgICAgIDxkaXYgY2xhc3M9XCJtZW51LXRpdGxlXCIgQGNsaWNrPVwidG9nZ2xlKCdpcGQnKVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToyNzY6OVwiPlxuICAgICAgICAgIElQRCAvIElucGF0aWVudFxuICAgICAgICAgIDxzcGFuIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToyNzg6MTFcIj57eyBtZW51T3Blbi5pcGQgPyAn4pa+JyA6ICfilrgnIH19PC9zcGFuPlxuICAgICAgICA8L2Rpdj5cbiAgICAgICAgPGRpdiB2LWlmPVwibWVudU9wZW4uaXBkXCIgY2xhc3M9XCJzdWJtZW51XCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjI4MDo5XCI+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnaXBkLmFkbWlzc2lvbnMnKVwiIHRvPVwiL2lwZC9hZG1pc3Npb25zXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToyODE6MTFcIj5BZG1pc3Npb25zPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2lwZC5iZWRCb2FyZCcpXCIgdG89XCIvaXBkL2JlZC1ib2FyZFwiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MjgyOjExXCI+QmVkIEJvYXJkPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2lwZC5udXJzaW5nJylcIiB0bz1cIi9pcGQvbnVyc2luZ1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MjgzOjExXCI+TnVyc2luZzwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdpcGQubWFyJylcIiB0bz1cIi9pcGQvbWFyXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToyODQ6MTFcIj5NQVI8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnaXBkLmRpc2NoYXJnZScpXCIgdG89XCIvaXBkL2Rpc2NoYXJnZVwiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6Mjg1OjExXCI+RGlzY2hhcmdlPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxkaXYgY2xhc3M9XCJzdWJtZW51LWRpdmlkZXJcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6Mjg2OjExXCI+RW1lcmdlbmN5IC8gT1QgLyBJQ1U8L2Rpdj5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdpcGQuYWRtaXNzaW9ucycpXCIgdG89XCIvZW1lcmdlbmN5L3RyaWFnZVwiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6Mjg3OjExXCI+RW1lcmdlbmN5IFRyaWFnZTwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdpcGQuYWRtaXNzaW9ucycpXCIgdG89XCIvZW1lcmdlbmN5L2VuY291bnRlcnNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjI4ODoxMVwiPkVtZXJnZW5jeSBFbmNvdW50ZXJzPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2lwZC5iZWRCb2FyZCcpXCIgdG89XCIvZW1lcmdlbmN5L29ic2VydmF0aW9uLWJlZHNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjI4OToxMVwiPk9ic2VydmF0aW9uIEJlZHM8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnaXBkLm51cnNpbmcnKVwiIHRvPVwiL290L3Byb2NlZHVyZXNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjI5MDoxMVwiPk9UIFByb2NlZHVyZXM8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnaXBkLm51cnNpbmcnKVwiIHRvPVwiL2ljdS93b3JrZmxvd3NcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjI5MToxMVwiPklDVSBXb3JrZmxvd3M8L1JvdXRlckxpbms+XG4gICAgICAgIDwvZGl2PlxuICAgICAgPC9kaXY+XG5cbiAgICAgIDwhLS0gSU5WRU5UT1JZIC0tPlxuICAgICAgPGRpdiBjbGFzcz1cIm1lbnUtZ3JvdXBcIiB2LWlmPVwic2hvd0FkdmFuY2VkRGVtb01vZHVsZXMgJiYgY2FuU2VlKCdpbnZlbnRvcnknKVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZToyOTY6N1wiPlxuICAgICAgICA8ZGl2IGNsYXNzPVwibWVudS10aXRsZVwiIEBjbGljaz1cInRvZ2dsZSgnaW52ZW50b3J5JylcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6Mjk3OjlcIj5cbiAgICAgICAgICBJbnZlbnRvcnlcbiAgICAgICAgICA8c3BhbiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6Mjk5OjExXCI+e3sgbWVudU9wZW4uaW52ZW50b3J5ID8gJ+KWvicgOiAn4pa4JyB9fTwvc3Bhbj5cbiAgICAgICAgPC9kaXY+XG4gICAgICAgIDxkaXYgdi1pZj1cIm1lbnVPcGVuLmludmVudG9yeVwiIGNsYXNzPVwic3VibWVudVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTozMDE6OVwiPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2ludmVudG9yeS5wcm9jdXJlbWVudCcpXCIgdG89XCIvaW52ZW50b3J5L3Byb2N1cmVtZW50XCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTozMDI6MTFcIj5Qcm9jdXJlbWVudDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdpbnZlbnRvcnkucHJvY3VyZW1lbnQnKVwiIHRvPVwiL2ludmVudG9yeS9zdXBwbGllcnNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMwMzoxMVwiPlN1cHBsaWVyczwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdpbnZlbnRvcnkucHJvY3VyZW1lbnQnKVwiIHRvPVwiL2ludmVudG9yeS9yZXF1aXNpdGlvbnNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMwNDoxMVwiPlJlcXVpc2l0aW9uczwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdpbnZlbnRvcnkucHJvY3VyZW1lbnQnKVwiIHRvPVwiL2ludmVudG9yeS9wdXJjaGFzZS1vcmRlcnNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMwNToxMVwiPlB1cmNoYXNlIE9yZGVyczwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdpbnZlbnRvcnkucHJvY3VyZW1lbnQnKVwiIHRvPVwiL2ludmVudG9yeS9yZWNlaXZpbmdcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMwNjoxMVwiPlJlY2VpdmluZzwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdpbnZlbnRvcnkuc3RvY2tNb3ZlbWVudHMnKVwiIHRvPVwiL2ludmVudG9yeS9zdG9jay1sb3RzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTozMDc6MTFcIj5TdG9jayBMb3RzPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2ludmVudG9yeS5zdG9ja01vdmVtZW50cycpXCIgdG89XCIvaW52ZW50b3J5L2V4cGlyeVwiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MzA4OjExXCI+RXhwaXJ5PC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2ludmVudG9yeS5zdG9ja01vdmVtZW50cycpXCIgdG89XCIvaW52ZW50b3J5L2FkanVzdG1lbnRzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTozMDk6MTFcIj5BZGp1c3RtZW50czwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdpbnZlbnRvcnkuc3RvY2tNb3ZlbWVudHMnKVwiIHRvPVwiL2ludmVudG9yeS9zdG9jay1tb3ZlbWVudHNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMxMDoxMVwiPlN0b2NrIE1vdmVtZW50czwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdpbnZlbnRvcnkucmVwb3J0cycpXCIgdG89XCIvaW52ZW50b3J5L3JlcG9ydHNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMxMToxMVwiPkludmVudG9yeSBSZXBvcnRzPC9Sb3V0ZXJMaW5rPlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvZGl2PlxuXG4gICAgICA8IS0tIEFOQUxZVElDUyAtLT5cbiAgICAgIDxkaXYgY2xhc3M9XCJtZW51LWdyb3VwXCIgdi1pZj1cInNob3dBZHZhbmNlZERlbW9Nb2R1bGVzICYmIGNhblNlZSgnYW5hbHl0aWNzJylcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MzE2OjdcIj5cbiAgICAgICAgPGRpdiBjbGFzcz1cIm1lbnUtdGl0bGVcIiBAY2xpY2s9XCJ0b2dnbGUoJ2FuYWx5dGljcycpXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMxNzo5XCI+XG4gICAgICAgICAgQW5hbHl0aWNzXG4gICAgICAgICAgPHNwYW4gZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMxOToxMVwiPnt7IG1lbnVPcGVuLmFuYWx5dGljcyA/ICfilr4nIDogJ+KWuCcgfX08L3NwYW4+XG4gICAgICAgIDwvZGl2PlxuICAgICAgICA8ZGl2IHYtaWY9XCJtZW51T3Blbi5hbmFseXRpY3NcIiBjbGFzcz1cInN1Ym1lbnVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MzIxOjlcIj5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdhbmFseXRpY3MuZXhlY3V0aXZlJylcIiB0bz1cIi9hbmFseXRpY3MvZXhlY3V0aXZlXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTozMjI6MTFcIj5FeGVjdXRpdmU8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnYW5hbHl0aWNzLmNsaW5pY2FsJylcIiB0bz1cIi9hbmFseXRpY3MvY2xpbmljYWxcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMyMzoxMVwiPkNsaW5pY2FsPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2FuYWx5dGljcy5maW5hbmNlJylcIiB0bz1cIi9hbmFseXRpY3MvZmluYW5jZVwiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MzI0OjExXCI+RmluYW5jZTwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdhbmFseXRpY3MuZmluYW5jZScpXCIgdG89XCIvYW5hbHl0aWNzL2V4cG9ydHNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMyNToxMVwiPkV4cG9ydHM8L1JvdXRlckxpbms+XG4gICAgICAgIDwvZGl2PlxuICAgICAgPC9kaXY+XG5cbiAgICAgIDwhLS0gUEFUSUVOVCBFTkdBR0VNRU5UIC0tPlxuICAgICAgPGRpdiBjbGFzcz1cIm1lbnUtZ3JvdXBcIiB2LWlmPVwic2hvd0FkdmFuY2VkRGVtb01vZHVsZXMgJiYgY2FuU2VlKCdwYXRpZW50RW5nYWdlbWVudCcpXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMzMDo3XCI+XG4gICAgICAgIDxkaXYgY2xhc3M9XCJtZW51LXRpdGxlXCIgQGNsaWNrPVwidG9nZ2xlKCdwYXRpZW50RW5nYWdlbWVudCcpXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMzMTo5XCI+XG4gICAgICAgICAgUGF0aWVudCBFbmdhZ2VtZW50XG4gICAgICAgICAgPHNwYW4gZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMzMzoxMVwiPnt7IG1lbnVPcGVuLnBhdGllbnRFbmdhZ2VtZW50ID8gJ+KWvicgOiAn4pa4JyB9fTwvc3Bhbj5cbiAgICAgICAgPC9kaXY+XG4gICAgICAgIDxkaXYgdi1pZj1cIm1lbnVPcGVuLnBhdGllbnRFbmdhZ2VtZW50XCIgY2xhc3M9XCJzdWJtZW51XCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMzNTo5XCI+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgncGF0aWVudEVuZ2FnZW1lbnQucG9ydGFsJylcIiB0bz1cIi9wYXRpZW50LWVuZ2FnZW1lbnQvcG9ydGFsLWFjY291bnRzXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTozMzY6MTFcIj5Qb3J0YWwgQWNjb3VudHM8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgncGF0aWVudEVuZ2FnZW1lbnQucHJlc2NyaXB0aW9ucycpXCIgdG89XCIvcGF0aWVudC1lbmdhZ2VtZW50L3ByZXNjcmlwdGlvbi1hY2Nlc3NcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMzNzoxMVwiPlByZXNjcmlwdGlvbiBBY2Nlc3M8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgncGF0aWVudEVuZ2FnZW1lbnQubm90aWZpY2F0aW9ucycpXCIgdG89XCIvcGF0aWVudC1lbmdhZ2VtZW50L25vdGlmaWNhdGlvbnNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjMzODoxMVwiPk5vdGlmaWNhdGlvbnM8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgncGF0aWVudEVuZ2FnZW1lbnQuY29uc2VudHMnKVwiIHRvPVwiL3BhdGllbnQtZW5nYWdlbWVudC9jb25zZW50c1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MzM5OjExXCI+Q29uc2VudHM8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgncGF0aWVudEVuZ2FnZW1lbnQubWVzc2FnZXMnKVwiIHRvPVwiL3BhdGllbnQtZW5nYWdlbWVudC9tZXNzYWdlc1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MzQwOjExXCI+TWVzc2FnZXM8L1JvdXRlckxpbms+XG4gICAgICAgIDwvZGl2PlxuICAgICAgPC9kaXY+XG5cbiAgICAgIDwhLS0gSU5URVJPUEVSQUJJTElUWSAtLT5cbiAgICAgIDxkaXYgY2xhc3M9XCJtZW51LWdyb3VwXCIgdi1pZj1cInNob3dBZHZhbmNlZERlbW9Nb2R1bGVzICYmIGNhblNlZSgnaW50ZXJvcGVyYWJpbGl0eScpXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjM0NTo3XCI+XG4gICAgICAgIDxkaXYgY2xhc3M9XCJtZW51LXRpdGxlXCIgQGNsaWNrPVwidG9nZ2xlKCdpbnRlcm9wZXJhYmlsaXR5JylcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MzQ2OjlcIj5cbiAgICAgICAgICBJbnRlcm9wZXJhYmlsaXR5XG4gICAgICAgICAgPHNwYW4gZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjM0ODoxMVwiPnt7IG1lbnVPcGVuLmludGVyb3BlcmFiaWxpdHkgPyAn4pa+JyA6ICfilrgnIH19PC9zcGFuPlxuICAgICAgICA8L2Rpdj5cbiAgICAgICAgPGRpdiB2LWlmPVwibWVudU9wZW4uaW50ZXJvcGVyYWJpbGl0eVwiIGNsYXNzPVwic3VibWVudVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTozNTA6OVwiPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2ludGVyb3BlcmFiaWxpdHkub3V0Ym94JylcIiB0bz1cIi9pbnRlcm9wZXJhYmlsaXR5L291dGJveFwiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MzUxOjExXCI+T3V0Ym94ICYgUmV0cmllczwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdpbnRlcm9wZXJhYmlsaXR5LmZoaXInKVwiIHRvPVwiL2ludGVyb3BlcmFiaWxpdHkvaGw3LWZoaXJcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjM1MjoxMVwiPkhMNyAvIEZISVI8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnaW50ZXJvcGVyYWJpbGl0eS5wYXJ0bmVycycpXCIgdG89XCIvaW50ZXJvcGVyYWJpbGl0eS9wYXJ0bmVyc1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MzUzOjExXCI+UGFydG5lcnM8L1JvdXRlckxpbms+XG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnaW50ZXJvcGVyYWJpbGl0eS5maGlyJylcIiB0bz1cIi9pbnRlcm9wZXJhYmlsaXR5L2V4Y2hhbmdlXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTozNTQ6MTFcIj5FeHRlcm5hbCBFeGNoYW5nZTwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdpbnRlcm9wZXJhYmlsaXR5LmZoaXInKVwiIHRvPVwiL2ludGVyb3BlcmFiaWxpdHkvd2ViaG9va3NcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjM1NToxMVwiPldlYmhvb2tzPC9Sb3V0ZXJMaW5rPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ2ludGVyb3BlcmFiaWxpdHkuZmhpcicpXCIgdG89XCIvaW50ZXJvcGVyYWJpbGl0eS9wYWNzLWRpY29tXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTozNTY6MTFcIj5QQUNTIC8gRElDT008L1JvdXRlckxpbms+XG4gICAgICAgIDwvZGl2PlxuICAgICAgPC9kaXY+XG5cbiAgICAgIDwhLS0gUkVQT1JUUyAtLT5cbiAgICAgIDxkaXYgY2xhc3M9XCJtZW51LWdyb3VwXCIgdi1pZj1cImNhblNlZSgncmVwb3J0cycpXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjM2MTo3XCI+XG4gICAgICAgIDxkaXYgY2xhc3M9XCJtZW51LXRpdGxlXCIgQGNsaWNrPVwidG9nZ2xlKCdyZXBvcnRzJylcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MzYyOjlcIj5cbiAgICAgICAgICBSZXBvcnRzXG4gICAgICAgICAgPHNwYW4gZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjM2NDoxMVwiPnt7IG1lbnVPcGVuLnJlcG9ydHMgPyAn4pa+JyA6ICfilrgnIH19PC9zcGFuPlxuICAgICAgICA8L2Rpdj5cbiAgICAgICAgPGRpdiB2LWlmPVwibWVudU9wZW4ucmVwb3J0c1wiIGNsYXNzPVwic3VibWVudVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTozNjY6OVwiPlxuICAgICAgICAgIDxSb3V0ZXJMaW5rIHYtaWY9XCJjYW5TZWUoJ3JlcG9ydHMucGF0aWVudCcpXCIgdG89XCIvZGFzaGJvYXJkXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTozNjc6MTFcIj5cbiAgICAgICAgICAgIFBhdGllbnQgUmVwb3J0c1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdyZXBvcnRzLmZpbmFuY2UnKVwiIHRvPVwiL2Rhc2hib2FyZFwiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MzcwOjExXCI+XG4gICAgICAgICAgICBGaW5hbmNpYWwgUmVwb3J0c1xuICAgICAgICAgIDwvUm91dGVyTGluaz5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdyZXBvcnRzLmxhYicpXCIgdG89XCIvZGFzaGJvYXJkXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTozNzM6MTFcIj5cbiAgICAgICAgICAgIExhYiBSZXBvcnRzXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvZGl2PlxuXG4gICAgICA8IS0tIEFETUlOIC0tPlxuICAgICAgPGRpdiBjbGFzcz1cIm1lbnUtZ3JvdXBcIiB2LWlmPVwiY2FuU2VlKCdhZG1pbicpXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjM4MDo3XCI+XG4gICAgICAgIDxkaXYgY2xhc3M9XCJtZW51LXRpdGxlXCIgQGNsaWNrPVwidG9nZ2xlKCdhZG1pbicpXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjM4MTo5XCI+XG4gICAgICAgICAgQWRtaW5pc3RyYXRpb25cbiAgICAgICAgICA8c3BhbiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MzgzOjExXCI+e3sgbWVudU9wZW4uYWRtaW4gPyAn4pa+JyA6ICfilrgnIH19PC9zcGFuPlxuICAgICAgICA8L2Rpdj5cbiAgICAgICAgPGRpdiB2LWlmPVwibWVudU9wZW4uYWRtaW5cIiBjbGFzcz1cInN1Ym1lbnVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6Mzg1OjlcIj5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdhZG1pbi5jb21wYW55JylcIiB0bz1cIi9jb21wYW55LWluZm9cIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjM4NjoxMVwiPlxuICAgICAgICAgICAgQ29tcGFueSBJbmZvXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuXG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnYWRtaW4ucGF5bWVudENhdGVnb3JpZXMnKVwiIHRvPVwiL2FkbWluL3BheW1lbnQtY2F0ZWdvcmllc1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6MzkwOjExXCI+XG4gICAgICAgICAgICBQYXltZW50IENhdGVnb3JpZXNcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdhZG1pbi51c2VycycpXCIgdG89XCIvYWRtaW4vdXNlcnNcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjM5NDoxMVwiPlxuICAgICAgICAgICAgVXNlcnNcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdhZG1pbi5hdWRpdCcpXCIgdG89XCIvYWRtaW4vYXVkaXRcIiBAY2xpY2s9XCJvbk5hdmlnYXRlXCIgZGF0YS12LWluc3BlY3Rvcj1cInNyYy9jb21wb25lbnRzL0FwcFNpZGViYXIudnVlOjM5ODoxMVwiPlxuICAgICAgICAgICAgQXVkaXQgVmlld2VyXG4gICAgICAgICAgPC9Sb3V0ZXJMaW5rPlxuXG4gICAgICAgICAgPFJvdXRlckxpbmsgdi1pZj1cImNhblNlZSgnYWRtaW4ucGVybWlzc2lvblN5bmMnKVwiIHRvPVwiL2FkbWluL3Blcm1pc3Npb24tc3luY1wiIEBjbGljaz1cIm9uTmF2aWdhdGVcIiBkYXRhLXYtaW5zcGVjdG9yPVwic3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWU6NDAyOjExXCI+XG4gICAgICAgICAgICBQZXJtaXNzaW9uIFN5bmNcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdhZG1pbi5vYnNlcnZhYmlsaXR5JylcIiB0bz1cIi9hZG1pbi9vYnNlcnZhYmlsaXR5XCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTo0MDY6MTFcIj5cbiAgICAgICAgICAgIE9ic2VydmFiaWxpdHlcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG5cbiAgICAgICAgICA8Um91dGVyTGluayB2LWlmPVwiY2FuU2VlKCdhZG1pbi5yb2xlcycpXCIgdG89XCIvZGFzaGJvYXJkXCIgQGNsaWNrPVwib25OYXZpZ2F0ZVwiIGRhdGEtdi1pbnNwZWN0b3I9XCJzcmMvY29tcG9uZW50cy9BcHBTaWRlYmFyLnZ1ZTo0MTA6MTFcIj5cbiAgICAgICAgICAgIFJvbGVzICYgUGVybWlzc2lvbnNcbiAgICAgICAgICA8L1JvdXRlckxpbms+XG4gICAgICAgIDwvZGl2PlxuICAgICAgPC9kaXY+XG4gICAgPC9uYXY+XG4gIDwvYXNpZGU+XG48L3RlbXBsYXRlPlxuXG48c2NyaXB0IHNldHVwIGxhbmc9XCJ0c1wiPlxuaW1wb3J0IHsgcmVhY3RpdmUsIHdhdGNoIH0gZnJvbSAndnVlJ1xuaW1wb3J0IHsgdXNlUm91dGUgfSBmcm9tICd2dWUtcm91dGVyJ1xuaW1wb3J0IHsgdXNlQXV0aFN0b3JlIH0gZnJvbSAnQC9zdG9yZS9hdXRoLnN0b3JlJ1xuaW1wb3J0IHsgY2FuU2VlTWVudUl0ZW0gfSBmcm9tICdAL3NlY3VyaXR5L3Blcm1pc3Npb25zJ1xuXG4vKipcbiAqIGBvcGVuYCBwcm9wIGNvbnRyb2xzIGRyYXdlciB2aXNpYmlsaXR5IG9uIG1vYmlsZS90YWJsZXRcbiAqL1xuY29uc3QgcHJvcHMgPSBkZWZpbmVQcm9wczx7IG9wZW46IGJvb2xlYW4gfT4oKVxuY29uc3QgZW1pdCA9IGRlZmluZUVtaXRzPHsgKGU6ICdjbG9zZScpOiB2b2lkIH0+KClcblxuY29uc3QgYXV0aCA9IHVzZUF1dGhTdG9yZSgpXG5jb25zdCByb3V0ZSA9IHVzZVJvdXRlKClcbmNvbnN0IHNob3dBZHZhbmNlZERlbW9Nb2R1bGVzID0gaW1wb3J0Lm1ldGEuZW52LlZJVEVfU0hPV19BRFZBTkNFRF9ERU1PX01PRFVMRVMgPT09ICd0cnVlJ1xuXG4vKipcbiAqIFJlbmFtZSBhY2NvcmRpb24gc3RhdGUgdG8gYXZvaWQgY29sbGlzaW9uIHdpdGggcHJvcCBgb3BlbmBcbiAqL1xuY29uc3QgbWVudU9wZW4gPSByZWFjdGl2ZSh7XG4gIHBhdGllbnRzOiBmYWxzZSxcbiAgaHI6IGZhbHNlLFxuICBsYWI6IGZhbHNlLFxuICBwaGFybWFjeTogZmFsc2UsXG4gIGlwZDogZmFsc2UsXG4gIGludmVudG9yeTogZmFsc2UsXG4gIGFuYWx5dGljczogZmFsc2UsXG4gIHBhdGllbnRFbmdhZ2VtZW50OiBmYWxzZSxcbiAgaW50ZXJvcGVyYWJpbGl0eTogZmFsc2UsXG4gIGJpbGxpbmc6IGZhbHNlLFxuICByZXBvcnRzOiBmYWxzZSxcbiAgYWRtaW46IGZhbHNlLFxufSlcblxuZnVuY3Rpb24gdG9nZ2xlKGtleToga2V5b2YgdHlwZW9mIG1lbnVPcGVuKSB7XG4gIE9iamVjdC5rZXlzKG1lbnVPcGVuKS5mb3JFYWNoKChrKSA9PiB7XG4gICAgbWVudU9wZW5bayBhcyBrZXlvZiB0eXBlb2YgbWVudU9wZW5dID0gZmFsc2VcbiAgfSlcbiAgbWVudU9wZW5ba2V5XSA9IHRydWVcbn1cblxuZnVuY3Rpb24gb25OYXZpZ2F0ZSgpIHtcbiAgZW1pdCgnY2xvc2UnKVxufVxuXG5jb25zdCBjYW5TZWUgPSAoa2V5OiBzdHJpbmcpOiBib29sZWFuID0+IGNhblNlZU1lbnVJdGVtKGtleSwgYXV0aC5wZXJtaXNzaW9ucylcblxuLyoqXG4gKiBBdXRvLWNsb3NlIGRyYXdlciB3aGVuIHJvdXRlIGNoYW5nZXMgKG1vYmlsZSBVWClcbiAqL1xud2F0Y2goXG4gICgpID0+IHJvdXRlLmZ1bGxQYXRoLFxuICAoKSA9PiB7XG4gICAgaWYgKHByb3BzLm9wZW4pIGVtaXQoJ2Nsb3NlJylcbiAgfVxuKVxuPC9zY3JpcHQ+XG5cbjxzdHlsZSBzY29wZWQ+XG4uc2lkZWJhciB7XG4gIHdpZHRoOiAyNzBweDtcbiAgYmFja2dyb3VuZDogIzRjYWY1MDtcbiAgY29sb3I6IHdoaXRlO1xuICBwYWRkaW5nOiAxOHB4IDE0cHg7XG4gIG92ZXJmbG93LXk6IGF1dG87XG59XG5cbi8qIGJyYW5kIHJvdyAqL1xuLmJyYW5kLXJvdyB7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGFsaWduLWl0ZW1zOiBjZW50ZXI7XG4gIGp1c3RpZnktY29udGVudDogc3BhY2UtYmV0d2VlbjtcbiAgZ2FwOiAxMHB4O1xuICBtYXJnaW4tYm90dG9tOiAxNHB4O1xufVxuXG4uYnJhbmQge1xuICBmb250LXNpemU6IDIycHg7XG4gIGZvbnQtd2VpZ2h0OiA3MDA7XG59XG5cbi8qIGNsb3NlIGJ1dHRvbiAobW9iaWxlIG9ubHkpICovXG4uY2xvc2Uge1xuICBkaXNwbGF5OiBub25lO1xuICBib3JkZXI6IG5vbmU7XG4gIGJhY2tncm91bmQ6IHJnYmEoMjU1LCAyNTUsIDI1NSwgMC4xOCk7XG4gIGNvbG9yOiAjZmZmO1xuICB3aWR0aDogMzhweDtcbiAgaGVpZ2h0OiAzOHB4O1xuICBib3JkZXItcmFkaXVzOiAxMHB4O1xuICBjdXJzb3I6IHBvaW50ZXI7XG59XG5cbi8qIERyYXdlciBiZWhhdmlvciBvbiBtb2JpbGUvdGFibGV0ICovXG5AbWVkaWEgKG1heC13aWR0aDogMTAyM3B4KSB7XG4gIC5zaWRlYmFyIHtcbiAgICBwb3NpdGlvbjogZml4ZWQ7XG4gICAgdG9wOiAwO1xuICAgIGxlZnQ6IDA7XG4gICAgaGVpZ2h0OiAxMDB2aDtcbiAgICB6LWluZGV4OiA1MDtcbiAgICB0cmFuc2Zvcm06IHRyYW5zbGF0ZVgoLTEwMCUpO1xuICAgIHRyYW5zaXRpb246IHRyYW5zZm9ybSAwLjJzIGVhc2U7XG4gICAgYm94LXNoYWRvdzogMTBweCAwIDMwcHggcmdiYSgwLCAwLCAwLCAwLjIpO1xuICB9XG5cbiAgLnNpZGViYXIub3BlbiB7XG4gICAgdHJhbnNmb3JtOiB0cmFuc2xhdGVYKDApO1xuICB9XG5cbiAgLmNsb3NlIHtcbiAgICBkaXNwbGF5OiBpbmxpbmUtZmxleDtcbiAgICBhbGlnbi1pdGVtczogY2VudGVyO1xuICAgIGp1c3RpZnktY29udGVudDogY2VudGVyO1xuICB9XG59XG5cbi8qIG1lbnUgc3R5bGVzICovXG4ubWVudS10aXRsZSB7XG4gIGRpc3BsYXk6IGZsZXg7XG4gIGp1c3RpZnktY29udGVudDogc3BhY2UtYmV0d2VlbjtcbiAgcGFkZGluZzogMTBweCAxMnB4O1xuICBmb250LXdlaWdodDogNjAwO1xuICBjdXJzb3I6IHBvaW50ZXI7XG4gIGJvcmRlci1yYWRpdXM6IDEwcHg7XG59XG5cbi5tZW51LXRpdGxlOmhvdmVyIHtcbiAgYmFja2dyb3VuZDogcmdiYSgyNTUsIDI1NSwgMjU1LCAwLjE1KTtcbn1cblxuLnN1Ym1lbnUge1xuICBwYWRkaW5nLWxlZnQ6IDEwcHg7XG4gIG1hcmdpbi1ib3R0b206IDZweDtcbn1cblxuLnN1Ym1lbnUgYSB7XG4gIGRpc3BsYXk6IGJsb2NrO1xuICBwYWRkaW5nOiA4cHggMTJweDtcbiAgYm9yZGVyLXJhZGl1czogMTBweDtcbiAgZm9udC1zaXplOiAxNHB4O1xuICBjb2xvcjogd2hpdGU7XG4gIHRleHQtZGVjb3JhdGlvbjogbm9uZTtcbn1cblxuLnN1Ym1lbnUgYTpob3ZlciB7XG4gIGJhY2tncm91bmQ6IHJnYmEoMjU1LCAyNTUsIDI1NSwgMC4xNSk7XG59XG5cbi5zdWJtZW51IGEucm91dGVyLWxpbmstYWN0aXZlIHtcbiAgYmFja2dyb3VuZDogcmdiYSgyNTUsIDI1NSwgMjU1LCAwLjI1KTtcbiAgY29sb3I6ICNlOGY1ZTk7XG4gIGZvbnQtd2VpZ2h0OiA2MDA7XG4gIGJvcmRlci1sZWZ0OiA0cHggc29saWQgI2M4ZTZjOTtcbn1cblxuLnN1Ym1lbnUtZGl2aWRlciB7XG4gIG1hcmdpbjogOHB4IDAgNHB4O1xuICBmb250LXNpemU6IDExcHg7XG4gIG9wYWNpdHk6IDAuODtcbiAgdGV4dC10cmFuc2Zvcm06IHVwcGVyY2FzZTtcbn1cblxuLm1lbnUtdGl0bGUuc2luZ2xlLWxpbmsge1xuICB0ZXh0LWRlY29yYXRpb246IG5vbmU7XG4gIGNvbG9yOiB3aGl0ZTtcbn1cblxuLm1lbnUtdGl0bGUuc2luZ2xlLWxpbmsucm91dGVyLWxpbmstYWN0aXZlIHtcbiAgYmFja2dyb3VuZDogcmdiYSgyNTUsIDI1NSwgMjU1LCAwLjI1KTtcbiAgY29sb3I6ICNlOGY1ZTk7XG4gIGZvbnQtd2VpZ2h0OiA2MDA7XG4gIGJvcmRlci1sZWZ0OiA0cHggc29saWQgI2M4ZTZjOTtcbn1cbjwvc3R5bGU+XG4iXSwiZmlsZSI6IkQ6L0RvdCBOZXQgUHJvamVjdHMvSlNLL2htaXMtdWkvc3JjL2NvbXBvbmVudHMvQXBwU2lkZWJhci52dWUifQ==
