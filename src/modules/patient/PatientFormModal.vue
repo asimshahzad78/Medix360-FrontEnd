@@ -88,21 +88,29 @@
               <label>Panel</label>
               <input v-model="form.panel" />
             </div>
-
-            <div>
-              <label>User Type</label>
-              <input type="number" v-model.number="form.userType" />
-            </div>
-
-            <div>
-              <label>Role Id</label>
-              <input type="number" v-model.number="form.roleId" />
-            </div>
-
           </div>
 
           <!-- OTHER INFO -->
           <div v-if="tab === 'other'" class="grid">
+            <div>
+              <label>User Type</label>
+              <select v-model.number="form.userType">
+                <option v-for="type in userTypeOptions" :key="type.id" :value="type.id">
+                  {{ type.name }}
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label>Role</label>
+              <select v-model.number="form.roleId">
+                <option value="0">Select role</option>
+                <option v-for="role in roleOptions" :key="role.id" :value="role.id">
+                  {{ role.name }}
+                </option>
+              </select>
+            </div>
+
             <div>
               <label>Email</label>
               <input v-model="form.email" type="email" @input="clearOptionalError('email')" />
@@ -125,13 +133,13 @@
             </div>
 
             <div v-if="!isEdit">
-              <label>Password *</label>
+              <label>Password</label>
               <input type="password" v-model="form.passwordHash" @input="clearError('passwordHash')" />
               <p v-if="errors.passwordHash" class="field-error">{{ errors.passwordHash }}</p>
             </div>
 
             <div v-if="!isEdit">
-              <label>Confirm Password *</label>
+              <label>Confirm Password</label>
               <input type="password" v-model="form.confirmPassword" @input="clearError('confirmPassword')" />
               <p v-if="errors.confirmPassword" class="field-error">
                 {{ errors.confirmPassword }}
@@ -223,7 +231,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref, computed, onMounted, watch } from 'vue'
-import { patientService, type PatientApiDto } from './patient.service'
+import { patientService, type PatientApiDto, type PatientRoleOption } from './patient.service'
 import { getApiErrorMessage } from '@/services/api-response'
 
 type AlertType = 'success' | 'error'
@@ -234,6 +242,16 @@ interface AlertState {
 }
 
 const titleOptions = ['Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Prof', 'Master', 'Baby'] as const
+const patientUserType = 7
+const userTypeOptions = [
+  { id: 1, name: 'Doctor' },
+  { id: 2, name: 'Nurse' },
+  { id: 3, name: 'Laboratory' },
+  { id: 4, name: 'Pharmacist' },
+  { id: 5, name: 'Accountant' },
+  { id: 6, name: 'Admin' },
+  { id: patientUserType, name: 'Patient' },
+]
 
 export default defineComponent({
   props: {
@@ -248,6 +266,7 @@ export default defineComponent({
     const duplicateLoading = ref(false)
     const profilePicturePreview = ref('')
     const saving = ref(false)
+    const roleOptions = ref<PatientRoleOption[]>([])
 
     const form = reactive({
       title: '',
@@ -270,7 +289,7 @@ export default defineComponent({
       agreement: false as boolean | null,
       remarks: '',
       profilePictureDetails: null as File | null,
-      userType: 0 as number | null,
+      userType: patientUserType as number | null,
       roleId: 0 as number | null,
       passwordHash: '',
       confirmPassword: '',
@@ -293,6 +312,17 @@ export default defineComponent({
 
     const isEdit = computed(() => !!props.patientId)
     const ageLabel = computed(() => (form.title === 'Baby' ? 'Age (Months)' : 'Age (Years)'))
+
+    const applyDefaultAccessValues = () => {
+      if (!form.userType) {
+        form.userType = patientUserType
+      }
+
+      if (!form.roleId) {
+        const patientRole = roleOptions.value.find((role) => role.name.toLowerCase() === 'patient')
+        form.roleId = patientRole?.id ?? roleOptions.value[0]?.id ?? 0
+      }
+    }
 
     const clearError = (key: keyof typeof errors) => {
       errors[key] = ''
@@ -324,12 +354,26 @@ export default defineComponent({
       form.country = p.Country ?? ''
       form.agreement = Boolean((p as PatientApiDto & { Agreement?: boolean | null }).Agreement)
       form.remarks = p.Remarks ?? ''
-      form.userType = p.UserType ?? 0
+      form.userType = p.UserType ?? patientUserType
       form.roleId = p.RoleId ?? 0
       profilePicturePreview.value = p.ProfilePicture ?? ''
+      applyDefaultAccessValues()
     }
 
-    onMounted(loadPatient)
+    const loadLookups = async () => {
+      try {
+        roleOptions.value = await patientService.getManageRoles()
+      } catch {
+        roleOptions.value = [{ id: 4, name: 'Patient', description: 'User Role: Patient' }]
+      }
+
+      applyDefaultAccessValues()
+    }
+
+    onMounted(async () => {
+      await loadLookups()
+      await loadPatient()
+    })
 
     let duplicateTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -433,21 +477,13 @@ export default defineComponent({
         ok = false
       }
 
-      // password rules only on create
-      /* if (!isEdit.value) {
-        if (!form.passwordHash) {
-          errors.passwordHash = 'Password is required.'
-          ok = false
-        }
-        if (!form.confirmPassword) {
-          errors.confirmPassword = 'Confirm Password is required.'
-          ok = false
-        }
-        if (form.passwordHash && form.confirmPassword && form.passwordHash !== form.confirmPassword) {
+      // password is optional; validate only when both fields are provided
+      if (!isEdit.value && form.passwordHash && form.confirmPassword) {
+        if (form.passwordHash !== form.confirmPassword) {
           errors.confirmPassword = 'Passwords do not match.'
           ok = false
         }
-    }*/
+      }
 
       // jump to correct tab
       if (
@@ -500,6 +536,8 @@ export default defineComponent({
       optionalErrors,
       clearError,
       clearOptionalError,
+      roleOptions,
+      userTypeOptions,
       isEdit,
       saving,
       save,

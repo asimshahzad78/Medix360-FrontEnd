@@ -36,16 +36,27 @@ onMounted(async () => {
 
 <style scoped>
 .item {
-  background: #ecfdf5;
-  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   padding: 12px 14px;
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
 }
 
+h3 {
+  margin: 0 0 14px;
+  color: var(--text-main);
+  font-size: 18px;
+}
+
+strong {
+  color: var(--primary-dark);
+}
+
 .state {
-  color: #64748b;
+  color: var(--text-muted);
   margin: 8px 0 0;
 }
 

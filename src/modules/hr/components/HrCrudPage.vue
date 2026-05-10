@@ -110,8 +110,8 @@ const props = withDefaults(
     initialState: FormModel
     listApi: (params?: { page?: number; pageSize?: number }) => Promise<PagedResult<UnknownRecord> | UnknownRecord[]>
     createApi: (payload: FormModel) => Promise<void>
-    updateApi: (id: number, payload: FormModel) => Promise<void>
-    deleteApi: (id: number) => Promise<void>
+    updateApi: (id: number | string, payload: FormModel) => Promise<void>
+    deleteApi: (id: number | string) => Promise<void>
     toForm?: (row: never) => FormModel
   }>(),
   {
@@ -160,7 +160,8 @@ const filtered = computed(() => {
 })
 
 function rowId(row: UnknownRecord) {
-  return Number(row['Id'] ?? 0)
+  const id = row['Id'] ?? row['Code'] ?? 0
+  return typeof id === 'number' ? id : String(id)
 }
 
 function renderValue(value: unknown) {

@@ -6,6 +6,7 @@ export type EnterpriseFormField = {
   type: 'text' | 'number' | 'date' | 'textarea' | 'select' | 'lookup'
   required?: boolean
   lookupKind?: LookupKind
+  lookupParamsFrom?: Record<string, string>
   options?: string[]
   placeholder?: string
 }
@@ -26,4 +27,5 @@ export type EnterpriseRowAction = {
   method?: 'post' | 'put'
   requiresAuditReason?: boolean
   idempotent?: boolean
+  payloadFields?: EnterpriseFormField[]
 }

@@ -1,8 +1,42 @@
+import { authTokenStorageMode } from '@/security/frontend-hardening'
+
 const TOKEN_KEY = 'token'
 const USER_KEY = 'user'
 const PERMISSIONS_KEY = 'permissions'
 const SAVED_AT_KEY = 'authSavedAt'
 const EXPIRES_AT_KEY = 'authExpiresAt'
+
+const authStorage = (): Storage | null => {
+  if (authTokenStorageMode === 'memory') return null
+  return authTokenStorageMode === 'local' ? localStorage : sessionStorage
+}
+
+const fallbackStorage = (): Storage => (authTokenStorageMode === 'local' ? sessionStorage : localStorage)
+
+const memoryAuth = new Map<string, string>()
+
+const readItem = (key: string): string | null => {
+  const storage = authStorage()
+  return storage?.getItem(key) ?? memoryAuth.get(key) ?? null
+}
+
+const writeItem = (key: string, value: string): void => {
+  const storage = authStorage()
+  if (storage) {
+    storage.setItem(key, value)
+    memoryAuth.delete(key)
+  } else {
+    memoryAuth.set(key, value)
+  }
+
+  fallbackStorage().removeItem(key)
+}
+
+const removeItem = (key: string): void => {
+  authStorage()?.removeItem(key)
+  fallbackStorage().removeItem(key)
+  memoryAuth.delete(key)
+}
 
 export type StoredAuthSession<TUser> = {
   token: string | null
@@ -22,7 +56,7 @@ const emptySession = <TUser>(): StoredAuthSession<TUser> => ({
 
 const readJson = <T>(key: string, fallback: T): T => {
   try {
-    const raw = localStorage.getItem(key)
+    const raw = readItem(key)
     return raw ? (JSON.parse(raw) as T) : fallback
   } catch {
     return fallback
@@ -30,7 +64,7 @@ const readJson = <T>(key: string, fallback: T): T => {
 }
 
 const readNumber = (key: string): number | null => {
-  const raw = localStorage.getItem(key)
+  const raw = readItem(key)
   if (!raw) return null
 
   const value = Number(raw)
@@ -67,15 +101,15 @@ export const isTokenUsable = (token: string | null, now = Date.now()): boolean =
 }
 
 export const clearStoredAuth = (): void => {
-  localStorage.removeItem(TOKEN_KEY)
-  localStorage.removeItem(USER_KEY)
-  localStorage.removeItem(PERMISSIONS_KEY)
-  localStorage.removeItem(SAVED_AT_KEY)
-  localStorage.removeItem(EXPIRES_AT_KEY)
+  removeItem(TOKEN_KEY)
+  removeItem(USER_KEY)
+  removeItem(PERMISSIONS_KEY)
+  removeItem(SAVED_AT_KEY)
+  removeItem(EXPIRES_AT_KEY)
 }
 
 export const readStoredAuth = <TUser>(): StoredAuthSession<TUser> => {
-  const token = localStorage.getItem(TOKEN_KEY)
+  const token = readItem(TOKEN_KEY)
 
   if (!isTokenUsable(token)) {
     clearStoredAuth()
@@ -96,18 +130,17 @@ export const writeStoredAuth = <TUser>(
   user: TUser,
   permissions: string[],
 ): void => {
-  localStorage.setItem(TOKEN_KEY, token)
-  localStorage.setItem(USER_KEY, JSON.stringify(user))
-  localStorage.setItem(PERMISSIONS_KEY, JSON.stringify(permissions))
-  localStorage.setItem(SAVED_AT_KEY, String(Date.now()))
+  writeItem(TOKEN_KEY, token)
+  writeItem(USER_KEY, JSON.stringify(user))
+  writeItem(PERMISSIONS_KEY, JSON.stringify(permissions))
+  writeItem(SAVED_AT_KEY, String(Date.now()))
 
   const expiresAt = getJwtExpiryMs(token)
   if (expiresAt) {
-    localStorage.setItem(EXPIRES_AT_KEY, String(expiresAt))
+    writeItem(EXPIRES_AT_KEY, String(expiresAt))
   } else {
-    localStorage.removeItem(EXPIRES_AT_KEY)
+    removeItem(EXPIRES_AT_KEY)
   }
 }
 
 export const getStoredAuthToken = (): string | null => readStoredAuth<unknown>().token
-

@@ -127,13 +127,17 @@ watch(patientSearch, () => {
 })
 
 const selectPatient = (patient: PatientApiDto) => {
+  const patientId = patient.Id ?? patient.id ?? 0
+  if (!patientId) return
+
   selectedPatient.value = {
-    id: patient.Id,
-    firstName: patient.FirstName ?? '',
-    lastName: patient.LastName ?? '',
-    phone: patient.Phone ?? '',
-    gender: patient.Gender ?? '',
+    id: patientId,
+    firstName: patient.FirstName ?? patient.firstName ?? '',
+    lastName: patient.LastName ?? patient.lastName ?? '',
+    phone: patient.Phone ?? patient.phone ?? '',
+    gender: patient.Gender ?? patient.gender ?? '',
   }
+  showEncounter.value = true
 }
 
 const loadRecent = async () => {
@@ -260,7 +264,7 @@ small {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .selected-card,

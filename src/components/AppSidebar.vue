@@ -170,6 +170,12 @@
           <RouterLink v-if="canSee('finance.claims')" to="/finance/claims" @click="onNavigate">
             Insurance Claims
           </RouterLink>
+          <RouterLink v-if="canSee('finance.sehatCardClaims')" to="/finance/sehat-card-claims" @click="onNavigate">
+            Sehat Card Claims
+          </RouterLink>
+          <RouterLink v-if="canSee('finance.panelBilling')" to="/finance/panel-billing" @click="onNavigate">
+            Panel / TPA Billing
+          </RouterLink>
           <RouterLink v-if="canSee('finance.posting')" to="/finance/posting-dashboard" @click="onNavigate">
             Posting Dashboard
           </RouterLink>
@@ -204,10 +210,10 @@
           <RouterLink v-if="canSee('lab.orders')" to="/diagnostics/orders" @click="onNavigate">
             Diagnostic Orders
           </RouterLink>
-          <RouterLink v-if="canSee('lab.tests')" to="/diagnostics/orders" @click="onNavigate">
+          <RouterLink v-if="canSee('lab.tests')" to="/diagnostics/lab-tests" @click="onNavigate">
             Lab Tests
           </RouterLink>
-          <RouterLink v-if="canSee('lab.categories')" to="/diagnostics/orders" @click="onNavigate">
+          <RouterLink v-if="canSee('lab.categories')" to="/diagnostics/categories" @click="onNavigate">
             Categories
           </RouterLink>
           <RouterLink v-if="canSee('lab.sample')" to="/diagnostics/sample-collection" @click="onNavigate">
@@ -287,8 +293,50 @@
           <RouterLink v-if="canSee('ipd.admissions')" to="/emergency/triage" @click="onNavigate">Emergency Triage</RouterLink>
           <RouterLink v-if="canSee('ipd.admissions')" to="/emergency/encounters" @click="onNavigate">Emergency Encounters</RouterLink>
           <RouterLink v-if="canSee('ipd.bedBoard')" to="/emergency/observation-beds" @click="onNavigate">Observation Beds</RouterLink>
+          <RouterLink v-if="canSee('pakistanMarket.er')" to="/emergency/er-workflow" @click="onNavigate">ER Workflow</RouterLink>
+          <RouterLink v-if="canSee('pakistanMarket.mlc')" to="/emergency/mlc-register" @click="onNavigate">MLC Register</RouterLink>
           <RouterLink v-if="canSee('ipd.nursing')" to="/ot/procedures" @click="onNavigate">OT Procedures</RouterLink>
+          <RouterLink v-if="canSee('pakistanMarket.otSurgery')" to="/ot/surgery-management" @click="onNavigate">Surgery Management</RouterLink>
           <RouterLink v-if="canSee('ipd.nursing')" to="/icu/workflows" @click="onNavigate">ICU Workflows</RouterLink>
+        </div>
+      </div>
+
+      <!-- PAKISTAN MARKET -->
+      <div class="menu-group" v-if="canSee('pakistanMarket')">
+        <div class="menu-title" @click="toggle('pakistanMarket')">
+          Pakistan Market
+          <span>{{ menuOpen.pakistanMarket ? '-' : '+' }}</span>
+        </div>
+        <div v-if="menuOpen.pakistanMarket" class="submenu">
+          <RouterLink v-if="canSee('pakistanMarket.sehatCard')" to="/finance/sehat-card-claims" @click="onNavigate">Sehat Card / SSP</RouterLink>
+          <RouterLink v-if="canSee('pakistanMarket.panelBilling')" to="/finance/panel-billing" @click="onNavigate">Panel / TPA Billing</RouterLink>
+          <RouterLink v-if="canSee('pakistanMarket.er')" to="/emergency/er-workflow" @click="onNavigate">Emergency / ER</RouterLink>
+          <RouterLink v-if="canSee('pakistanMarket.mlc')" to="/emergency/mlc-register" @click="onNavigate">MLC / Police Case</RouterLink>
+          <RouterLink v-if="canSee('pakistanMarket.otSurgery')" to="/ot/surgery-management" @click="onNavigate">OT / Surgery</RouterLink>
+          <RouterLink v-if="canSee('pakistanMarket.maternity')" to="/maternity/labor-room" @click="onNavigate">Maternity / Newborn</RouterLink>
+          <RouterLink v-if="canSee('pakistanMarket.regulatory')" to="/regulatory/government-reports" @click="onNavigate">Government Reports</RouterLink>
+          <RouterLink v-if="canSee('pakistanMarket.welfare')" to="/welfare/charity-zakat" @click="onNavigate">Charity / Zakat</RouterLink>
+          <RouterLink v-if="canSee('pakistanMarket.complaints')" to="/patient-facilitation/complaints" @click="onNavigate">Complaints Desk</RouterLink>
+        </div>
+      </div>
+
+      <!-- INTEGRATION & AUTOMATION -->
+      <div class="menu-group" v-if="canSee('integrationAutomation')">
+        <div class="menu-title" @click="toggle('integrationAutomation')">
+          Integration & Automation
+          <span>{{ menuOpen.integrationAutomation ? '-' : '+' }}</span>
+        </div>
+        <div v-if="menuOpen.integrationAutomation" class="submenu">
+          <RouterLink v-if="canSee('integrationAutomation.hub')" to="/integrations/hub" @click="onNavigate">Connector Hub</RouterLink>
+          <RouterLink v-if="canSee('integrationAutomation.fbr')" to="/integrations/fbr-e-invoicing" @click="onNavigate">FBR E-Invoicing</RouterLink>
+          <RouterLink v-if="canSee('integrationAutomation.provincialTax')" to="/integrations/provincial-tax" @click="onNavigate">Provincial Tax</RouterLink>
+          <RouterLink v-if="canSee('integrationAutomation.aiMarketplace')" to="/ai/agent-marketplace" @click="onNavigate">AI Agent Marketplace</RouterLink>
+          <RouterLink v-if="canSee('integrationAutomation.aiGovernance')" to="/ai/governance" @click="onNavigate">AI Governance</RouterLink>
+          <RouterLink v-if="canSee('integrationAutomation.downtime')" to="/downtime/offline-queue" @click="onNavigate">Downtime Queue</RouterLink>
+          <RouterLink v-if="canSee('integrationAutomation.documents')" to="/documents/management" @click="onNavigate">Documents / Scanning</RouterLink>
+          <RouterLink v-if="canSee('integrationAutomation.biometric')" to="/identity/biometric-cnic" @click="onNavigate">Biometric / CNIC</RouterLink>
+          <RouterLink v-if="canSee('integrationAutomation.multiBranch')" to="/enterprise/multi-branch" @click="onNavigate">Multi-Branch Controls</RouterLink>
+          <RouterLink v-if="canSee('integrationAutomation.paymentGateways')" to="/payments/gateways" @click="onNavigate">Payment Gateways</RouterLink>
         </div>
       </div>
 
@@ -354,6 +402,81 @@
           <RouterLink v-if="canSee('interoperability.fhir')" to="/interoperability/exchange" @click="onNavigate">External Exchange</RouterLink>
           <RouterLink v-if="canSee('interoperability.fhir')" to="/interoperability/webhooks" @click="onNavigate">Webhooks</RouterLink>
           <RouterLink v-if="canSee('interoperability.fhir')" to="/interoperability/pacs-dicom" @click="onNavigate">PACS / DICOM</RouterLink>
+        </div>
+      </div>
+
+      <!-- QUALITY -->
+      <div class="menu-group" v-if="canSee('quality')">
+        <div class="menu-title" @click="toggle('quality')">
+          Quality & Compliance
+          <span>{{ menuOpen.quality ? '-' : '+' }}</span>
+        </div>
+        <div v-if="menuOpen.quality" class="submenu">
+          <RouterLink v-if="canSee('quality.incidents')" to="/quality/incidents" @click="onNavigate">Incidents</RouterLink>
+          <RouterLink v-if="canSee('quality.incidentActions')" to="/quality/incident-actions" @click="onNavigate">Incident Actions</RouterLink>
+          <RouterLink v-if="canSee('quality.auditChecklists')" to="/quality/audit-checklists" @click="onNavigate">Audit Checklists</RouterLink>
+          <RouterLink v-if="canSee('quality.auditFindings')" to="/quality/audit-findings" @click="onNavigate">Audit Findings</RouterLink>
+          <RouterLink v-if="canSee('quality.complianceTasks')" to="/quality/compliance-tasks" @click="onNavigate">Compliance Tasks</RouterLink>
+          <RouterLink v-if="canSee('quality.correctiveActions')" to="/quality/corrective-actions" @click="onNavigate">Corrective Actions</RouterLink>
+          <RouterLink v-if="canSee('quality.riskRegister')" to="/quality/risk-register" @click="onNavigate">Risk Register</RouterLink>
+          <RouterLink v-if="canSee('quality.infectionControl')" to="/quality/infection-control" @click="onNavigate">Infection Control</RouterLink>
+          <RouterLink v-if="canSee('quality.mortalityReviews')" to="/quality/mortality-reviews" @click="onNavigate">Mortality Reviews</RouterLink>
+          <RouterLink v-if="canSee('quality.reports')" to="/quality/reports" @click="onNavigate">Quality Reports</RouterLink>
+        </div>
+      </div>
+
+      <!-- BLOOD BANK -->
+      <div class="menu-group" v-if="canSee('bloodBank')">
+        <div class="menu-title" @click="toggle('bloodBank')">
+          Blood Bank
+          <span>{{ menuOpen.bloodBank ? '-' : '+' }}</span>
+        </div>
+        <div v-if="menuOpen.bloodBank" class="submenu">
+          <RouterLink v-if="canSee('bloodBank.donors')" to="/blood-bank/donors" @click="onNavigate">Donor Registry</RouterLink>
+          <RouterLink v-if="canSee('bloodBank.units')" to="/blood-bank/blood-units" @click="onNavigate">Blood Units</RouterLink>
+          <RouterLink v-if="canSee('bloodBank.crossMatching')" to="/blood-bank/cross-matching" @click="onNavigate">Cross Matching</RouterLink>
+          <RouterLink v-if="canSee('bloodBank.issueReturn')" to="/blood-bank/issue-return" @click="onNavigate">Issue & Return</RouterLink>
+          <RouterLink v-if="canSee('bloodBank.coldChain')" to="/blood-bank/cold-chain" @click="onNavigate">Cold Chain</RouterLink>
+        </div>
+      </div>
+
+      <!-- ENTERPRISE LIS -->
+      <div class="menu-group" v-if="canSee('enterpriseLis')">
+        <div class="menu-title" @click="toggle('enterpriseLis')">
+          Enterprise LIS
+          <span>{{ menuOpen.enterpriseLis ? '-' : '+' }}</span>
+        </div>
+        <div v-if="menuOpen.enterpriseLis" class="submenu">
+          <RouterLink v-if="canSee('enterpriseLis.outreach')" to="/lis/outreach-orders" @click="onNavigate">Outreach Orders</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.phlebotomy')" to="/lis/phlebotomy-collections" @click="onNavigate">Phlebotomy</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.accessioning')" to="/lis/accessioning-barcoding" @click="onNavigate">Accessioning</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.routing')" to="/lis/specimen-routing" @click="onNavigate">Specimen Routing</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.instruments')" to="/lis/instrument-worklists" @click="onNavigate">Instrument Worklists</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.pathology')" to="/lis/anatomic-pathology" @click="onNavigate">Anatomic Pathology</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.molecular')" to="/lis/molecular-diagnostics" @click="onNavigate">Molecular Diagnostics</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.microbiology')" to="/lis/microbiology" @click="onNavigate">Microbiology</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.verification')" to="/lis/auto-verification" @click="onNavigate">Auto Verification</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.reflex')" to="/lis/reflex-testing" @click="onNavigate">Reflex Testing</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.alerts')" to="/lis/critical-alerts" @click="onNavigate">Critical Alerts</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.reagents')" to="/lis/reagent-inventory" @click="onNavigate">Reagent Inventory</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.biobanking')" to="/lis/biobanking" @click="onNavigate">Biobanking</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.documents')" to="/lis/document-control" @click="onNavigate">Document Control</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.maintenance')" to="/lis/predictive-maintenance" @click="onNavigate">Predictive Maintenance</RouterLink>
+          <RouterLink v-if="canSee('enterpriseLis.aiInterpretation')" to="/lis/ai-interpretation" @click="onNavigate">AI Interpretation</RouterLink>
+        </div>
+      </div>
+
+      <!-- ADVANCED HMS -->
+      <div class="menu-group" v-if="canSee('advancedHms')">
+        <div class="menu-title" @click="toggle('advancedHms')">
+          Advanced HMS
+          <span>{{ menuOpen.advancedHms ? '-' : '+' }}</span>
+        </div>
+        <div v-if="menuOpen.advancedHms" class="submenu">
+          <RouterLink v-if="canSee('advancedHms.aiScribe')" to="/clinical/ai-voice-scribe" @click="onNavigate">AI Voice Scribe</RouterLink>
+          <RouterLink v-if="canSee('advancedHms.telemedicine')" to="/telemedicine/workspace" @click="onNavigate">Telemedicine Workspace</RouterLink>
+          <RouterLink v-if="canSee('advancedHms.pacsViewer')" to="/radiology/pacs-viewer" @click="onNavigate">PACS Image Viewer</RouterLink>
+          <RouterLink v-if="canSee('advancedHms.abdmAbha')" to="/interoperability/abdm-abha" @click="onNavigate">ABDM / ABHA</RouterLink>
         </div>
       </div>
 
@@ -444,6 +567,12 @@ const menuOpen = reactive({
   analytics: false,
   patientEngagement: false,
   interoperability: false,
+  pakistanMarket: false,
+  integrationAutomation: false,
+  quality: false,
+  bloodBank: false,
+  enterpriseLis: false,
+  advancedHms: false,
   billing: false,
   reports: false,
   admin: false,
@@ -476,10 +605,13 @@ watch(
 <style scoped>
 .sidebar {
   width: 270px;
-  background: #4caf50;
-  color: white;
+  background:
+    linear-gradient(180deg, rgba(15, 118, 110, 0.24), transparent 280px),
+    linear-gradient(180deg, var(--sidebar-bg-2), var(--sidebar-bg));
+  color: var(--sidebar-text);
   padding: 18px 14px;
   overflow-y: auto;
+  border-right: 1px solid rgba(148, 163, 184, 0.22);
 }
 
 /* brand row */
@@ -492,19 +624,20 @@ watch(
 }
 
 .brand {
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 /* close button (mobile only) */
 .close {
   display: none;
   border: none;
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
+  background: rgba(226, 232, 240, 0.12);
+  color: var(--sidebar-text);
   width: 38px;
   height: 38px;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
 }
 
@@ -518,7 +651,7 @@ watch(
     z-index: 50;
     transform: translateX(-100%);
     transition: transform 0.2s ease;
-    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.2);
+    box-shadow: 18px 0 44px rgba(15, 23, 42, 0.28);
   }
 
   .sidebar.open {
@@ -539,54 +672,57 @@ watch(
   padding: 10px 12px;
   font-weight: 600;
   cursor: pointer;
-  border-radius: 10px;
+  border-radius: 8px;
+  color: var(--sidebar-text);
 }
 
 .menu-title:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--sidebar-hover);
 }
 
 .submenu {
-  padding-left: 10px;
+  padding-left: 8px;
   margin-bottom: 6px;
 }
 
 .submenu a {
   display: block;
   padding: 8px 12px;
-  border-radius: 10px;
-  font-size: 14px;
-  color: white;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--sidebar-muted);
   text-decoration: none;
+  border-left: 3px solid transparent;
 }
 
 .submenu a:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--sidebar-hover);
+  color: var(--sidebar-text);
 }
 
 .submenu a.router-link-active {
-  background: rgba(255, 255, 255, 0.25);
-  color: #e8f5e9;
+  background: var(--sidebar-active);
+  color: #ffffff;
   font-weight: 600;
-  border-left: 4px solid #c8e6c9;
+  border-left-color: #2dd4bf;
 }
 
 .submenu-divider {
   margin: 8px 0 4px;
   font-size: 11px;
-  opacity: 0.8;
+  color: #7dd3fc;
   text-transform: uppercase;
 }
 
 .menu-title.single-link {
   text-decoration: none;
-  color: white;
+  color: var(--sidebar-text);
 }
 
 .menu-title.single-link.router-link-active {
-  background: rgba(255, 255, 255, 0.25);
-  color: #e8f5e9;
+  background: var(--sidebar-active);
+  color: #ffffff;
   font-weight: 600;
-  border-left: 4px solid #c8e6c9;
+  border-left: 4px solid #2dd4bf;
 }
 </style>

@@ -74,6 +74,7 @@ async getPaged(page: number, pageSize: number, search?: string): Promise<PagedRe
       Id: payment.Id ?? payment.id ?? 0,
       VisitId: payment.VisitId ?? payment.visitId ?? null,
       PatientName: payment.PatientName ?? payment.patientName ?? '',
+      DoctorName: payment.DoctorName ?? payment.doctorName ?? '',
       PatientType: payment.PatientType ?? payment.patientType ?? '',
       Discount: payment.Discount ?? payment.discount ?? 0,
       Tax: payment.Tax ?? payment.tax ?? 0,
@@ -108,7 +109,7 @@ async getPaged(page: number, pageSize: number, search?: string): Promise<PagedRe
      INVOICE / PRINT ✅ (doctorName + doctorMobile included)
   ========================= */
  async getInvoiceForPrint(id: number): Promise<PaymentPrintResponse> {
-  const { data } = await api.get<{
+  const { data: responseData } = await api.get<{
     id: number
     visitId: string
     receiptNo: string
@@ -150,6 +151,8 @@ async getPaged(page: number, pageSize: number, search?: string): Promise<PagedRe
       netAmount: number
     }>
   }>(`/payments/${id}/invoice`)
+
+  const data = unwrapApiData<typeof responseData>(responseData, responseData)
 
   // ✅ keep your existing mapping logic (Paid -> Posted)
   const status: PaymentPrintResponse['status'] =

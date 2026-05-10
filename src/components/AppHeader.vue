@@ -41,15 +41,16 @@ function logout() {
 <style scoped>
 .header {
   height: 64px;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.94);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 30;
+  backdrop-filter: blur(12px);
 }
 
 .left {
@@ -61,8 +62,8 @@ function logout() {
 
 .title {
   font-size: 20px;
-  font-weight: 600;
-  color: #1f2937;
+  font-weight: 700;
+  color: var(--text-main);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -71,9 +72,9 @@ function logout() {
 
 .burger {
   display: none;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   background: #fff;
-  border-radius: 6px;
+  border-radius: 8px;
   height: 38px;
   padding: 0 12px;
   cursor: pointer;
@@ -87,7 +88,7 @@ function logout() {
 }
 
 .context {
-  color: #166534;
+  color: var(--primary-dark);
   font-size: 12px;
   font-weight: 700;
   max-width: 220px;
@@ -98,7 +99,7 @@ function logout() {
 
 .hello {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-muted);
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -106,17 +107,17 @@ function logout() {
 }
 
 .logout {
-  background: #ef4444;
+  background: var(--danger);
   color: white;
   border: none;
   padding: 6px 14px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 13px;
   cursor: pointer;
 }
 
 .logout:hover {
-  background: #dc2626;
+  background: #b91c1c;
 }
 
 @media (max-width: 1023px) {

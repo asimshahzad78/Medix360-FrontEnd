@@ -28,6 +28,24 @@ export const demoRecentCheckups: CheckupItem[] = [
   { patientName: 'Fatima Noor', doctorName: 'Dr. Hina Yusuf', date: new Date().toISOString() },
 ]
 
+const demoRevenueChart: RevenueChartItem[] = [
+  { label: 'Jan', income: 315000, expense: 198000 },
+  { label: 'Feb', income: 342000, expense: 205000 },
+  { label: 'Mar', income: 388000, expense: 228000 },
+  { label: 'Apr', income: 421000, expense: 244000 },
+  { label: 'May', income: 485000, expense: 271000 },
+  { label: 'Jun', income: 532000, expense: 296000 },
+]
+
+const demoPatientTrend: PatientTrendItem[] = [
+  { month: 'Jan', newPatients: 96, recoveredPatients: 72 },
+  { month: 'Feb', newPatients: 118, recoveredPatients: 84 },
+  { month: 'Mar', newPatients: 132, recoveredPatients: 91 },
+  { month: 'Apr', newPatients: 149, recoveredPatients: 103 },
+  { month: 'May', newPatients: 164, recoveredPatients: 121 },
+  { month: 'Jun', newPatients: 181, recoveredPatients: 136 },
+]
+
 export const dashboardService = {
   async getSummary(): Promise<DashboardSummary> {
     try {
@@ -39,13 +57,23 @@ export const dashboardService = {
   },
 
   async getRevenueChart(): Promise<RevenueChartItem[]> {
-    const { data } = await api.get('/dashboard/revenue-chart')
-    return unwrapApiData<RevenueChartItem[]>(data, [])
+    try {
+      const { data } = await api.get('/dashboard/revenue-chart')
+      const rows = unwrapApiData<RevenueChartItem[]>(data, [])
+      return rows.length ? rows : demoRevenueChart
+    } catch {
+      return demoRevenueChart
+    }
   },
 
   async getPatientTrend(): Promise<PatientTrendItem[]> {
-    const { data } = await api.get('/dashboard/patient-trend')
-    return unwrapApiData<PatientTrendItem[]>(data, [])
+    try {
+      const { data } = await api.get('/dashboard/patient-trend')
+      const rows = unwrapApiData<PatientTrendItem[]>(data, [])
+      return rows.length ? rows : demoPatientTrend
+    } catch {
+      return demoPatientTrend
+    }
   },
 
   async getRecentPayments(): Promise<PaymentItem[]> {

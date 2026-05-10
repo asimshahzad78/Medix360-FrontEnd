@@ -126,6 +126,7 @@ onMounted(() => {
 
 <style scoped>
 .lookup-select {
+  width: 100%;
   min-width: 0;
 }
 
@@ -156,6 +157,9 @@ onMounted(() => {
 }
 
 :deep(.multiselect) {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   min-height: 34px;
   border-color: #cbd5e1;
   border-radius: 6px;

@@ -5,7 +5,7 @@
       <h2>{{ value }}</h2>
 
       <div v-if="trend" class="trend">
-        <span :class="trend > 0 ? 'up' : 'down'"> {{ trend > 0 ? '+' : '' }}{{ trend }}% </span>
+        <span :class="trend > 0 ? 'up' : 'down'">{{ trend > 0 ? '+' : '' }}{{ trend }}%</span>
       </div>
     </div>
 
@@ -19,73 +19,94 @@
 defineProps<{
   label: string
   value: string | number
-  variant: 'red' | 'green' | 'blue' | 'purple'
+  variant: 'red' | 'green' | 'blue' | 'purple' | 'teal'
   trend?: number
 }>()
 </script>
 
 <style scoped>
 .kpi-card {
-  border-radius: 16px;
-  padding: 22px;
+  position: relative;
   display: flex;
-  justify-content: space-between;
+  min-height: 116px;
   align-items: center;
-  color: white;
-  min-height: 120px;
+  justify-content: space-between;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: var(--shadow-soft);
+  color: var(--text-main);
+  padding: 20px;
 }
 
-/* 🎨 GRADIENTS (MATCHING ERES) */
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--card-accent);
+}
+
 .red {
-  background: linear-gradient(135deg, #ee338d, #ff9a9e);
+  --card-accent: #dc2626;
 }
 
 .green {
-  background: linear-gradient(135deg, #56ab2f, #a8e063);
+  --card-accent: #16a34a;
 }
 
 .blue {
-  background: linear-gradient(135deg, #5b86e5, #36d1dc);
+  --card-accent: #2563eb;
 }
 
 .purple {
-  background: linear-gradient(135deg, #a12fda, #f64f59);
+  --card-accent: #7c3aed;
+}
+
+.teal {
+  --card-accent: #0f766e;
 }
 
 .label {
-  font-size: 14px;
-  opacity: 0.9;
-  margin-bottom: 6px;
+  margin: 0 0 6px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 700;
 }
 
 h2 {
-  font-size: 28px;
-  font-weight: 700;
   margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 .trend {
   margin-top: 8px;
   font-size: 13px;
+  font-weight: 700;
 }
 
 .trend .up {
-  color: #eaffea;
+  color: var(--success);
 }
 
 .trend .down {
-  color: #ffecec;
+  color: var(--danger);
 }
 
-/* Icon circle */
 .icon {
+  display: flex;
   width: 54px;
   height: 54px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.5);
-  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  border: 1px solid color-mix(in srgb, var(--card-accent), white 72%);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--card-accent), white 88%);
+  color: var(--card-accent);
+  font-size: 16px;
+  font-weight: 800;
 }
 </style>

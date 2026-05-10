@@ -134,10 +134,9 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { coaService } from '@/modules/finance/coa/coa.service'
-import type { ChartOfAccountUiDto } from '@/modules/finance/coa/coa.types'
 import { counterClosingService } from './counter-closing.service'
 import type { CounterClosingReportDto } from './counter-closing.types'
+import type { CounterClosingCashAccount } from './counter-closing.service'
 
 function todayIso(): string {
   const d = new Date()
@@ -150,30 +149,48 @@ function todayIso(): string {
 // ---------- Wire (PascalCase) ----------
 type CounterClosingWire = {
   Date?: string
+  date?: string
   TenantId?: string
+  tenantId?: string
   PropertyId?: string
+  propertyId?: string
 
   NewPatients?: number
+  newPatients?: number
   TotalCheckups?: number
+  totalCheckups?: number
   TotalCheckupFee?: number
+  totalCheckupFee?: number
 
   FreePatients?: number
+  freePatients?: number
   DiscountedPatients?: number
+  discountedPatients?: number
   DiscountAmount?: number
+  discountAmount?: number
 
   CashTransactions?: number
+  cashTransactions?: number
   CashAmount?: number
+  cashAmount?: number
 
   CardTransactions?: number
+  cardTransactions?: number
   CardAmount?: number
+  cardAmount?: number
 
   OnlineTransactions?: number
+  onlineTransactions?: number
   OnlineAmount?: number
+  onlineAmount?: number
 
   ExpensesFromCashInHand?: number
+  expensesFromCashInHand?: number
   DoctorPayoutFromCashInHand?: number
+  doctorPayoutFromCashInHand?: number
 
   AmountLeft?: number
+  amountLeft?: number
 }
 
 function n(v: unknown): number {
@@ -186,45 +203,39 @@ function s(v: unknown): string {
 
 function mapWireToUi(w: CounterClosingWire): CounterClosingReportDto {
   return {
-    date: s(w.Date),
-    tenantId: s(w.TenantId),
-    propertyId: s(w.PropertyId),
+    date: s(w.Date ?? w.date),
+    tenantId: s(w.TenantId ?? w.tenantId),
+    propertyId: s(w.PropertyId ?? w.propertyId),
 
-    newPatients: n(w.NewPatients),
-    totalCheckups: n(w.TotalCheckups),
-    totalCheckupFee: n(w.TotalCheckupFee),
+    newPatients: n(w.NewPatients ?? w.newPatients),
+    totalCheckups: n(w.TotalCheckups ?? w.totalCheckups),
+    totalCheckupFee: n(w.TotalCheckupFee ?? w.totalCheckupFee),
 
-    freePatients: n(w.FreePatients),
-    discountedPatients: n(w.DiscountedPatients),
-    discountAmount: n(w.DiscountAmount),
+    freePatients: n(w.FreePatients ?? w.freePatients),
+    discountedPatients: n(w.DiscountedPatients ?? w.discountedPatients),
+    discountAmount: n(w.DiscountAmount ?? w.discountAmount),
 
-    cashTransactions: n(w.CashTransactions),
-    cashAmount: n(w.CashAmount),
+    cashTransactions: n(w.CashTransactions ?? w.cashTransactions),
+    cashAmount: n(w.CashAmount ?? w.cashAmount),
 
-    cardTransactions: n(w.CardTransactions),
-    cardAmount: n(w.CardAmount),
+    cardTransactions: n(w.CardTransactions ?? w.cardTransactions),
+    cardAmount: n(w.CardAmount ?? w.cardAmount),
 
-    onlineTransactions: n(w.OnlineTransactions),
-    onlineAmount: n(w.OnlineAmount),
+    onlineTransactions: n(w.OnlineTransactions ?? w.onlineTransactions),
+    onlineAmount: n(w.OnlineAmount ?? w.onlineAmount),
 
-    expensesFromCashInHand: n(w.ExpensesFromCashInHand),
-    doctorPayoutFromCashInHand: n(w.DoctorPayoutFromCashInHand),
+    expensesFromCashInHand: n(w.ExpensesFromCashInHand ?? w.expensesFromCashInHand),
+    doctorPayoutFromCashInHand: n(w.DoctorPayoutFromCashInHand ?? w.doctorPayoutFromCashInHand),
 
-    amountLeft: n(w.AmountLeft),
+    amountLeft: n(w.AmountLeft ?? w.amountLeft),
   }
 }
 
 const loading = ref(false)
 const date = ref<string>(todayIso())
 
-const accounts = ref<ChartOfAccountUiDto[]>([])
+const cashAccounts = ref<CounterClosingCashAccount[]>([])
 const cashAccountId = ref<string>('')
-
-const cashAccounts = computed<ChartOfAccountUiDto[]>(() =>
-  accounts.value.filter(
-    (a) => a.isLeaf && a.isActive && a.typeLabel === 'Asset' && a.code.startsWith('11'),
-  ),
-)
 
 const report = ref<CounterClosingReportDto | null>(null)
 
@@ -248,10 +259,9 @@ function money(nv: number): string {
 }
 
 async function loadCoa(): Promise<void> {
-  accounts.value = await coaService.getAllUi()
+  cashAccounts.value = await counterClosingService.getCashAccounts()
 
-  // default: Cash in Hand (1110) if exists
-  const cashInHand = accounts.value.find((a) => a.code === '1110')
+  const cashInHand = cashAccounts.value.find((a) => a.code === '1110' || /cash in hand/i.test(a.name))
   cashAccountId.value = cashInHand ? cashInHand.id : (cashAccounts.value[0]?.id ?? '')
 }
 

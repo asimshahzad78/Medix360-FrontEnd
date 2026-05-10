@@ -14,6 +14,7 @@ export type LookupKind =
   | 'shift'
   | 'employee'
   | 'leaveType'
+  | 'encounter'
   | 'doctor'
   | 'facility'
   | 'department'
@@ -125,6 +126,13 @@ const lookupConfigs: Record<LookupKind, LookupConfig> = {
     codeKeys: ['code', 'Code'],
     descriptionKeys: ['description', 'Description'],
   },
+  encounter: {
+    endpoint: '/checkups',
+    labelKeys: ['visitId', 'VisitId'],
+    idKeys: ['visitId', 'VisitId'],
+    codeKeys: ['serialNo', 'SerialNo'],
+    descriptionKeys: ['patientName', 'PatientName', 'doctorName', 'DoctorName', 'checkupDate', 'CheckupDate'],
+  },
   doctor: {
     endpoint: '/doctors',
     labelKeys: ['label', 'Label', 'name', 'Name', 'doctorName', 'DoctorName', 'fullName', 'FullName'],
@@ -212,7 +220,7 @@ const getItems = (payload: unknown): unknown[] => {
   if (!isRecord(payload)) return []
 
   const candidate =
-    pick(payload, ['items', 'Items', 'results', 'Results', 'data', 'Data', 'records', 'Records']) ?? []
+    pick(payload, ['items', 'Items', 'value', 'Value', 'results', 'Results', 'data', 'Data', 'records', 'Records']) ?? []
 
   return Array.isArray(candidate) ? candidate : []
 }

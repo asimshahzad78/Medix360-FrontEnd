@@ -2,9 +2,17 @@
   background: var(--bg-card);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  border: 1px solid var(--border);
   padding: 20px;
 }
 
 body {
   background: var(--bg-page);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }

@@ -63,7 +63,9 @@ watch(
 
 .content {
   padding: 24px;
-  background: #f3f7f5;
+  background:
+    linear-gradient(180deg, rgba(15, 118, 110, 0.06), transparent 260px),
+    var(--bg-page);
   min-width: 0;
   /* prevents overflow with wide tables */
 }

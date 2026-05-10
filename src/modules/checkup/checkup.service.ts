@@ -29,9 +29,12 @@ export interface CheckupApiDto {
    CREATE RESPONSE DTO
 ========================= */
 export interface CheckupCreateResponse {
-  CheckupId: number
-  VisitId: number
-  PaymentId: number
+  CheckupId?: number
+  checkupId?: number
+  VisitId?: string | number
+  visitId?: string | number
+  PaymentId?: number
+  paymentId?: number
 }
 
 /* =========================
@@ -136,7 +139,7 @@ export const checkupService = {
   /* 🔁 CREATE */
   async create(payload: CheckupSaveDto): Promise<CheckupCreateResponse> {
     const { data } = await api.post<CheckupCreateResponse>('/checkups', payload, {
-      meta: { idempotencyKey: true },
+      meta: { auditReason: 'Create OPD encounter' },
     })
     return unwrapApiData<CheckupCreateResponse>(data, data)
   },

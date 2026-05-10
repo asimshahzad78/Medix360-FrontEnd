@@ -3,6 +3,7 @@ import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { PaymentService } from './payment.service'
 import { companyInfoService } from '@/modules/company-info/company-info.service'
+import { getApiErrorMessage } from '@/services/api-response'
 import type { PaymentPrintResponse } from './payment.types'
 
 interface CompanyInfo {
@@ -38,6 +39,8 @@ const router = useRouter()
 
 const payment = ref<PaymentPrintResponse | null>(null)
 const company = ref<CompanyInfo | null>(null)
+const isLoading = ref(false)
+const loadError = ref('')
 
 /* ===== Logo ===== */
 const API_ORIGIN = (import.meta.env.VITE_API_ORIGIN || window.location.origin).replace(/\/$/, '')
@@ -153,7 +156,18 @@ const printBlobHidden = (blob: Blob) => {
 /* ===== Load ===== */
 const load = async () => {
   const id = Number(route.params.id)
-  payment.value = await PaymentService.getInvoiceForPrint(id)
+  isLoading.value = true
+  loadError.value = ''
+
+  try {
+    payment.value = await PaymentService.getInvoiceForPrint(id)
+  } catch (error) {
+    payment.value = null
+    loadError.value = getApiErrorMessage(error, 'Failed to load invoice.')
+    return
+  } finally {
+    isLoading.value = false
+  }
 
   try {
     company.value = await companyInfoService.get()
@@ -313,7 +327,11 @@ const goBack = () => {
 </script>
 
 <template>
-  <div v-if="payment">
+  <div v-if="isLoading" class="print-state no-print">Loading invoice...</div>
+  <div v-else-if="loadError" class="print-state error no-print">
+    {{ loadError }}
+  </div>
+  <div v-else-if="payment">
     <div class="action-bar no-print">
       <button class="action-btn success" @click="thermalPrint">🧾 Thermal</button>
       <button class="action-btn primary" @click="printInvoice">🖨 Print</button>
@@ -474,6 +492,23 @@ const goBack = () => {
 .action-btn.ghost {
   background: transparent;
   color: #334155;
+}
+
+.print-state {
+  max-width: 720px;
+  margin: 32px auto;
+  padding: 14px 18px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #334155;
+  font-weight: 600;
+}
+
+.print-state.error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
 }
 
 .print-page {

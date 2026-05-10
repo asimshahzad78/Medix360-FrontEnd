@@ -28,6 +28,8 @@ export interface PaymentApiItem {
   visitId?: string | null
   PatientName: string
   patientName?: string
+  DoctorName?: string | null
+  doctorName?: string | null
   PatientType: string
   patientType?: string
   Discount: number

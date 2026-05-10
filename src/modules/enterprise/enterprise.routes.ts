@@ -17,6 +17,8 @@ type ScreenConfig = {
   mutationEndpoint: string
   exportEndpoint: string
   mutationLabel: string
+  canCreate?: boolean
+  canExport?: boolean
   requiresAuditReason?: boolean
   formFields: EnterpriseFormField[]
   filterFields: EnterpriseFilterField[]
@@ -97,8 +99,35 @@ const rowActionsFor = (screen: ModuleScreen): EnterpriseRowAction[] => {
   }
 
   if (screen.path.startsWith('/finance')) {
+    if (screen.path.includes('sehat-card')) {
+      return [
+        workflowAction('eligibility-check', 'Check Eligibility'),
+        workflowAction('pre-authorization', 'Pre-Auth', 'pre-authorization', {
+          payloadFields: [field('referenceNumber', 'Pre-Authorization No', 'text'), notesField],
+        }),
+        workflowAction('admission-approval', 'Approve Admission', 'admission-approval', {
+          payloadFields: [field('referenceNumber', 'Admission Approval No', 'text', { required: true }), notesField],
+        }),
+        workflowAction('claim', 'Submit Claim'),
+        workflowAction('objection', 'Record Objection', 'objection', {
+          payloadFields: [field('reason', 'Objection Reason', 'textarea', { required: true })],
+        }),
+        workflowAction('resubmission', 'Resubmit', 'resubmission', { payloadFields: [notesField] }),
+        workflowAction('payment-reconciliation', 'Reconcile Payment', 'payment-reconciliation', {
+          payloadFields: [
+            field('referenceNumber', 'Payment Reference', 'text', { required: true }),
+            field('amount', 'Reconciled Amount', 'number', { required: true }),
+          ],
+        }),
+        workflowAction('audit-flag', 'Audit Flag', 'audit-flag', {
+          payloadFields: [field('reason', 'Audit / Fraud Reason', 'textarea', { required: true })],
+        }),
+      ]
+    }
     if (screen.path.includes('leakage')) return [resolveAction, approveAction]
-    if (screen.path.includes('claims')) return [approveAction, postAction, reverseAction]
+    if (screen.path.includes('claims') || screen.path.includes('panel-billing')) {
+      return [verifyAction, approveAction, postAction, reverseAction]
+    }
     return [approveAction, postAction, reverseAction]
   }
 
@@ -121,6 +150,7 @@ const rowActionsFor = (screen: ModuleScreen): EnterpriseRowAction[] => {
   }
 
   if (screen.path.startsWith('/emergency')) {
+    if (screen.path.includes('mlc')) return [verifyAction, sendAction, resolveAction]
     if (screen.path.includes('triage')) return [inProgressAction, admitAction, dispositionAction, cancelAction]
     return [inProgressAction, dispositionAction, transferAction, dischargeAction]
   }
@@ -142,6 +172,47 @@ const rowActionsFor = (screen: ModuleScreen): EnterpriseRowAction[] => {
     if (screen.path.includes('consents')) return [signAction, verifyAction, cancelAction]
     if (screen.path.includes('notifications') || screen.path.includes('messages')) return [sendAction, retryAction, resolveAction]
     return [verifyAction, approveAction, cancelAction]
+  }
+
+  if (screen.path.startsWith('/quality')) {
+    return []
+  }
+
+  if (
+    screen.path.startsWith('/maternity') ||
+    screen.path.startsWith('/regulatory') ||
+    screen.path.startsWith('/welfare') ||
+    screen.path.startsWith('/patient-facilitation') ||
+    screen.path.startsWith('/integrations') ||
+    screen.path.startsWith('/ai') ||
+    screen.path.startsWith('/downtime') ||
+    screen.path.startsWith('/documents') ||
+    screen.path.startsWith('/identity') ||
+    screen.path.startsWith('/enterprise/multi-branch') ||
+    screen.path.startsWith('/payments/gateways')
+  ) {
+    if (screen.path.includes('fbr-e-invoicing')) {
+      return [
+        workflowAction('validate', 'Validate'),
+        workflowAction('submit', 'Submit', 'submit', {
+          payloadFields: [
+            field('irn', 'IRN', 'text'),
+            field('qrPayload', 'QR Payload', 'textarea'),
+            field('responsePayloadUri', 'Response Payload URI', 'text'),
+          ],
+        }),
+        workflowAction('fail', 'Mark Failed', 'fail', {
+          payloadFields: [
+            field('failureReason', 'Failure Reason', 'textarea', { required: true }),
+            field('responsePayloadUri', 'Response Payload URI', 'text'),
+          ],
+        }),
+        workflowAction('retry', 'Queue Retry', 'retry', {
+          payloadFields: [field('failureReason', 'Retry Reason', 'textarea')],
+        }),
+      ]
+    }
+    return [verifyAction, approveAction, resolveAction]
   }
 
   return []
@@ -189,12 +260,53 @@ const financeForm = (type: string): EnterpriseFormField[] => [
   reasonField,
 ]
 
+const sehatCardClaimForm = (): EnterpriseFormField[] => [
+  field('claimNumber', 'Claim No', 'text'),
+  field('cnic', 'CNIC', 'text', { required: true, placeholder: '35202-1234567-1' }),
+  field('patientName', 'Patient Name', 'text', { required: true }),
+  field('eligibilityReference', 'Eligibility Reference', 'text'),
+  field('entitlementPlan', 'Entitlement / Family No', 'text'),
+  field('packageCode', 'Package Code', 'text', { required: true }),
+  field('packageName', 'Package Name', 'text'),
+  field('preAuthorizationNumber', 'Pre-Authorization No', 'text'),
+  field('admissionApprovalNumber', 'Admission Approval No', 'text'),
+  field('admissionNumber', 'Admission No', 'text'),
+  field('documentBundleUri', 'Claim Document Bundle URI', 'text'),
+  field('dischargePackageUri', 'Discharge Package URI', 'text'),
+  field('claimAmount', 'Claim Amount', 'number'),
+  field('approvedAmount', 'Approved Amount', 'number'),
+  field('reconciledAmount', 'Reconciled Amount', 'number'),
+  field('paymentReference', 'Payment Reference', 'text'),
+  field('status', 'Status', 'select', { options: ['Draft', 'Eligible', 'PreAuthorizationPending', 'AdmissionApproved', 'ClaimSubmitted', 'Objected', 'Rejected', 'Resubmitted', 'Paid', 'ManualReview'] }),
+  field('objectionReason', 'Objection / Rejection Reason', 'textarea'),
+  field('fraudFlag', 'Fraud / Audit Flag', 'select', { options: ['false', 'true'] }),
+  field('auditFlags', 'Audit Flags', 'textarea'),
+  notesField,
+]
+
+const panelBillingForm = (): EnterpriseFormField[] => [
+  field('panelName', 'Panel / Corporate / TPA', 'text', { required: true }),
+  patientField,
+  field('employeeNo', 'Employee No', 'text'),
+  field('dependentName', 'Dependent Name', 'text'),
+  field('authorizationLetterNo', 'Authorization Letter No', 'text'),
+  field('priceList', 'Price List', 'text'),
+  field('creditLimit', 'Credit Limit', 'number'),
+  field('invoiceNo', 'Invoice No', 'text'),
+  field('receivableAmount', 'Receivable Amount', 'number'),
+  field('agingBucket', 'Aging Bucket', 'select', { options: ['Current', '1-30', '31-60', '61-90', '90+'] }),
+  field('status', 'Status', 'select', { options: ['Draft', 'Authorized', 'Billed', 'Submitted', 'PartPaid', 'Paid', 'Disputed'] }),
+  notesField,
+]
+
 const diagnosticsForm = (type: 'Lab' | 'Radiology' | 'Approval'): EnterpriseFormField[] => [
   patientField,
   doctorField,
-  field('encounterId', 'Encounter', 'text', { placeholder: 'Visit or encounter ID' }),
-  field('orderId', 'Order ID', 'text'),
-  field('accessionNo', 'Accession No', 'text'),
+  field('encounterId', 'Visit ID', 'lookup', {
+    lookupKind: 'encounter',
+    lookupParamsFrom: { patientId: 'patientId' },
+    placeholder: 'Select latest visit',
+  }),
   field('orderType', 'Order Type', 'select', { options: [type] }),
   field('labTestId', 'Lab Test', 'lookup', { lookupKind: 'labTest' }),
   field('radiologyStudyId', 'Radiology Study', 'lookup', { lookupKind: 'radiologyStudy' }),
@@ -211,6 +323,30 @@ const diagnosticsForm = (type: 'Lab' | 'Radiology' | 'Approval'): EnterpriseForm
   field('impression', 'Impression', 'textarea'),
   field('reportFileUri', 'Report File / Upload URI', 'text'),
   notesField,
+]
+
+const labTestForm = (): EnterpriseFormField[] => [
+  field('testName', 'Lab Test Name', 'text', { required: true }),
+  field('category', 'Category', 'text', { placeholder: 'Biochemistry, Hematology, Microbiology' }),
+  field('specimenType', 'Specimen Type', 'select', {
+    options: ['Blood', 'Urine', 'Serum', 'Plasma', 'Swab', 'Tissue', 'Stool', 'Sputum'],
+  }),
+  field('unit', 'Unit', 'text', { placeholder: 'mg/dL, mmol/L, IU/L' }),
+  field('referenceRange', 'Reference Range', 'text'),
+  field('turnaroundTime', 'TAT', 'text', { placeholder: 'Same day, 24 hours' }),
+  field('price', 'Price', 'number'),
+  field('status', 'Status', 'select', { options: ['Active', 'Inactive'] }),
+  notesField,
+]
+
+const labCategoryForm = (): EnterpriseFormField[] => [
+  field('name', 'Category Name', 'text', { required: true }),
+  field('department', 'Department', 'select', {
+    options: ['Biochemistry', 'Hematology', 'Microbiology', 'Serology', 'Histopathology', 'Molecular'],
+  }),
+  field('code', 'Code', 'text'),
+  field('description', 'Description', 'textarea'),
+  field('status', 'Status', 'select', { options: ['Active', 'Inactive'] }),
 ]
 
 const ipdForm = (type: string): EnterpriseFormField[] => [
@@ -251,6 +387,37 @@ const emergencyForm = (type: string): EnterpriseFormField[] => [
   notesField,
 ]
 
+const mlcForm = (): EnterpriseFormField[] => [
+  patientField,
+  doctorField,
+  field('mlcNo', 'MLC No', 'text', { required: true }),
+  field('caseType', 'Case Type', 'select', { options: ['RoadTrafficAccident', 'Assault', 'Poisoning', 'Gunshot', 'Burn', 'WorkplaceInjury', 'SexualAssault', 'Other'] }),
+  field('policeStation', 'Police Station', 'text'),
+  field('policeIntimationNo', 'Police Intimation No', 'text'),
+  field('broughtBy', 'Brought By', 'text'),
+  field('injurySummary', 'Injury Summary', 'textarea', { required: true }),
+  field('evidenceChain', 'Evidence / Chain Of Custody', 'textarea'),
+  field('legalStatus', 'Legal Status', 'select', { options: ['Open', 'PoliceInformed', 'ReportPrepared', 'CourtRequested', 'Closed'] }),
+  reasonField,
+]
+
+const maternityForm = (): EnterpriseFormField[] => [
+  patientField,
+  doctorField,
+  field('ancNo', 'ANC No', 'text'),
+  field('gravidaPara', 'Gravida / Para', 'text'),
+  field('laborStage', 'Labor Stage', 'select', { options: ['ANC', 'Latent', 'Active', 'SecondStage', 'ThirdStage', 'Postpartum'] }),
+  field('deliveryMode', 'Delivery Mode', 'select', { options: ['Normal', 'Assisted', 'CSection', 'VBAC'] }),
+  field('partographSummary', 'Partograph Summary', 'textarea'),
+  field('newbornName', 'Newborn Name', 'text'),
+  field('apgarScore', 'APGAR', 'text'),
+  field('birthWeight', 'Birth Weight', 'number'),
+  field('vaccinationAtBirth', 'Vaccination At Birth', 'select', { options: ['Pending', 'BCG', 'OPV0', 'HepB', 'Completed'] }),
+  field('maternalComplications', 'Maternal Complications', 'textarea'),
+  field('status', 'Status', 'select', { options: ['ANC', 'InLabor', 'Delivered', 'Postpartum', 'Referred', 'Closed'] }),
+  notesField,
+]
+
 const otIcuForm = (type: string): EnterpriseFormField[] => [
   patientField,
   doctorField,
@@ -269,6 +436,173 @@ const otIcuForm = (type: string): EnterpriseFormField[] => [
   field('status', 'Status', 'select', { options: ['Planned', 'Scheduled', 'InProgress', 'Completed', 'Verified', 'Cancelled'] }),
   field('disposition', 'Disposition', 'select', { options: ['Ward', 'ICU', 'Recovery', 'Discharge', 'Transfer'] }),
   field('workflowType', 'Workflow Type', 'select', { options: [type] }),
+  notesField,
+]
+
+const regulatoryReportForm = (): EnterpriseFormField[] => [
+  field('reportName', 'Report Name', 'text', { required: true }),
+  field('reportType', 'Report Type', 'select', { options: ['DHIS', 'DiseaseSurveillance', 'BirthRegister', 'DeathRegister', 'NotifiableDisease', 'FacilityStatistics'] }),
+  field('facilityId', 'Facility', 'lookup', { lookupKind: 'facility' }),
+  field('periodFrom', 'Period From', 'date'),
+  field('periodTo', 'Period To', 'date'),
+  field('submissionNo', 'Submission No', 'text'),
+  field('status', 'Status', 'select', { options: ['Draft', 'Validated', 'Submitted', 'Accepted', 'Returned'] }),
+  notesField,
+]
+
+const welfareForm = (): EnterpriseFormField[] => [
+  patientField,
+  field('program', 'Program', 'select', { options: ['Charity', 'Zakat', 'Bait-ul-Mal', 'DonorFund', 'WelfareDiscount'] }),
+  field('assessmentNo', 'Assessment No', 'text'),
+  field('requestedAmount', 'Requested Amount', 'number'),
+  field('approvedAmount', 'Approved Amount', 'number'),
+  field('fundSource', 'Fund Source', 'text'),
+  field('eligibilityNotes', 'Eligibility Notes', 'textarea'),
+  field('status', 'Status', 'select', { options: ['Requested', 'UnderAssessment', 'Approved', 'Rejected', 'Posted', 'Reversed'] }),
+  reasonField,
+]
+
+const complaintForm = (): EnterpriseFormField[] => [
+  patientField,
+  field('complaintNo', 'Complaint No', 'text', { required: true }),
+  field('channel', 'Channel', 'select', { options: ['FrontDesk', 'SehatCardFacilitator', 'Phone', 'WhatsApp', 'Portal', 'WalkIn'] }),
+  field('category', 'Category', 'select', { options: ['SehatCard', 'Billing', 'ClinicalCare', 'WaitingTime', 'StaffBehavior', 'Pharmacy', 'Lab', 'Facility'] }),
+  field('priority', 'Priority', 'select', { options: ['Low', 'Medium', 'High', 'Critical'] }),
+  field('slaDueAt', 'SLA Due', 'date'),
+  field('assignedTo', 'Assigned To', 'text'),
+  field('resolution', 'Resolution', 'textarea'),
+  field('status', 'Status', 'select', { options: ['Open', 'Acknowledged', 'Escalated', 'Resolved', 'Closed'] }),
+  notesField,
+]
+
+const integrationHubForm = (): EnterpriseFormField[] => [
+  field('connectorName', 'Connector Name', 'text', { required: true }),
+  field('connectorType', 'Connector Type', 'select', { options: ['FBR', 'ProvincialTax', 'SehatCard', 'StateLife', 'NADRA', 'SMS', 'WhatsApp', 'Email', 'Lab', 'PACS', 'Biometric', 'AccountingERP', 'PaymentGateway'] }),
+  field('environment', 'Environment', 'select', { options: ['Sandbox', 'Live'] }),
+  field('endpointUrl', 'Endpoint URL', 'text'),
+  field('credentialReference', 'Credential Reference', 'text'),
+  field('facilityId', 'Facility', 'lookup', { lookupKind: 'facility' }),
+  field('status', 'Status', 'select', { options: ['Draft', 'Active', 'Paused', 'Failed', 'Retired'] }),
+  notesField,
+]
+
+const fbrEinvoicingForm = (): EnterpriseFormField[] => [
+  field('invoiceNumber', 'Invoice No', 'text', { required: true }),
+  field('invoiceType', 'Invoice Type', 'select', { options: ['SaleInvoice', 'CreditNote', 'DebitNote', 'Return'] }),
+  field('environment', 'Environment', 'select', { options: ['Sandbox', 'Live'] }),
+  field('credentialReference', 'Credential Reference', 'text', { required: true }),
+  field('branchCode', 'Branch Code', 'text', { required: true }),
+  field('posId', 'POS / Branch ID', 'text', { required: true }),
+  field('taxProfileCode', 'Tax Profile', 'text', { required: true }),
+  field('provinceAdapter', 'Province Adapter', 'select', { options: ['FBR', 'PRA', 'SRB', 'KPRA', 'BRA'] }),
+  field('buyerNtnOrCnic', 'Buyer NTN / CNIC', 'text'),
+  field('grossAmount', 'Gross Amount', 'number'),
+  field('taxAmount', 'Tax Amount', 'number'),
+  field('netAmount', 'Net Amount', 'number'),
+  field('originalInvoiceNumber', 'Original Invoice No', 'text'),
+  field('irn', 'IRN', 'text'),
+  field('qrPayload', 'QR Code Payload', 'textarea'),
+  field('requestPayloadUri', 'Request Payload URI', 'text'),
+  field('responsePayloadUri', 'Response Payload URI', 'text'),
+  field('validationStatus', 'Validation Status', 'select', { options: ['Draft', 'Validated', 'Submitted', 'Accepted', 'Failed', 'RetryQueued'] }),
+  field('failureReason', 'Failure Reason', 'textarea'),
+]
+
+const provincialTaxForm = (): EnterpriseFormField[] => [
+  field('authority', 'Authority', 'select', { options: ['PRA', 'SRB', 'KPRA', 'BRA'] }),
+  field('adapterName', 'Adapter Name', 'text', { required: true }),
+  field('environment', 'Environment', 'select', { options: ['Sandbox', 'Live'] }),
+  field('branchCode', 'Branch Code', 'text'),
+  field('serviceCategory', 'Service Category', 'text'),
+  field('taxRate', 'Tax Rate', 'number'),
+  field('lastSyncStatus', 'Last Sync Status', 'select', { options: ['Ready', 'Pending', 'Accepted', 'Rejected', 'Failed'] }),
+  notesField,
+]
+
+const aiAgentMarketplaceForm = (): EnterpriseFormField[] => [
+  field('agentName', 'Agent Name', 'select', {
+    options: [
+      'Billing Claim Checker',
+      'Sehat Card Document Auditor',
+      'OPD Note Summarizer',
+      'Lab Result Explanation Draft',
+      'Discharge Summary Drafter',
+      'Inventory Reorder Assistant',
+      'Revenue Leakage Investigator',
+      'Complaint Triage Assistant',
+    ],
+  }),
+  field('provider', 'Provider', 'select', { options: ['OpenAI', 'AzureOpenAI', 'LocalModel', 'Other'] }),
+  field('permissionCode', 'Permission Code', 'text'),
+  field('facilityScope', 'Facility Scope', 'lookup', { lookupKind: 'facility' }),
+  field('mode', 'Mode', 'select', { options: ['DraftOnly', 'ReviewRequired', 'ReadOnly'] }),
+  field('status', 'Status', 'select', { options: ['Available', 'Installed', 'Paused', 'Disabled'] }),
+  notesField,
+]
+
+const aiGovernanceForm = (): EnterpriseFormField[] => [
+  field('policyName', 'Policy Name', 'text', { required: true }),
+  field('modelProvider', 'Model Provider', 'select', { options: ['OpenAI', 'AzureOpenAI', 'LocalModel', 'Other'] }),
+  field('phiRedaction', 'PHI Redaction', 'select', { options: ['Required', 'Optional', 'Disabled'] }),
+  field('approvalRule', 'Approval Rule', 'select', { options: ['DraftOnly', 'HumanApprovalRequired', 'AutoApproveReadOnly'] }),
+  field('blockedActions', 'Blocked Actions', 'textarea'),
+  field('monthlyBudget', 'Monthly Budget', 'number'),
+  field('status', 'Status', 'select', { options: ['Draft', 'Active', 'Paused', 'Archived'] }),
+  reasonField,
+]
+
+const downtimeQueueForm = (): EnterpriseFormField[] => [
+  field('queueType', 'Queue Type', 'select', { options: ['Receipt', 'PharmacySale', 'EmergencyRegistration', 'FBRInvoice'] }),
+  field('localReference', 'Local Reference', 'text', { required: true }),
+  field('facilityId', 'Facility', 'lookup', { lookupKind: 'facility' }),
+  field('payloadSummary', 'Payload Summary', 'textarea'),
+  field('syncStatus', 'Sync Status', 'select', { options: ['Queued', 'Syncing', 'Synced', 'Failed', 'ManualReview'] }),
+  field('retryCount', 'Retry Count', 'number'),
+  field('lastError', 'Last Error', 'textarea'),
+  notesField,
+]
+
+const documentManagementForm = (): EnterpriseFormField[] => [
+  patientField,
+  field('documentType', 'Document Type', 'select', { options: ['CNIC', 'AdmissionForm', 'ClaimDocument', 'ConsentForm', 'PoliceLetter', 'AuthorizationLetter', 'DischargeBundle', 'Other'] }),
+  field('sourceModule', 'Source Module', 'select', { options: ['SehatCard', 'MLC', 'PanelBilling', 'Welfare', 'IPD', 'ER', 'Maternity'] }),
+  field('documentNo', 'Document No', 'text'),
+  field('storageUri', 'Storage URI', 'text'),
+  field('ocrStatus', 'OCR Status', 'select', { options: ['Pending', 'Extracted', 'Failed', 'NotRequired'] }),
+  field('verificationStatus', 'Verification Status', 'select', { options: ['Pending', 'Verified', 'Rejected', 'Expired'] }),
+  notesField,
+]
+
+const biometricCnicForm = (): EnterpriseFormField[] => [
+  field('cnic', 'CNIC', 'text', { required: true }),
+  patientField,
+  field('verificationPurpose', 'Purpose', 'select', { options: ['SehatCard', 'PanelBilling', 'StaffAttendance', 'ControlledDrugs', 'HighRiskApproval'] }),
+  field('deviceId', 'Device ID', 'text'),
+  field('approvedChannel', 'Approved Channel', 'text'),
+  field('verificationStatus', 'Verification Status', 'select', { options: ['Pending', 'Verified', 'Failed', 'ManualReview'] }),
+  field('failureReason', 'Failure Reason', 'textarea'),
+  reasonField,
+]
+
+const multiBranchForm = (): EnterpriseFormField[] => [
+  field('branchName', 'Branch Name', 'text', { required: true }),
+  field('facilityId', 'Facility', 'lookup', { lookupKind: 'facility' }),
+  field('pricingProfile', 'Pricing Profile', 'text'),
+  field('inventoryTransferPolicy', 'Inventory Transfer Policy', 'select', { options: ['Allowed', 'ApprovalRequired', 'Blocked'] }),
+  field('taxCredentialProfile', 'Tax Credential Profile', 'text'),
+  field('centralClaims', 'Central Claims', 'select', { options: ['Enabled', 'Disabled'] }),
+  field('biScope', 'BI Scope', 'select', { options: ['BranchOnly', 'Region', 'Group'] }),
+  field('status', 'Status', 'select', { options: ['Active', 'Paused', 'Closed'] }),
+  notesField,
+]
+
+const paymentGatewayForm = (): EnterpriseFormField[] => [
+  field('gatewayName', 'Gateway', 'select', { options: ['JazzCash', 'Easypaisa', 'BankTransfer', 'CardTerminal', 'QRPayment', 'Other'] }),
+  field('merchantId', 'Merchant ID', 'text'),
+  field('environment', 'Environment', 'select', { options: ['Sandbox', 'Live'] }),
+  field('paymentUseCase', 'Use Case', 'select', { options: ['AppointmentDeposit', 'OPDReceipt', 'IPDBill', 'PharmacySale', 'OnlinePayment'] }),
+  field('settlementAccount', 'Settlement Account', 'lookup', { lookupKind: 'paymentAccount' }),
+  field('status', 'Status', 'select', { options: ['Draft', 'Active', 'Paused', 'Failed'] }),
   notesField,
 ]
 
@@ -442,6 +776,131 @@ const patientEngagementForm = (type: string): EnterpriseFormField[] => {
   ]
 }
 
+const qualityStatusOptions = ['Open', 'Pending', 'InProgress', 'UnderReview', 'Approved', 'Completed', 'Closed', 'Cancelled']
+
+const qualityForm = (type: string): EnterpriseFormField[] => {
+  if (type === 'Incidents') {
+    return [
+      field('incidentNumber', 'Incident Number', 'text', { required: true }),
+      field('occurredAt', 'Occurred At', 'date', { required: true }),
+      field('reportedAt', 'Reported At', 'date', { required: true }),
+      field('incidentType', 'Incident Type', 'select', { options: ['Clinical', 'Medication', 'Fall', 'InfectionControl', 'Equipment', 'Security', 'Other'] }),
+      field('severity', 'Severity', 'select', { options: ['Low', 'Moderate', 'High', 'Critical'] }),
+      patientField,
+      field('departmentId', 'Department', 'lookup', { lookupKind: 'department' }),
+      field('location', 'Location', 'text'),
+      field('description', 'Description', 'textarea', { required: true }),
+      field('immediateAction', 'Immediate Action', 'textarea'),
+      field('reportedBy', 'Reported By', 'text', { required: true }),
+      field('status', 'Status', 'select', { options: qualityStatusOptions }),
+    ]
+  }
+
+  if (type === 'Incident Actions') {
+    return [
+      field('incidentReportId', 'Incident Report ID', 'number', { required: true }),
+      field('actionType', 'Action Type', 'select', { options: ['Containment', 'Investigation', 'Correction', 'FollowUp'] }),
+      field('description', 'Description', 'textarea', { required: true }),
+      field('ownerUserId', 'Owner User ID', 'text', { required: true }),
+      field('dueDate', 'Due Date', 'date', { required: true }),
+      field('completedAt', 'Completed At', 'date'),
+      field('status', 'Status', 'select', { options: qualityStatusOptions }),
+    ]
+  }
+
+  if (type === 'Audit Checklists') {
+    return [
+      field('checklistCode', 'Checklist Code', 'text', { required: true }),
+      field('name', 'Name', 'text', { required: true }),
+      field('department', 'Department', 'text'),
+      field('standard', 'Standard', 'text'),
+      field('isActive', 'Active', 'select', { options: ['true', 'false'] }),
+    ]
+  }
+
+  if (type === 'Audit Findings') {
+    return [
+      field('auditChecklistId', 'Audit Checklist ID', 'number', { required: true }),
+      field('departmentId', 'Department', 'lookup', { lookupKind: 'department' }),
+      field('auditDate', 'Audit Date', 'date', { required: true }),
+      field('auditorUserId', 'Auditor User ID', 'text', { required: true }),
+      field('findingType', 'Finding Type', 'select', { options: ['Observation', 'Minor', 'Major', 'Critical'] }),
+      field('findingSummary', 'Finding Summary', 'textarea', { required: true }),
+      field('scorePercent', 'Score Percent', 'number'),
+      field('status', 'Status', 'select', { options: qualityStatusOptions }),
+    ]
+  }
+
+  if (type === 'Compliance Tasks') {
+    return [
+      field('taskNumber', 'Task Number', 'text', { required: true }),
+      field('complianceArea', 'Compliance Area', 'text', { required: true }),
+      field('requirement', 'Requirement', 'textarea', { required: true }),
+      field('ownerUserId', 'Owner User ID', 'text', { required: true }),
+      field('dueDate', 'Due Date', 'date', { required: true }),
+      field('completedAt', 'Completed At', 'date'),
+      field('status', 'Status', 'select', { options: qualityStatusOptions }),
+    ]
+  }
+
+  if (type === 'Corrective Actions') {
+    return [
+      field('sourceType', 'Source Type', 'select', { options: ['Incident', 'AuditFinding', 'Risk', 'ComplianceTask'] }),
+      field('sourceId', 'Source ID', 'number', { required: true }),
+      field('actionDescription', 'Action Description', 'textarea', { required: true }),
+      field('ownerUserId', 'Owner User ID', 'text', { required: true }),
+      field('dueDate', 'Due Date', 'date', { required: true }),
+      field('completedAt', 'Completed At', 'date'),
+      field('effectivenessCheck', 'Effectiveness Check', 'textarea'),
+      field('status', 'Status', 'select', { options: qualityStatusOptions }),
+    ]
+  }
+
+  if (type === 'Risk Register') {
+    return [
+      field('riskNumber', 'Risk Number', 'text', { required: true }),
+      field('riskCategory', 'Risk Category', 'select', { options: ['Clinical', 'Operational', 'Financial', 'Compliance', 'Security'] }),
+      field('description', 'Description', 'textarea', { required: true }),
+      field('likelihood', 'Likelihood', 'number', { required: true }),
+      field('impact', 'Impact', 'number', { required: true }),
+      field('riskScore', 'Risk Score', 'number', { required: true }),
+      field('mitigationPlan', 'Mitigation Plan', 'textarea'),
+      field('ownerUserId', 'Owner User ID', 'text', { required: true }),
+      field('status', 'Status', 'select', { options: qualityStatusOptions }),
+    ]
+  }
+
+  if (type === 'Infection Control') {
+    return [
+      field('caseNumber', 'Case Number', 'text', { required: true }),
+      patientField,
+      field('admissionId', 'Admission ID', 'text'),
+      field('infectionType', 'Infection Type', 'text', { required: true }),
+      field('organism', 'Organism', 'text'),
+      field('detectedAt', 'Detected At', 'date', { required: true }),
+      field('isolationStatus', 'Isolation Status', 'select', { options: ['NotRequired', 'Required', 'Active', 'Discontinued'] }),
+      field('antibioticPlan', 'Antibiotic Plan', 'textarea'),
+      field('status', 'Status', 'select', { options: qualityStatusOptions }),
+    ]
+  }
+
+  if (type === 'Mortality Reviews') {
+    return [
+      field('reviewNumber', 'Review Number', 'text', { required: true }),
+      patientField,
+      field('admissionId', 'Admission ID', 'text'),
+      field('deathAt', 'Death At', 'date', { required: true }),
+      field('reviewDate', 'Review Date', 'date', { required: true }),
+      field('primaryCause', 'Primary Cause', 'textarea', { required: true }),
+      field('preventability', 'Preventability', 'select', { options: ['NotPreventable', 'PossiblyPreventable', 'Preventable', 'UnderReview'] }),
+      field('committeeDecision', 'Committee Decision', 'textarea'),
+      field('status', 'Status', 'select', { options: qualityStatusOptions }),
+    ]
+  }
+
+  return [notesField]
+}
+
 const getScreenConfig = (screen: ModuleScreen): ScreenConfig => {
   const createEndpoint = `${screen.dataEndpoint}/commands`
   const baseConfig = {
@@ -466,18 +925,64 @@ const getScreenConfig = (screen: ModuleScreen): ScreenConfig => {
   }
 
   if (screen.path.startsWith('/finance')) {
+    const isSehatCard = screen.path.includes('sehat-card')
+    const isPanelBilling = screen.path.includes('panel-billing')
+
     return {
       ...baseConfig,
-      mutationEndpoint: createEndpoint,
+      mutationEndpoint: isSehatCard ? screen.dataEndpoint : createEndpoint,
       mutationLabel: screen.title,
       requiresAuditReason: true,
-      formFields: financeForm(screen.title),
+      formFields: isSehatCard
+        ? sehatCardClaimForm()
+        : isPanelBilling
+          ? panelBillingForm()
+          : financeForm(screen.title),
       filterFields: [
-        statusFilter(['Draft', 'Pending', 'Approved', 'Posted', 'Rejected']),
+        statusFilter(isSehatCard
+          ? ['EligibilityPending', 'Eligible', 'PreAuthPending', 'Approved', 'Submitted', 'Objected', 'Rejected', 'Paid']
+          : isPanelBilling
+            ? ['Draft', 'Authorized', 'Billed', 'Submitted', 'PartPaid', 'Paid', 'Disputed']
+            : ['Draft', 'Pending', 'Approved', 'Posted', 'Rejected']),
+        ...(isSehatCard
+          ? [{ key: 'scheme', label: 'Scheme', type: 'select' as const, options: ['Sehat Sahulat Program', 'Sehat Card Plus KP', 'Punjab Health Initiative', 'State Life', 'Other'] }]
+          : []),
         { key: 'doctorId', label: 'Doctor', type: 'lookup', lookupKind: 'doctor' },
         { key: 'paymentAccountId', label: 'Account', type: 'lookup', lookupKind: 'paymentAccount' },
         ...dateFilters,
       ],
+    }
+  }
+
+  if (screen.path === '/diagnostics/lab-tests') {
+    return {
+      ...baseConfig,
+      mutationEndpoint: '/diagnostics/lab-tests',
+      mutationLabel: 'Lab Test',
+      canExport: false,
+      requiresAuditReason: true,
+      formFields: labTestForm(),
+      filterFields: [
+        { key: 'search', label: 'Search', type: 'text', placeholder: 'Search lab test' },
+        statusFilter(['Active', 'Inactive']),
+      ],
+      rowActions: [],
+    }
+  }
+
+  if (screen.path === '/diagnostics/categories') {
+    return {
+      ...baseConfig,
+      mutationEndpoint: '/diagnostics/categories',
+      mutationLabel: 'Lab Category',
+      canExport: false,
+      requiresAuditReason: true,
+      formFields: labCategoryForm(),
+      filterFields: [
+        { key: 'search', label: 'Search', type: 'text', placeholder: 'Search category' },
+        statusFilter(['Active', 'Inactive']),
+      ],
+      rowActions: [],
     }
   }
 
@@ -515,16 +1020,22 @@ const getScreenConfig = (screen: ModuleScreen): ScreenConfig => {
   }
 
   if (screen.path.startsWith('/emergency')) {
+    const isMlc = screen.path.includes('mlc')
+
     return {
       ...baseConfig,
       mutationEndpoint: createEndpoint,
       mutationLabel: screen.title,
       requiresAuditReason: true,
-      formFields: emergencyForm(screen.title),
+      formFields: isMlc ? mlcForm() : emergencyForm(screen.title),
       filterFields: [
-        statusFilter(['Registered', 'Triaged', 'InTreatment', 'Observation', 'Admitted', 'Transferred', 'Discharged']),
+        statusFilter(isMlc
+          ? ['Open', 'PoliceInformed', 'ReportPrepared', 'CourtRequested', 'Closed']
+          : ['Registered', 'Triaged', 'InTreatment', 'Observation', 'Admitted', 'Transferred', 'Discharged']),
         { key: 'doctorId', label: 'Doctor', type: 'lookup', lookupKind: 'doctor' },
-        { key: 'acuityLevel', label: 'Acuity', type: 'select', options: ['Resuscitation', 'Emergent', 'Urgent', 'LessUrgent', 'NonUrgent'] },
+        ...(isMlc
+          ? [{ key: 'caseType', label: 'Case Type', type: 'select' as const, options: ['RoadTrafficAccident', 'Assault', 'Poisoning', 'Gunshot', 'Burn', 'WorkplaceInjury', 'Other'] }]
+          : [{ key: 'acuityLevel', label: 'Acuity', type: 'select' as const, options: ['Resuscitation', 'Emergent', 'Urgent', 'LessUrgent', 'NonUrgent'] }]),
         ...dateFilters,
       ],
     }
@@ -541,6 +1052,103 @@ const getScreenConfig = (screen: ModuleScreen): ScreenConfig => {
         statusFilter(['Planned', 'Scheduled', 'InProgress', 'Completed', 'Verified', 'Cancelled']),
         { key: 'doctorId', label: 'Doctor', type: 'lookup', lookupKind: 'doctor' },
         { key: 'wardId', label: 'Ward', type: 'lookup', lookupKind: 'ward' },
+        ...dateFilters,
+      ],
+    }
+  }
+
+  if (screen.path.startsWith('/maternity')) {
+    return {
+      ...baseConfig,
+      mutationEndpoint: createEndpoint,
+      mutationLabel: screen.title,
+      requiresAuditReason: true,
+      formFields: maternityForm(),
+      filterFields: [
+        statusFilter(['ANC', 'InLabor', 'Delivered', 'Postpartum', 'Referred', 'Closed']),
+        { key: 'doctorId', label: 'Doctor', type: 'lookup', lookupKind: 'doctor' },
+        ...dateFilters,
+      ],
+    }
+  }
+
+  if (screen.path.startsWith('/regulatory')) {
+    return {
+      ...baseConfig,
+      mutationEndpoint: createEndpoint,
+      mutationLabel: screen.title,
+      requiresAuditReason: true,
+      formFields: regulatoryReportForm(),
+      filterFields: [
+        statusFilter(['Draft', 'Validated', 'Submitted', 'Accepted', 'Returned']),
+        { key: 'facilityId', label: 'Facility', type: 'lookup', lookupKind: 'facility' },
+        { key: 'reportType', label: 'Report Type', type: 'select', options: ['DHIS', 'DiseaseSurveillance', 'BirthRegister', 'DeathRegister', 'NotifiableDisease', 'FacilityStatistics'] },
+        ...dateFilters,
+      ],
+    }
+  }
+
+  if (screen.path.startsWith('/welfare')) {
+    return {
+      ...baseConfig,
+      mutationEndpoint: createEndpoint,
+      mutationLabel: screen.title,
+      requiresAuditReason: true,
+      formFields: welfareForm(),
+      filterFields: [
+        statusFilter(['Requested', 'UnderAssessment', 'Approved', 'Rejected', 'Posted', 'Reversed']),
+        { key: 'program', label: 'Program', type: 'select', options: ['Charity', 'Zakat', 'Bait-ul-Mal', 'DonorFund', 'WelfareDiscount'] },
+        ...dateFilters,
+      ],
+    }
+  }
+
+  if (screen.path.startsWith('/patient-facilitation')) {
+    return {
+      ...baseConfig,
+      mutationEndpoint: createEndpoint,
+      mutationLabel: screen.title,
+      requiresAuditReason: true,
+      formFields: complaintForm(),
+      filterFields: [
+        statusFilter(['Open', 'Acknowledged', 'Escalated', 'Resolved', 'Closed']),
+        { key: 'category', label: 'Category', type: 'select', options: ['SehatCard', 'Billing', 'ClinicalCare', 'WaitingTime', 'StaffBehavior', 'Pharmacy', 'Lab', 'Facility'] },
+        ...dateFilters,
+      ],
+    }
+  }
+
+  if (
+    screen.path.startsWith('/integrations') ||
+    screen.path.startsWith('/ai') ||
+    screen.path.startsWith('/downtime') ||
+    screen.path.startsWith('/documents') ||
+    screen.path.startsWith('/identity') ||
+    screen.path.startsWith('/enterprise/multi-branch') ||
+    screen.path.startsWith('/payments/gateways')
+  ) {
+    const formFields = (() => {
+      if (screen.path.includes('fbr-e-invoicing')) return fbrEinvoicingForm()
+      if (screen.path.includes('provincial-tax')) return provincialTaxForm()
+      if (screen.path.includes('agent-marketplace')) return aiAgentMarketplaceForm()
+      if (screen.path.includes('governance')) return aiGovernanceForm()
+      if (screen.path.includes('downtime')) return downtimeQueueForm()
+      if (screen.path.includes('documents')) return documentManagementForm()
+      if (screen.path.includes('biometric-cnic')) return biometricCnicForm()
+      if (screen.path.includes('multi-branch')) return multiBranchForm()
+      if (screen.path.includes('gateways')) return paymentGatewayForm()
+      return integrationHubForm()
+    })()
+
+    return {
+      ...baseConfig,
+      mutationEndpoint: screen.path.includes('fbr-e-invoicing') ? screen.dataEndpoint : createEndpoint,
+      mutationLabel: screen.title,
+      requiresAuditReason: true,
+      formFields,
+      filterFields: [
+        statusFilter(['Draft', 'Ready', 'Active', 'Pending', 'Failed', 'Paused', 'Accepted', 'Rejected']),
+        { key: 'facilityId', label: 'Facility', type: 'lookup', lookupKind: 'facility' },
         ...dateFilters,
       ],
     }
@@ -609,6 +1217,51 @@ const getScreenConfig = (screen: ModuleScreen): ScreenConfig => {
     }
   }
 
+  if (screen.path.startsWith('/quality')) {
+    const isReports = screen.path.includes('reports')
+
+    return {
+      ...baseConfig,
+      mutationEndpoint: screen.dataEndpoint,
+      exportEndpoint: isReports ? '/quality/reports/open-actions' : `${screen.dataEndpoint}/export/csv`,
+      mutationLabel: screen.title,
+      canCreate: !isReports,
+      canExport: false,
+      requiresAuditReason: !isReports,
+      formFields: isReports ? [] : qualityForm(screen.title),
+      filterFields: [
+        statusFilter(qualityStatusOptions),
+        { key: 'departmentId', label: 'Department', type: 'lookup', lookupKind: 'department' },
+        ...dateFilters,
+      ],
+    }
+  }
+
+  if (
+    screen.path.startsWith('/blood-bank') ||
+    screen.path.startsWith('/lis') ||
+    screen.path.startsWith('/clinical/ai-voice-scribe') ||
+    screen.path.startsWith('/telemedicine') ||
+    screen.path.startsWith('/radiology/pacs-viewer') ||
+    screen.path.startsWith('/interoperability/abdm-abha')
+  ) {
+    return {
+      ...baseConfig,
+      mutationEndpoint: '',
+      exportEndpoint: '',
+      mutationLabel: screen.title,
+      canCreate: false,
+      canExport: false,
+      rowActions: [],
+      formFields: [],
+      filterFields: [
+        statusFilter(['Ready', 'Pending', 'Active', 'InProgress', 'Flagged', 'Completed']),
+        { key: 'facilityId', label: 'Facility', type: 'lookup', lookupKind: 'facility' },
+        ...dateFilters,
+      ],
+    }
+  }
+
   return {
     ...baseConfig,
     mutationEndpoint: createEndpoint,
@@ -666,6 +1319,30 @@ const operationsActions = [
   { title: 'Operational visibility', description: 'Give managers an overview of pending work, exceptions, and trends.' },
   { title: 'Integration health', description: 'Track outbox, partner status, and retry queues for connected systems.' },
   { title: 'Executive reporting', description: 'Surface high-level clinical, finance, inventory, and workforce signals.' },
+]
+
+const qualityActions = [
+  { title: 'Capture events', description: 'Record incidents, infection-control cases, mortality reviews, and audit findings.' },
+  { title: 'Track corrective work', description: 'Assign owners, due dates, action status, and effectiveness follow-up.' },
+  { title: 'Monitor compliance risk', description: 'Review open actions, risk scores, checklist coverage, and report summaries.' },
+]
+
+const bloodBankActions = [
+  { title: 'Protect inventory', description: 'Track units by blood group, component, expiry, temperature, and storage location.' },
+  { title: 'Verify compatibility', description: 'Manage cross-match status before issuing blood for transfusion.' },
+  { title: 'Audit movement', description: 'Review issue, return, discard, and cold-chain exception history.' },
+]
+
+const advancedHmsActions = [
+  { title: 'Extend clinical workflow', description: 'Add AI, video care, image viewing, and national health identity workflows.' },
+  { title: 'Keep context connected', description: 'Link notes, prescriptions, reports, payments, and patient portal communication.' },
+  { title: 'Prepare integrations', description: 'Expose backend-ready endpoints for implementation-specific connectors.' },
+]
+
+const lisActions = [
+  { title: 'Control pre-analytics', description: 'Manage outreach orders, phlebotomy, accessioning, routing, and custody.' },
+  { title: 'Coordinate testing', description: 'Track analyzer worklists, pathology, molecular diagnostics, and microbiology.' },
+  { title: 'Improve quality', description: 'Monitor auto-verification, reflex rules, alerts, reagent stock, and compliance.' },
 ]
 
 const screens: ModuleScreen[] = [
@@ -742,6 +1419,24 @@ const screens: ModuleScreen[] = [
     actions: financeActions,
   },
   {
+    path: '/finance/sehat-card-claims',
+    dataEndpoint: '/finance/sehat-card-claims',
+    module: 'Sehat Card / SSP',
+    title: 'Sehat Card Claims',
+    subtitle: 'CNIC eligibility, entitlement, package selection, pre-authorization, claim documents, objections, resubmission, payment reconciliation, and fraud review.',
+    workflow: ['Check CNIC eligibility', 'Select package', 'Request pre-authorization', 'Attach discharge documents', 'Submit or resubmit claim', 'Reconcile payment'],
+    actions: financeActions,
+  },
+  {
+    path: '/finance/panel-billing',
+    dataEndpoint: '/finance/panel-billing',
+    module: 'Panel / TPA Billing',
+    title: 'Panel Billing',
+    subtitle: 'Corporate, insurance, TPA, NGO, State Life, and government-panel billing with price lists, authorization letters, receivables, and aging.',
+    workflow: ['Verify employee or dependent', 'Validate authorization', 'Apply panel price list', 'Bill on credit', 'Submit receivable', 'Track aging'],
+    actions: financeActions,
+  },
+  {
     path: '/finance/posting-dashboard',
     dataEndpoint: '/finance/posting-dashboard',
     module: 'Billing And Finance',
@@ -775,6 +1470,24 @@ const screens: ModuleScreen[] = [
     title: 'Diagnostic Orders',
     subtitle: 'Unified order lifecycle for laboratory and radiology requests.',
     workflow: ['Order placed', 'Authorize', 'Collect sample or schedule study', 'Result/report', 'Approve'],
+    actions: diagnosticActions,
+  },
+  {
+    path: '/diagnostics/lab-tests',
+    dataEndpoint: '/lookups/lab-tests',
+    module: 'Laboratory',
+    title: 'Lab Tests',
+    subtitle: 'Master list for lab investigations, specimen details, reference ranges, and pricing.',
+    workflow: ['Create test', 'Set specimen', 'Define range', 'Set price', 'Activate'],
+    actions: diagnosticActions,
+  },
+  {
+    path: '/diagnostics/categories',
+    dataEndpoint: '/diagnostics/categories',
+    module: 'Laboratory',
+    title: 'Categories',
+    subtitle: 'Lab category setup for grouping tests by department and reporting workflow.',
+    workflow: ['Create category', 'Assign department', 'Add description', 'Review usage', 'Activate'],
     actions: diagnosticActions,
   },
   {
@@ -904,12 +1617,39 @@ const screens: ModuleScreen[] = [
     actions: ipdActions,
   },
   {
+    path: '/emergency/er-workflow',
+    dataEndpoint: '/emergency/er-workflow',
+    module: 'Emergency',
+    title: 'ER Workflow',
+    subtitle: 'Emergency registration, triage, trauma care, quick orders, casualty notes, death-on-arrival, referral out, and disposition workflow.',
+    workflow: ['Quick register', 'Triage and tag MLC if needed', 'Order lab/pharmacy/radiology', 'Document casualty notes', 'Admit, discharge, refer, or mark death'],
+    actions: ipdActions,
+  },
+  {
+    path: '/emergency/mlc-register',
+    dataEndpoint: '/emergency/mlc-register',
+    module: 'MLC / Legal',
+    title: 'MLC Register',
+    subtitle: 'Medico-legal case register for accidents, assault, poisoning, firearm injury, police intimation, legal reports, and immutable audit.',
+    workflow: ['Open MLC', 'Capture injuries', 'Inform police', 'Maintain evidence chain', 'Prepare legal report', 'Close with audit'],
+    actions: ipdActions,
+  },
+  {
     path: '/ot/procedures',
     dataEndpoint: '/ot/procedures',
     module: 'OT / ICU',
     title: 'OT Procedures',
     subtitle: 'Operating theatre procedures with schedule, surgeon, anesthetist, status, and post-op disposition.',
     workflow: ['Plan procedure', 'Schedule OT', 'Start case', 'Complete case', 'Verify notes'],
+    actions: ipdActions,
+  },
+  {
+    path: '/ot/surgery-management',
+    dataEndpoint: '/ot/surgery-management',
+    module: 'OT / Surgery',
+    title: 'Surgery Management',
+    subtitle: 'Surgery scheduling, surgeon and anesthesia team, consent, pre-op checklist, implants, consumables, recovery, post-op notes, and package mapping.',
+    workflow: ['Schedule surgery', 'Complete consent and pre-op checks', 'Assign OT team', 'Record implants and consumables', 'Write post-op notes', 'Map package for claim'],
     actions: ipdActions,
   },
   {
@@ -920,6 +1660,132 @@ const screens: ModuleScreen[] = [
     subtitle: 'ICU procedure and care workflow with bed, ward, doctor, status, and disposition tracking.',
     workflow: ['Admit to ICU', 'Start workflow', 'Track procedure', 'Verify care', 'Dispose patient'],
     actions: ipdActions,
+  },
+  {
+    path: '/maternity/labor-room',
+    dataEndpoint: '/maternity/labor-room',
+    module: 'Maternity',
+    title: 'Labor Room And Newborn',
+    subtitle: 'ANC, labor progress, partograph, delivery notes, C-section workflow, birth register, APGAR, newborn admission, and vaccination at birth.',
+    workflow: ['Track ANC', 'Monitor labor', 'Record delivery', 'Register newborn', 'Capture APGAR and birth vaccines', 'Close postpartum care'],
+    actions: ipdActions,
+  },
+  {
+    path: '/regulatory/government-reports',
+    dataEndpoint: '/regulatory/government-reports',
+    module: 'Government Reporting',
+    title: 'Government Reports',
+    subtitle: 'DHIS-style statistics, notifiable disease surveillance, birth/death summaries, facility indicators, and provincial reporting exports.',
+    workflow: ['Select reporting period', 'Validate indicators', 'Review exceptions', 'Submit report', 'Track acceptance or return'],
+    actions: operationsActions,
+  },
+  {
+    path: '/welfare/charity-zakat',
+    dataEndpoint: '/welfare/charity-zakat',
+    module: 'Welfare Desk',
+    title: 'Charity / Zakat',
+    subtitle: 'Welfare assessment, donor funds, Zakat, Bait-ul-Mal, partial discounts, approvals, posting, and audit trail.',
+    workflow: ['Assess eligibility', 'Choose fund source', 'Approve support', 'Apply discount or payment', 'Post adjustment', 'Audit utilization'],
+    actions: operationsActions,
+  },
+  {
+    path: '/patient-facilitation/complaints',
+    dataEndpoint: '/patient-facilitation/complaints',
+    module: 'Patient Facilitation',
+    title: 'Complaint Desk',
+    subtitle: 'Sehat Card facilitator and patient complaint registration, category, SLA, escalation, resolution, and satisfaction tracking.',
+    workflow: ['Register complaint', 'Assign owner', 'Track SLA', 'Escalate if overdue', 'Resolve case', 'Capture satisfaction'],
+    actions: operationsActions,
+  },
+  {
+    path: '/integrations/hub',
+    dataEndpoint: '/integrations/hub',
+    module: 'Integration Hub',
+    title: 'Connector Hub',
+    subtitle: 'Central connector registry for FBR, provincial tax, Sehat Card, State Life, NADRA, SMS, WhatsApp, email, labs, PACS, biometric devices, ERP, and payment gateways.',
+    workflow: ['Register connector', 'Attach credentials', 'Map facility', 'Test connection', 'Activate', 'Monitor health'],
+    actions: operationsActions,
+  },
+  {
+    path: '/integrations/fbr-e-invoicing',
+    dataEndpoint: '/integrations/fbr-e-invoicing',
+    module: 'Tax Integrations',
+    title: 'FBR E-Invoicing',
+    subtitle: 'Plug-and-play FBR digital invoicing and POS integration with sandbox/live credentials, invoice validation, IRN, QR, retry queue, failed invoice dashboard, credit/debit notes, tax profiles, branch/POS mapping, and audit log.',
+    workflow: ['Configure credentials', 'Map branch/POS', 'Validate invoice', 'Submit to FBR', 'Capture IRN and QR', 'Retry or resolve failures'],
+    actions: operationsActions,
+  },
+  {
+    path: '/integrations/provincial-tax',
+    dataEndpoint: '/integrations/provincial-tax',
+    module: 'Tax Integrations',
+    title: 'Provincial Tax Integrations',
+    subtitle: 'Adapter-based tax integrations for PRA, SRB, KPRA, and BRA with province-specific credentials, service categories, rates, submissions, and retries.',
+    workflow: ['Choose authority', 'Configure adapter', 'Map tax profile', 'Submit transaction', 'Track response', 'Resolve exceptions'],
+    actions: operationsActions,
+  },
+  {
+    path: '/ai/agent-marketplace',
+    dataEndpoint: '/ai/agent-marketplace',
+    module: 'AI Agents',
+    title: 'AI Agent Marketplace',
+    subtitle: 'Permission-gated, tenant/facility-scoped, draft-only installable agents for claims, Sehat Card document audit, OPD summaries, lab explanations, discharge drafts, inventory reorder, revenue leakage, and complaint triage.',
+    workflow: ['Review agent', 'Check permissions', 'Install in draft mode', 'Scope facility', 'Monitor usage', 'Disable if needed'],
+    actions: operationsActions,
+  },
+  {
+    path: '/ai/governance',
+    dataEndpoint: '/ai/governance',
+    module: 'AI Governance',
+    title: 'AI Governance Center',
+    subtitle: 'AI provider, model, prompt policy, PHI redaction, approval rules, blocked actions, audit review, and usage cost tracking.',
+    workflow: ['Define policy', 'Select provider', 'Set redaction', 'Require approval', 'Track usage', 'Audit outcomes'],
+    actions: operationsActions,
+  },
+  {
+    path: '/downtime/offline-queue',
+    dataEndpoint: '/downtime/offline-queue',
+    module: 'Downtime Mode',
+    title: 'Offline Queue',
+    subtitle: 'Local downtime queue for receipts, pharmacy sales, emergency registration, and FBR invoices with sync status, retries, and manual review.',
+    workflow: ['Capture locally', 'Queue payload', 'Sync when online', 'Retry failures', 'Review conflicts', 'Close queue item'],
+    actions: operationsActions,
+  },
+  {
+    path: '/documents/management',
+    dataEndpoint: '/documents/management',
+    module: 'Document Management',
+    title: 'Documents And Scanning',
+    subtitle: 'Document scanning and bundle management for CNICs, admission forms, claims, consents, police letters, authorization letters, and discharge packages.',
+    workflow: ['Scan document', 'Classify type', 'Run OCR', 'Verify document', 'Attach to workflow', 'Audit access'],
+    actions: operationsActions,
+  },
+  {
+    path: '/identity/biometric-cnic',
+    dataEndpoint: '/identity/biometric-cnic',
+    module: 'Identity Verification',
+    title: 'Biometric / CNIC Verification',
+    subtitle: 'Approved-channel CNIC and biometric verification layer for Sehat Card, panels, attendance, controlled drugs, and high-risk approvals.',
+    workflow: ['Capture CNIC', 'Select purpose', 'Verify through device/channel', 'Store result', 'Escalate failure', 'Audit access'],
+    actions: operationsActions,
+  },
+  {
+    path: '/enterprise/multi-branch',
+    dataEndpoint: '/enterprise/multi-branch',
+    module: 'Enterprise Controls',
+    title: 'Multi-Branch Controls',
+    subtitle: 'Facility-level pricing, inventory transfers, pharmacy stock visibility, branch tax credentials, centralized claims, and consolidated BI controls.',
+    workflow: ['Register branch', 'Assign pricing', 'Set inventory policy', 'Map tax credentials', 'Centralize claims', 'Review BI'],
+    actions: operationsActions,
+  },
+  {
+    path: '/payments/gateways',
+    dataEndpoint: '/payments/gateways',
+    module: 'Payment Integrations',
+    title: 'Payment Gateways',
+    subtitle: 'JazzCash, Easypaisa, bank transfer, card terminal references, QR payments, online appointment deposits, settlement accounts, and reconciliation.',
+    workflow: ['Configure gateway', 'Map merchant', 'Test sandbox', 'Activate live', 'Collect payment', 'Reconcile settlement'],
+    actions: operationsActions,
   },
   {
     path: '/inventory/procurement',
@@ -1145,6 +2011,321 @@ const screens: ModuleScreen[] = [
     subtitle: 'Radiology external image links with PACS URL, DICOM study references, status, and audit trail.',
     workflow: ['Link study', 'Validate PACS URL', 'Exchange metadata', 'Verify visibility', 'Resolve failures'],
     actions: operationsActions,
+  },
+  {
+    path: '/quality/incidents',
+    dataEndpoint: '/quality/incidents',
+    module: 'Quality And Compliance',
+    title: 'Incidents',
+    subtitle: 'Incident capture, severity review, immediate action, ownership, and closure workflow.',
+    workflow: ['Report incident', 'Assess severity', 'Capture immediate action', 'Assign owner', 'Close or escalate'],
+    actions: qualityActions,
+  },
+  {
+    path: '/quality/incident-actions',
+    dataEndpoint: '/quality/incident-actions',
+    module: 'Quality And Compliance',
+    title: 'Incident Actions',
+    subtitle: 'Follow-up actions linked to incidents with due dates, owners, and completion status.',
+    workflow: ['Create action', 'Assign owner', 'Track due date', 'Complete action', 'Verify effectiveness'],
+    actions: qualityActions,
+  },
+  {
+    path: '/quality/audit-checklists',
+    dataEndpoint: '/quality/audit-checklists',
+    module: 'Quality And Compliance',
+    title: 'Audit Checklists',
+    subtitle: 'Checklist masters for department standards, evidence requirements, and active audit scope.',
+    workflow: ['Define checklist', 'Add requirements', 'Activate standard', 'Use in audit', 'Review coverage'],
+    actions: qualityActions,
+  },
+  {
+    path: '/quality/audit-findings',
+    dataEndpoint: '/quality/audit-findings',
+    module: 'Quality And Compliance',
+    title: 'Audit Findings',
+    subtitle: 'Audit findings with checklist, department, score, type, and corrective action tracking.',
+    workflow: ['Run audit', 'Capture finding', 'Score result', 'Assign action', 'Verify closure'],
+    actions: qualityActions,
+  },
+  {
+    path: '/quality/compliance-tasks',
+    dataEndpoint: '/quality/compliance-tasks',
+    module: 'Quality And Compliance',
+    title: 'Compliance Tasks',
+    subtitle: 'Regulatory and internal compliance tasks with requirements, owners, due dates, and completion.',
+    workflow: ['Define requirement', 'Assign owner', 'Track due date', 'Complete evidence', 'Review compliance'],
+    actions: qualityActions,
+  },
+  {
+    path: '/quality/corrective-actions',
+    dataEndpoint: '/quality/corrective-actions',
+    module: 'Quality And Compliance',
+    title: 'Corrective Actions',
+    subtitle: 'Corrective and preventive action register across incidents, audits, risks, and compliance tasks.',
+    workflow: ['Identify source', 'Plan action', 'Assign owner', 'Check effectiveness', 'Close action'],
+    actions: qualityActions,
+  },
+  {
+    path: '/quality/risk-register',
+    dataEndpoint: '/quality/risk-register',
+    module: 'Quality And Compliance',
+    title: 'Risk Register',
+    subtitle: 'Operational, clinical, financial, and compliance risks with likelihood, impact, score, and mitigation.',
+    workflow: ['Register risk', 'Score likelihood', 'Score impact', 'Plan mitigation', 'Review status'],
+    actions: qualityActions,
+  },
+  {
+    path: '/quality/infection-control',
+    dataEndpoint: '/quality/infection-control-cases',
+    module: 'Quality And Compliance',
+    title: 'Infection Control',
+    subtitle: 'Infection-control case tracking with organism, isolation status, antibiotic plan, and case status.',
+    workflow: ['Detect case', 'Record organism', 'Set isolation', 'Plan antibiotics', 'Resolve case'],
+    actions: qualityActions,
+  },
+  {
+    path: '/quality/mortality-reviews',
+    dataEndpoint: '/quality/mortality-reviews',
+    module: 'Quality And Compliance',
+    title: 'Mortality Reviews',
+    subtitle: 'Mortality review workflow with cause, preventability, committee decision, and closure status.',
+    workflow: ['Open review', 'Document cause', 'Assess preventability', 'Record decision', 'Close review'],
+    actions: qualityActions,
+  },
+  {
+    path: '/quality/reports',
+    dataEndpoint: '/quality/reports/risk-summary',
+    module: 'Quality And Compliance',
+    title: 'Quality Reports',
+    subtitle: 'Incident summary, open actions, risk summary, and compliance reporting workspace.',
+    workflow: ['Select report', 'Apply period', 'Review summary', 'Export findings', 'Share actions'],
+    actions: qualityActions,
+  },
+  {
+    path: '/blood-bank/donors',
+    dataEndpoint: '/blood-bank/donors',
+    module: 'Blood Bank',
+    title: 'Donor Registry',
+    subtitle: 'Donor eligibility, donation history, blood group, screening, and deferral tracking.',
+    workflow: ['Register donor', 'Screen eligibility', 'Collect donation', 'Record result', 'Schedule next donation'],
+    actions: bloodBankActions,
+  },
+  {
+    path: '/blood-bank/blood-units',
+    dataEndpoint: '/blood-bank/blood-units',
+    module: 'Blood Bank',
+    title: 'Blood Units',
+    subtitle: 'Component inventory for whole blood, packed cells, plasma, platelets, expiry, and storage status.',
+    workflow: ['Receive unit', 'Test and label', 'Store by component', 'Monitor expiry', 'Reserve or discard'],
+    actions: bloodBankActions,
+  },
+  {
+    path: '/blood-bank/cross-matching',
+    dataEndpoint: '/blood-bank/cross-matching',
+    module: 'Blood Bank',
+    title: 'Cross Matching',
+    subtitle: 'Compatibility testing, antibody screening, and transfusion readiness workflow.',
+    workflow: ['Receive request', 'Select unit', 'Run compatibility', 'Approve match', 'Release for issue'],
+    actions: bloodBankActions,
+  },
+  {
+    path: '/blood-bank/issue-return',
+    dataEndpoint: '/blood-bank/issue-return',
+    module: 'Blood Bank',
+    title: 'Issue And Return',
+    subtitle: 'Blood issue, bedside handoff, return, discard, and transfusion reaction tracking.',
+    workflow: ['Approve issue', 'Dispatch unit', 'Confirm transfusion', 'Process return', 'Audit exception'],
+    actions: bloodBankActions,
+  },
+  {
+    path: '/blood-bank/cold-chain',
+    dataEndpoint: '/blood-bank/cold-chain',
+    module: 'Blood Bank',
+    title: 'Cold Chain',
+    subtitle: 'Refrigerator inventory, temperature logs, excursion alerts, and storage-location monitoring.',
+    workflow: ['Log temperature', 'Detect excursion', 'Quarantine unit', 'Review stability', 'Release or discard'],
+    actions: bloodBankActions,
+  },
+  {
+    path: '/clinical/ai-voice-scribe',
+    dataEndpoint: '/clinical/ai-voice-scribe',
+    module: 'Advanced Clinical',
+    title: 'AI Voice Scribe',
+    subtitle: 'Doctor dictation workspace for structured notes, prescriptions, diagnoses, and follow-up instructions.',
+    workflow: ['Record encounter', 'Transcribe speech', 'Structure note', 'Review prescription', 'Save to EMR'],
+    actions: advancedHmsActions,
+  },
+  {
+    path: '/telemedicine/workspace',
+    dataEndpoint: '/patient-engagement/telemedicine-workspace',
+    module: 'Patient Engagement',
+    title: 'Telemedicine Workspace',
+    subtitle: 'Remote consultation cockpit with session queue, chat, prescription, billing, and follow-up context.',
+    workflow: ['Start session', 'Verify patient', 'Consult remotely', 'Issue prescription', 'Collect payment'],
+    actions: advancedHmsActions,
+  },
+  {
+    path: '/radiology/pacs-viewer',
+    dataEndpoint: '/radiology/pacs-viewer',
+    module: 'Radiology',
+    title: 'PACS Image Viewer',
+    subtitle: 'Imaging viewer launchpad for DICOM studies, PACS URLs, report context, and viewing status.',
+    workflow: ['Open study', 'Load images', 'Review prior scan', 'Draft findings', 'Release report'],
+    actions: advancedHmsActions,
+  },
+  {
+    path: '/interoperability/abdm-abha',
+    dataEndpoint: '/interoperability/abdm-abha',
+    module: 'Interoperability',
+    title: 'ABDM / ABHA',
+    subtitle: 'ABHA identity linking, consent, health information exchange, and ABDM compliance workspace.',
+    workflow: ['Verify ABHA', 'Capture consent', 'Link records', 'Exchange data', 'Audit access'],
+    actions: advancedHmsActions,
+  },
+  {
+    path: '/lis/outreach-orders',
+    dataEndpoint: '/lis/outreach-orders',
+    module: 'Enterprise LIS',
+    title: 'Outreach Orders',
+    subtitle: 'External clinic and home-collection order intake with real-time tracking and source attribution.',
+    workflow: ['Receive order', 'Validate patient', 'Assign collection', 'Track status', 'Bill source'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/phlebotomy-collections',
+    dataEndpoint: '/lis/phlebotomy-collections',
+    module: 'Enterprise LIS',
+    title: 'Phlebotomy Collections',
+    subtitle: 'Home and in-facility phlebotomy, consent, collection handoff, GPS, and transport monitoring.',
+    workflow: ['Assign phlebotomist', 'Capture consent', 'Collect sample', 'Track transport', 'Receive sample'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/accessioning-barcoding',
+    dataEndpoint: '/lis/accessioning-barcoding',
+    module: 'Enterprise LIS',
+    title: 'Accessioning And Barcoding',
+    subtitle: 'Barcode/RFID accessioning and chain-of-custody control from receipt through processing.',
+    workflow: ['Scan sample', 'Generate accession', 'Validate container', 'Print barcode', 'Route specimen'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/specimen-routing',
+    dataEndpoint: '/lis/specimen-routing',
+    module: 'Enterprise LIS',
+    title: 'Specimen Routing',
+    subtitle: 'Pre-processing, sample sorting, department routing, aliquot tracking, and exception handling.',
+    workflow: ['Receive specimen', 'Sort department', 'Prepare aliquot', 'Dispatch bench', 'Track exception'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/instrument-worklists',
+    dataEndpoint: '/lis/instrument-worklists',
+    module: 'Enterprise LIS',
+    title: 'Instrument Worklists',
+    subtitle: 'Bidirectional analyzer worklists, instrument status, result import, and downtime visibility.',
+    workflow: ['Build worklist', 'Send to analyzer', 'Run test', 'Receive result', 'Handle downtime'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/anatomic-pathology',
+    dataEndpoint: '/lis/anatomic-pathology',
+    module: 'Enterprise LIS',
+    title: 'Anatomic Pathology',
+    subtitle: 'Biopsy, cytology, grossing, histology, slide tracking, and digital pathology workflow.',
+    workflow: ['Receive specimen', 'Gross case', 'Process tissue', 'Review slide', 'Sign report'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/molecular-diagnostics',
+    dataEndpoint: '/lis/molecular-diagnostics',
+    module: 'Enterprise LIS',
+    title: 'Molecular Diagnostics',
+    subtitle: 'NGS, DNA/RNA analysis, molecular panels, variant interpretation, and result approval.',
+    workflow: ['Extract sample', 'Run assay', 'Analyze variant', 'Review interpretation', 'Release report'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/microbiology',
+    dataEndpoint: '/lis/microbiology',
+    module: 'Enterprise LIS',
+    title: 'Microbiology',
+    subtitle: 'Culture tracking, incubation, organism identification, sensitivity testing, and infection alerts.',
+    workflow: ['Inoculate culture', 'Track incubation', 'Identify organism', 'Run sensitivity', 'Release result'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/auto-verification',
+    dataEndpoint: '/lis/auto-verification',
+    module: 'Enterprise LIS',
+    title: 'Auto Verification',
+    subtitle: 'Rules-based result validation to auto-release normal findings and flag exceptions.',
+    workflow: ['Evaluate rules', 'Check delta', 'Flag abnormal', 'Auto-release normal', 'Queue review'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/reflex-testing',
+    dataEndpoint: '/lis/reflex-testing',
+    module: 'Enterprise LIS',
+    title: 'Reflex Testing',
+    subtitle: 'Logical follow-up testing rules triggered by abnormal, critical, or clinically linked results.',
+    workflow: ['Detect trigger', 'Select follow-up', 'Create order', 'Notify lab', 'Track completion'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/critical-alerts',
+    dataEndpoint: '/lis/critical-alerts',
+    module: 'Enterprise LIS',
+    title: 'Critical Value Alerts',
+    subtitle: 'Immediate notification workflow for life-threatening results with acknowledgement tracking.',
+    workflow: ['Detect critical value', 'Notify clinician', 'Escalate if missed', 'Acknowledge', 'Audit response'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/reagent-inventory',
+    dataEndpoint: '/lis/reagent-inventory',
+    module: 'Enterprise LIS',
+    title: 'Reagent Inventory',
+    subtitle: 'Reagent kits, lot numbers, shelf life, low-stock alerts, and supplier reorder planning.',
+    workflow: ['Receive reagent', 'Track lot', 'Monitor usage', 'Raise low-stock alert', 'Reorder'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/biobanking',
+    dataEndpoint: '/lis/biobanking',
+    module: 'Enterprise LIS',
+    title: 'Biobanking',
+    subtitle: 'Long-term specimen storage with freezer, rack, shelf, position, consent, and research status.',
+    workflow: ['Register specimen', 'Assign freezer', 'Track position', 'Manage consent', 'Retrieve sample'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/document-control',
+    dataEndpoint: '/lis/document-control',
+    module: 'Enterprise LIS',
+    title: 'Document Control',
+    subtitle: 'SOP, ISO 15189/CAP compliance documents, versioning, acknowledgements, and audit trail.',
+    workflow: ['Draft SOP', 'Review version', 'Approve document', 'Publish', 'Track acknowledgement'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/predictive-maintenance',
+    dataEndpoint: '/lis/predictive-maintenance',
+    module: 'Enterprise LIS',
+    title: 'Predictive Maintenance',
+    subtitle: 'Analyzer telemetry, downtime prediction, maintenance schedules, and failure-risk scoring.',
+    workflow: ['Collect telemetry', 'Score risk', 'Schedule maintenance', 'Log service', 'Review downtime'],
+    actions: lisActions,
+  },
+  {
+    path: '/lis/ai-interpretation',
+    dataEndpoint: '/lis/ai-interpretation',
+    module: 'Enterprise LIS',
+    title: 'AI Result Interpretation',
+    subtitle: 'Plain-language result summaries and interpretation support for clinician and patient review.',
+    workflow: ['Load report', 'Generate summary', 'Review clinically', 'Publish explanation', 'Track feedback'],
+    actions: lisActions,
   },
 ]
 

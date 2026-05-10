@@ -81,6 +81,12 @@ export interface PatientSaveDto {
   confirmPassword?: string
 }
 
+export interface PatientRoleOption {
+  id: number
+  name: string
+  description?: string | null
+}
+
 const emptyPaged = <T>(page: number, pageSize: number): PagedResult<T> => ({
   items: [],
   pageNumber: page,
@@ -88,34 +94,54 @@ const emptyPaged = <T>(page: number, pageSize: number): PagedResult<T> => ({
   totalCount: 0,
 })
 
-const mapToApiPayload = (payload: PatientSaveDto) => ({
-  Title: payload.title,
-  FirstName: payload.firstName,
-  LastName: payload.lastName,
-  Phone: payload.phone,
-  Panel: payload.panel,
-  Age: payload.age,
-  Email: payload.email,
-  Gender: payload.gender,
-  MaritalStatus: payload.maritalStatus,
-  SpouseName: payload.spouseName,
-  BloodGroup: payload.bloodGroup,
-  FatherName: payload.fatherName,
-  MotherName: payload.motherName,
-  DateOfBirth: payload.dateOfBirth,
-  RegistrationFee: payload.registrationFee,
-  Address: payload.address,
-  Country: payload.country,
-  Agreement: payload.agreement,
-  Remarks: payload.remarks,
-  ProfilePictureDetails: payload.profilePictureDetails ?? undefined,
-  UserType: payload.userType,
-  RoleId: payload.roleId,
-  PasswordHash: payload.passwordHash,
-  ConfirmPassword: payload.confirmPassword,
-})
+const mapToApiPayload = (payload: PatientSaveDto) => {
+  const includePassword = Boolean(payload.passwordHash && payload.confirmPassword)
+
+  return {
+    Title: payload.title,
+    FirstName: payload.firstName,
+    LastName: payload.lastName,
+    Phone: payload.phone,
+    Panel: payload.panel,
+    Age: payload.age,
+    Email: payload.email,
+    Gender: payload.gender,
+    MaritalStatus: payload.maritalStatus,
+    SpouseName: payload.spouseName,
+    BloodGroup: payload.bloodGroup,
+    FatherName: payload.fatherName,
+    MotherName: payload.motherName,
+    DateOfBirth: payload.dateOfBirth,
+    RegistrationFee: payload.registrationFee,
+    Address: payload.address,
+    Country: payload.country,
+    Agreement: payload.agreement,
+    Remarks: payload.remarks,
+    ProfilePictureDetails: payload.profilePictureDetails ?? undefined,
+    UserType: payload.userType,
+    RoleId: payload.roleId,
+    PasswordHash: includePassword ? payload.passwordHash : undefined,
+    ConfirmPassword: includePassword ? payload.confirmPassword : undefined,
+  }
+}
 
 const normalizePhone = (phone?: string) => phone?.replace(/\D/g, '') ?? ''
+
+const normalizeRoleOption = (role: Record<string, unknown>): PatientRoleOption | null => {
+  const id = role.id ?? role.Id
+  const name = role.name ?? role.Name
+  const description = role.description ?? role.Description
+
+  if (typeof id !== 'number' || !Number.isFinite(id) || typeof name !== 'string' || !name.trim()) {
+    return null
+  }
+
+  return {
+    id,
+    name,
+    description: typeof description === 'string' ? description : null,
+  }
+}
 
 export const normalizePatient = (patient: PatientApiDto): PatientApiDto => ({
   Id: patient.Id ?? patient.id ?? 0,
@@ -160,6 +186,16 @@ const toRequestBody = (payload: PatientSaveDto) => {
 }
 
 export const patientService = {
+  async getManageRoles(): Promise<PatientRoleOption[]> {
+    const { data } = await api.get('/roles/manage')
+    const rows: unknown[] = Array.isArray(data) ? data : data?.items ?? data?.Items ?? []
+
+    return rows
+      .filter((role: unknown): role is Record<string, unknown> => typeof role === 'object' && role !== null)
+      .map(normalizeRoleOption)
+      .filter((role): role is PatientRoleOption => role !== null)
+  },
+
   async getPaged(page: number, pageSize: number, search?: string): Promise<PagedResult<PatientApiDto>> {
     const { data } = await api.get('/patients', {
       params: { page, pageSize, search: search?.trim() || undefined },
@@ -183,7 +219,7 @@ export const patientService = {
   async create(payload: PatientSaveDto): Promise<void> {
     await api.post('/patients', toRequestBody(payload), {
       headers: payload.profilePictureDetails ? { 'Content-Type': 'multipart/form-data' } : undefined,
-      meta: { idempotencyKey: true },
+      meta: { auditReason: 'Create patient registration', idempotencyKey: true },
     })
   },
 
@@ -203,13 +239,15 @@ export const patientService = {
           },
       {
         headers: body instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
-        meta: { idempotencyKey: true },
+        meta: { auditReason: 'Update patient registration', idempotencyKey: true },
       },
     )
   },
 
   async delete(id: number): Promise<void> {
-    await api.delete(`/patients/${id}`)
+    await api.delete(`/patients/${id}`, {
+      meta: { auditReason: 'Delete patient registration', idempotencyKey: true },
+    })
   },
 
   async search(term: string): Promise<PatientApiDto[]> {

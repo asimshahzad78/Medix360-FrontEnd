@@ -8,11 +8,11 @@
       </div>
 
       <div class="header-actions">
-        <button type="button" :disabled="exporting" @click="exportData">
+        <button v-if="props.canExport" type="button" :disabled="exporting" @click="exportData">
           {{ exporting ? 'Exporting...' : 'Export' }}
         </button>
         <button type="button" :disabled="loading" @click="refresh">Refresh</button>
-        <button type="button" class="primary" @click="openForm">New</button>
+        <button v-if="props.canCreate" type="button" class="primary" @click="openForm">New</button>
       </div>
     </section>
 
@@ -134,6 +134,7 @@
             v-if="field.type === 'lookup' && field.lookupKind"
             v-model="form[field.key]"
             :kind="field.lookupKind"
+            :params="lookupParams(field)"
             :placeholder="field.placeholder || field.label"
           />
           <select v-else-if="field.type === 'select'" v-model="form[field.key]" :required="field.required">
@@ -183,6 +184,29 @@
         <label v-if="pendingRowAction.requiresAuditReason" class="field">
           <span>Audit Reason <b>*</b></span>
           <textarea v-model.trim="rowActionReason" required placeholder="Explain this workflow action." />
+        </label>
+
+        <label v-for="field in pendingRowAction.payloadFields || []" :key="field.key" class="field">
+          <span>{{ field.label }} <b v-if="field.required">*</b></span>
+          <select v-if="field.type === 'select'" v-model="rowActionForm[field.key]" :required="field.required">
+            <option value="">Select</option>
+            <option v-for="option in field.options" :key="option" :value="option">
+              {{ option }}
+            </option>
+          </select>
+          <textarea
+            v-else-if="field.type === 'textarea'"
+            v-model.trim="rowActionForm[field.key]"
+            :required="field.required"
+            :placeholder="field.placeholder || field.label"
+          />
+          <input
+            v-else
+            v-model.trim="rowActionForm[field.key]"
+            :type="field.type"
+            :required="field.required"
+            :placeholder="field.placeholder || field.label"
+          />
         </label>
 
         <AppProblemDetails v-if="actionError" :problem="actionError" fallback-title="Could not complete action" />
@@ -235,6 +259,8 @@ const props = withDefaults(
     exportEndpoint?: string
     mutationEndpoint?: string
     mutationLabel?: string
+    canCreate?: boolean
+    canExport?: boolean
     requiresAuditReason?: boolean
     formFields?: EnterpriseFormField[]
     filterFields?: EnterpriseFilterField[]
@@ -254,6 +280,8 @@ const props = withDefaults(
     mutationEndpoint: '',
     exportEndpoint: '',
     mutationLabel: 'Create record',
+    canCreate: true,
+    canExport: true,
     requiresAuditReason: false,
     formFields: () => [],
     filterFields: () => [
@@ -287,6 +315,7 @@ const rowActionReason = ref('')
 const pendingRow = ref<QueueRow | null>(null)
 const pendingRowAction = ref<EnterpriseRowAction | null>(null)
 const form = reactive<Record<string, string | number | null>>({})
+const rowActionForm = reactive<Record<string, string | number | null>>({})
 const filters = reactive<Record<string, string | number | null>>({})
 const columns = ['ID', 'Subject', 'Owner', 'Status']
 const toast = useToastStore()
@@ -337,6 +366,49 @@ const compact = (source: Record<string, unknown>): Record<string, unknown> =>
   Object.fromEntries(
     Object.entries(source).filter(([, value]) => value !== '' && value !== null && value !== undefined),
   )
+
+const serializeForm = (): Record<string, unknown> => {
+  const typed = Object.fromEntries(
+    props.formFields.map((field) => {
+      const value = form[field.key]
+      if (isBlank(value)) return [field.key, value]
+      if (field.type === 'number') return [field.key, Number(value)]
+      if (field.options?.every((option) => option === 'true' || option === 'false')) {
+        return [field.key, value === 'true']
+      }
+
+      return [field.key, value]
+    }),
+  )
+
+  return compact(typed)
+}
+
+const serializeFields = (
+  fields: EnterpriseFormField[],
+  source: Record<string, string | number | null>,
+): Record<string, unknown> => {
+  const typed = Object.fromEntries(
+    fields.map((field) => {
+      const value = source[field.key]
+      if (isBlank(value)) return [field.key, value]
+      if (field.type === 'number') return [field.key, Number(value)]
+      return [field.key, value]
+    }),
+  )
+
+  return compact(typed)
+}
+
+const lookupParams = (field: EnterpriseFormField): Record<string, unknown> => {
+  if (!field.lookupParamsFrom) return {}
+
+  return Object.fromEntries(
+    Object.entries(field.lookupParamsFrom)
+      .map(([paramName, formKey]) => [paramName, fieldValue(formKey)])
+      .filter(([, value]) => !isBlank(value)),
+  )
+}
 
 const resetForm = () => {
   Object.keys(form).forEach((key) => {
@@ -414,7 +486,7 @@ const submitForm = async () => {
   const result = await runMutation(
     saveState,
     () =>
-      enterpriseService.runWorkspaceAction(endpoint, compact(form), {
+      enterpriseService.runWorkspaceAction(endpoint, serializeForm(), {
         auditReason: props.requiresAuditReason ? auditReason.value : undefined,
         idempotencyKey: true,
       }),
@@ -434,6 +506,12 @@ const startRowAction = (row: QueueRow, action: EnterpriseRowAction) => {
   pendingRow.value = row
   pendingRowAction.value = action
   rowActionReason.value = ''
+  Object.keys(rowActionForm).forEach((key) => {
+    delete rowActionForm[key]
+  })
+  ;(action.payloadFields || []).forEach((field) => {
+    rowActionForm[field.key] = ''
+  })
   actionState.error.value = null
 }
 
@@ -443,6 +521,9 @@ const closeRowAction = () => {
   pendingRow.value = null
   pendingRowAction.value = null
   rowActionReason.value = ''
+  Object.keys(rowActionForm).forEach((key) => {
+    delete rowActionForm[key]
+  })
 }
 
 const submitRowAction = async () => {
@@ -457,7 +538,10 @@ const submitRowAction = async () => {
     () =>
       enterpriseService.runWorkspaceAction(
         endpoint,
-        { id: row.id },
+        {
+          id: row.id,
+          ...serializeFields(action.payloadFields || [], rowActionForm),
+        },
         {
           auditReason: action.requiresAuditReason ? rowActionReason.value : undefined,
           idempotencyKey: action.idempotent === false ? undefined : true,
@@ -508,6 +592,12 @@ const applyFilters = async () => {
 
 onMounted(loadModuleData)
 watch(() => props.dataEndpoint, loadModuleData)
+watch(
+  () => form.patientId,
+  () => {
+    if ('encounterId' in form) form.encounterId = ''
+  },
+)
 </script>
 
 <style scoped>
@@ -515,6 +605,11 @@ watch(() => props.dataEndpoint, loadModuleData)
   min-height: 100vh;
   background: #f4f9f4;
   padding: 24px;
+}
+
+.module-page,
+.module-page * {
+  box-sizing: border-box;
 }
 
 .module-header,
@@ -582,7 +677,8 @@ h3 {
 .record-form {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  align-items: start;
+  gap: 14px 12px;
 }
 
 .record-form.one-column {
@@ -592,6 +688,12 @@ h3 {
 .field {
   display: grid;
   gap: 5px;
+  min-width: 0;
+}
+
+.field :deep(.lookup-select),
+.field :deep(.multiselect) {
+  width: 100%;
   min-width: 0;
 }
 
@@ -606,12 +708,22 @@ h3 {
 input,
 select,
 textarea {
+  box-sizing: border-box;
+  min-width: 0;
   width: 100%;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   color: #0f172a;
   font-size: 13px;
   padding: 0 10px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.12);
 }
 
 input,

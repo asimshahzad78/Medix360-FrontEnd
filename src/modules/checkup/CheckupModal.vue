@@ -21,6 +21,7 @@
         <!-- TABS -->
         <div class="tabs">
           <button :class="{ active: tab === 'encounter' }" @click.prevent="tab = 'encounter'">Encounter</button>
+          <button :class="{ active: tab === 'details' }" @click.prevent="tab = 'details'">Details</button>
           <button :class="{ active: tab === 'vitals' }" @click.prevent="tab = 'vitals'">
             Vitals
           </button>
@@ -37,18 +38,55 @@
         <!-- ================= ENCOUNTER TAB ================= -->
         <div v-if="tab === 'encounter'" class="grid">
           <div>
-            <label>Patient</label>
+            <label>Patient *</label>
             <input type="text" :value="patient.firstName + ' ' + patient.lastName" disabled />
           </div>
 
           <div>
-            <label>Patient Type</label>
+            <label>Patient Type *</label>
             <select v-model="form.patientType">
               <option value="Out Patient">Out Patient</option>
               <option value="In Patient">In Patient</option>
             </select>
           </div>
 
+          <div>
+            <label>Doctor *</label>
+            <AppLookupSelect
+              v-model="form.doctorId"
+              kind="doctor"
+              placeholder="Search doctor"
+              @selected="selectDoctor"
+            />
+          </div>
+
+          <div>
+            <label>Checkup Date *</label>
+            <input type="date" v-model="form.checkupDate" />
+          </div>
+
+          <div>
+            <label>Payment Mode *</label>
+            <select v-model="form.paymentMode" @change="syncPaymentType">
+              <option v-for="mode in paymentModeOptions" :key="mode" :value="mode">
+                {{ mode }}
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label>Payment Account *</label>
+            <select v-model="selectedAccountId" @change="syncPaymentAccount">
+              <option value="">Select payment account</option>
+              <option v-for="account in paymentAccountOptions" :key="account.id" :value="String(account.id)">
+                {{ account.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ================= DETAILS TAB ================= -->
+        <div v-if="tab === 'details'" class="grid">
           <div>
             <label>Visit ID</label>
             <input v-model="form.visitId" />
@@ -60,26 +98,11 @@
           </div>
 
           <div>
-            <label>Doctor</label>
-            <AppLookupSelect
-              v-model="form.doctorId"
-              kind="doctor"
-              placeholder="Search doctor"
-              @selected="selectDoctor"
-            />
-          </div>
-
-          <div>
-            <label>Checkup Date</label>
-            <input type="date" v-model="form.checkupDate" />
-          </div>
-
-          <div>
             <label>Next Visit Date</label>
             <input type="date" v-model="form.nextVisitDate" />
           </div>
 
-          <div class="full">
+          <div>
             <label>Current URL</label>
             <input v-model="form.currentURL" readonly />
           </div>
@@ -252,16 +275,6 @@
         <!-- ================= PAYMENT TAB ================= -->
         <div v-if="tab === 'payment'" class="grid">
           <div>
-            <label>Payment Mode</label>
-            <AppLookupSelect
-              v-model="form.paymentMode"
-              kind="paymentMode"
-              placeholder="Select payment mode"
-              @selected="selectPaymentMode"
-            />
-          </div>
-
-          <div>
             <label>Payment Type</label>
             <select v-model="form.paymentType">
               <option value="Cash">Cash</option>
@@ -271,16 +284,6 @@
               <option value="Insurance">Insurance</option>
               <option value="Free">Free</option>
             </select>
-          </div>
-
-          <div>
-            <label>Payment Account</label>
-            <AppLookupSelect
-              v-model="selectedAccountId"
-              kind="paymentAccount"
-              placeholder="Search payment account"
-              @selected="selectPaymentAccount"
-            />
           </div>
 
           <div>
@@ -311,7 +314,7 @@ import { lookupService, type LookupOption } from '@/services/lookup.service'
 import { checkupService } from './checkup.service'
 import type { AxiosError } from 'axios'
 
-type TabType = 'encounter' | 'vitals' | 'diagnosis' | 'prescription' | 'orders' | 'payment'
+type TabType = 'encounter' | 'details' | 'vitals' | 'diagnosis' | 'prescription' | 'orders' | 'payment'
 type AlertType = 'success' | 'error'
 
 interface AlertState {
@@ -368,6 +371,8 @@ interface CheckupForm {
 }
 
 /** ✅ This matches your API after backend fix: DocId = DoctorsInfo.Id */
+const paymentModeOptions = ['Cash', 'Card', 'Bank', 'Online Transfer', 'Wallet', 'Insurance', 'Free'] as const
+
 export default defineComponent({
   components: { AppLookupSelect },
   props: {
@@ -384,6 +389,7 @@ export default defineComponent({
 
     const selectedAccountId = ref<string | null>(null)
     const selectedPaymentAccount = ref<LookupOption | null>(null)
+    const paymentAccountOptions = ref<LookupOption[]>([])
     const selectedDoctorFee = ref<number>(0)
     const makeVisitId = (): string => `VIS-${Date.now().toString().slice(-8)}`
     const orderTotal = computed(() =>
@@ -470,13 +476,45 @@ export default defineComponent({
       newTest.price = option.price ?? 0
     }
 
-    const selectPaymentMode = (option: LookupOption | null): void => {
-      form.paymentMode = option ? String(option.id) : ''
-      form.paymentType = option?.label ?? form.paymentType
+    const findDefaultPaymentAccount = (): LookupOption | null => {
+      const mode = form.paymentMode.toLowerCase()
+      const accounts = paymentAccountOptions.value
+      const byText = (...terms: string[]) =>
+        accounts.find((account) => {
+          const haystack = [account.label, account.code, account.description].filter(Boolean).join(' ').toLowerCase()
+          return terms.some((term) => haystack.includes(term))
+        }) ?? null
+
+      if (mode === 'cash') return byText('cash in hand', 'cash') ?? accounts[0] ?? null
+      if (['card', 'bank', 'online transfer', 'wallet'].includes(mode)) {
+        return byText('bank', 'card', 'online', 'wallet') ?? accounts[0] ?? null
+      }
+
+      return accounts[0] ?? null
     }
 
-    const selectPaymentAccount = (option: LookupOption | null): void => {
-      selectedPaymentAccount.value = option
+    const selectPaymentAccount = (account: LookupOption | null): void => {
+      selectedAccountId.value = account ? String(account.id) : null
+      selectedPaymentAccount.value = account
+    }
+
+    const syncDefaultPaymentAccount = (): void => {
+      if (selectedAccountId.value) {
+        syncPaymentAccount()
+        return
+      }
+
+      selectPaymentAccount(findDefaultPaymentAccount())
+    }
+
+    const syncPaymentType = (): void => {
+      form.paymentType = form.paymentMode
+      selectPaymentAccount(findDefaultPaymentAccount())
+    }
+
+    const syncPaymentAccount = (): void => {
+      selectedPaymentAccount.value =
+        paymentAccountOptions.value.find((account) => String(account.id) === String(selectedAccountId.value)) ?? null
     }
 
     const addMedicine = (): void => {
@@ -506,30 +544,45 @@ export default defineComponent({
 
     onMounted(async () => {
       const accounts = await lookupService.search('paymentAccount')
-      const cash = accounts.find((a) => a.label.toLowerCase().includes('cash in') || a.label.toLowerCase() === 'cash')
-      if (cash) {
-        selectedAccountId.value = String(cash.id)
-        selectedPaymentAccount.value = cash
-      }
+      paymentAccountOptions.value = accounts
+      syncDefaultPaymentAccount()
     })
 
     const save = async (): Promise<void> => {
       try {
+        if (!form.patientId) {
+          alertState.value = { type: 'error', message: 'Please select a patient.' }
+          tab.value = 'encounter'
+          return
+        }
+
+        if (!form.patientType) {
+          alertState.value = { type: 'error', message: 'Please select patient type.' }
+          tab.value = 'encounter'
+          return
+        }
+
         if (!form.doctorId) {
           alertState.value = { type: 'error', message: 'Please select a doctor.' }
           tab.value = 'encounter'
           return
         }
 
+        if (!form.checkupDate) {
+          alertState.value = { type: 'error', message: 'Please select checkup date.' }
+          tab.value = 'encounter'
+          return
+        }
+
         if (!form.paymentMode) {
           alertState.value = { type: 'error', message: 'Please select payment mode.' }
-          tab.value = 'payment'
+          tab.value = 'encounter'
           return
         }
 
         if (!selectedAccountId.value) {
           alertState.value = { type: 'error', message: 'Please select a payment account.' }
-          tab.value = 'payment'
+          tab.value = 'encounter'
           return
         }
 
@@ -538,7 +591,7 @@ export default defineComponent({
             type: 'error',
             message: 'Selected payment mode is not Cash. Please select a suitable payment account.',
           }
-          tab.value = 'payment'
+          tab.value = 'encounter'
           return
         }
 
@@ -597,7 +650,7 @@ export default defineComponent({
         alertState.value = { type: 'success', message: 'Checkup saved successfully.' }
 
         setTimeout(() => {
-          emit('saved', res.PaymentId)
+          emit('saved', res.PaymentId ?? res.paymentId)
           emit('close')
         }, 1200)
       } catch (e) {
@@ -616,19 +669,21 @@ export default defineComponent({
       selectedDoctorFee,
       orderTotal,
       vitalSignsSummary,
+      paymentAccountOptions,
       form,
       newMed,
       newTest,
       selectDoctor,
       selectMedicine,
       selectDiagnosticOrder,
-      selectPaymentMode,
-      selectPaymentAccount,
+      syncPaymentType,
+      syncPaymentAccount,
       addMedicine,
       removeMedicine,
       addTest,
       removeTest,
       save,
+      paymentModeOptions,
     }
   },
 })

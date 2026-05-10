@@ -146,7 +146,7 @@ export type PerformanceAppraisalDto = {
 }
 
 export type PermissionDto = {
-  Id: number
+  Id: number | string
   Code?: string | null
   Name?: string | null
   Description?: string | null
@@ -185,7 +185,27 @@ export type PagedResult<T> = {
 
 async function list<T>(url: string, params?: Record<string, unknown>): Promise<PagedResult<T>> {
   const { data } = await api.get<PagedResult<T>>(url, { params })
-  return data
+  if (!data || typeof data !== 'object') return data
+
+  const rawItems = (data as PagedResult<T>).items ?? (data as PagedResult<T> & { Items?: T[] }).Items
+  if (!Array.isArray(rawItems)) return data
+
+  return {
+    ...(data as PagedResult<T>),
+    items: rawItems.map((item) => pascalizeKeys(item)) as T[],
+  }
+}
+
+function pascalizeKeys<T>(value: T): T {
+  if (Array.isArray(value)) return value.map((item) => pascalizeKeys(item)) as T
+  if (!value || typeof value !== 'object') return value
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).map(([key, itemValue]) => [
+      key ? `${key.charAt(0).toUpperCase()}${key.slice(1)}` : key,
+      pascalizeKeys(itemValue),
+    ]),
+  ) as T
 }
 
 function toPascalPayload(payload: Record<string, unknown>): Record<string, unknown> {
@@ -199,18 +219,35 @@ function toPascalPayload(payload: Record<string, unknown>): Record<string, unkno
 
 async function create(url: string, payload: Record<string, unknown>): Promise<void> {
   await api.post(url, toPascalPayload(payload), {
-    meta: { idempotencyKey: true },
+    meta: { auditReason: `Create ${hrEntityName(url)}`, idempotencyKey: true },
   })
 }
 
-async function update(url: string, id: number, payload: Record<string, unknown>): Promise<void> {
-  await api.put(`${url}/${id}`, toPascalPayload(payload), {
-    meta: { idempotencyKey: true },
+type EntityId = number | string
+
+function idSegment(id: EntityId): string {
+  return encodeURIComponent(String(id))
+}
+
+async function update(url: string, id: EntityId, payload: Record<string, unknown>): Promise<void> {
+  await api.put(`${url}/${idSegment(id)}`, toPascalPayload(payload), {
+    meta: { auditReason: `Update ${hrEntityName(url)}`, idempotencyKey: true },
   })
 }
 
-async function remove(url: string, id: number): Promise<void> {
-  await api.delete(`${url}/${id}`)
+async function remove(url: string, id: EntityId): Promise<void> {
+  await api.delete(`${url}/${idSegment(id)}`, {
+    meta: { auditReason: `Delete ${hrEntityName(url)}`, idempotencyKey: true },
+  })
+}
+
+function hrEntityName(url: string): string {
+  const segments = url.split('/').filter(Boolean)
+  const segment = segments[segments.length - 1] ?? 'HR record'
+  return segment
+    .split('-')
+    .map((part: string) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
 }
 
 export const hrLookupsService = {
@@ -234,7 +271,7 @@ export const hrLookupsService = {
     await update('/hr/departments', id, payload)
   },
 
-  async deleteDepartment(id: number): Promise<void> {
+  async deleteDepartment(id: EntityId): Promise<void> {
     await remove('/hr/departments', id)
   },
 
@@ -263,7 +300,7 @@ export const hrLookupsService = {
     await update('/hr/subdepartments', id, payload)
   },
 
-  async deleteSubDepartment(id: number): Promise<void> {
+  async deleteSubDepartment(id: EntityId): Promise<void> {
     await remove('/hr/subdepartments', id)
   },
 
@@ -287,7 +324,7 @@ export const hrLookupsService = {
     await update('/hr/designations', id, payload)
   },
 
-  async deleteDesignation(id: number): Promise<void> {
+  async deleteDesignation(id: EntityId): Promise<void> {
     await remove('/hr/designations', id)
   },
 
@@ -298,10 +335,10 @@ export const hrLookupsService = {
   async createAttendanceLog(payload: Record<string, unknown>): Promise<void> {
     await create('/hr/attendance-logs', payload)
   },
-  async updateAttendanceLog(id: number, payload: Record<string, unknown>): Promise<void> {
+  async updateAttendanceLog(id: EntityId, payload: Record<string, unknown>): Promise<void> {
     await update('/hr/attendance-logs', id, payload)
   },
-  async deleteAttendanceLog(id: number): Promise<void> {
+  async deleteAttendanceLog(id: EntityId): Promise<void> {
     await remove('/hr/attendance-logs', id)
   },
 
@@ -312,10 +349,10 @@ export const hrLookupsService = {
   async createCredential(payload: Record<string, unknown>): Promise<void> {
     await create('/hr/credentials', payload)
   },
-  async updateCredential(id: number, payload: Record<string, unknown>): Promise<void> {
+  async updateCredential(id: EntityId, payload: Record<string, unknown>): Promise<void> {
     await update('/hr/credentials', id, payload)
   },
-  async deleteCredential(id: number): Promise<void> {
+  async deleteCredential(id: EntityId): Promise<void> {
     await remove('/hr/credentials', id)
   },
 
@@ -326,10 +363,10 @@ export const hrLookupsService = {
   async createDisciplinaryIncident(payload: Record<string, unknown>): Promise<void> {
     await create('/hr/disciplinary-incidents', payload)
   },
-  async updateDisciplinaryIncident(id: number, payload: Record<string, unknown>): Promise<void> {
+  async updateDisciplinaryIncident(id: EntityId, payload: Record<string, unknown>): Promise<void> {
     await update('/hr/disciplinary-incidents', id, payload)
   },
-  async deleteDisciplinaryIncident(id: number): Promise<void> {
+  async deleteDisciplinaryIncident(id: EntityId): Promise<void> {
     await remove('/hr/disciplinary-incidents', id)
   },
 
@@ -340,10 +377,10 @@ export const hrLookupsService = {
   async createDutyRoster(payload: Record<string, unknown>): Promise<void> {
     await create('/hr/duty-rosters', payload)
   },
-  async updateDutyRoster(id: number, payload: Record<string, unknown>): Promise<void> {
+  async updateDutyRoster(id: EntityId, payload: Record<string, unknown>): Promise<void> {
     await update('/hr/duty-rosters', id, payload)
   },
-  async deleteDutyRoster(id: number): Promise<void> {
+  async deleteDutyRoster(id: EntityId): Promise<void> {
     await remove('/hr/duty-rosters', id)
   },
 
@@ -354,10 +391,10 @@ export const hrLookupsService = {
   async createEmploymentProfileTag(payload: Record<string, unknown>): Promise<void> {
     await create('/hr/employment-profile-tags', payload)
   },
-  async updateEmploymentProfileTag(id: number, payload: Record<string, unknown>): Promise<void> {
+  async updateEmploymentProfileTag(id: EntityId, payload: Record<string, unknown>): Promise<void> {
     await update('/hr/employment-profile-tags', id, payload)
   },
-  async deleteEmploymentProfileTag(id: number): Promise<void> {
+  async deleteEmploymentProfileTag(id: EntityId): Promise<void> {
     await remove('/hr/employment-profile-tags', id)
   },
 
@@ -368,10 +405,10 @@ export const hrLookupsService = {
   async createLeaveBalance(payload: Record<string, unknown>): Promise<void> {
     await create('/hr/leave-balances', payload)
   },
-  async updateLeaveBalance(id: number, payload: Record<string, unknown>): Promise<void> {
+  async updateLeaveBalance(id: EntityId, payload: Record<string, unknown>): Promise<void> {
     await update('/hr/leave-balances', id, payload)
   },
-  async deleteLeaveBalance(id: number): Promise<void> {
+  async deleteLeaveBalance(id: EntityId): Promise<void> {
     await remove('/hr/leave-balances', id)
   },
 
@@ -382,10 +419,10 @@ export const hrLookupsService = {
   async createLeaveRequest(payload: Record<string, unknown>): Promise<void> {
     await create('/hr/leave-requests', payload)
   },
-  async updateLeaveRequest(id: number, payload: Record<string, unknown>): Promise<void> {
+  async updateLeaveRequest(id: EntityId, payload: Record<string, unknown>): Promise<void> {
     await update('/hr/leave-requests', id, payload)
   },
-  async deleteLeaveRequest(id: number): Promise<void> {
+  async deleteLeaveRequest(id: EntityId): Promise<void> {
     await remove('/hr/leave-requests', id)
   },
 
@@ -396,10 +433,10 @@ export const hrLookupsService = {
   async createLeaveType(payload: Record<string, unknown>): Promise<void> {
     await create('/hr/leave-types', payload)
   },
-  async updateLeaveType(id: number, payload: Record<string, unknown>): Promise<void> {
+  async updateLeaveType(id: EntityId, payload: Record<string, unknown>): Promise<void> {
     await update('/hr/leave-types', id, payload)
   },
-  async deleteLeaveType(id: number): Promise<void> {
+  async deleteLeaveType(id: EntityId): Promise<void> {
     await remove('/hr/leave-types', id)
   },
 
@@ -410,10 +447,10 @@ export const hrLookupsService = {
   async createOnboardingChecklistItem(payload: Record<string, unknown>): Promise<void> {
     await create('/hr/onboarding-checklist-items', payload)
   },
-  async updateOnboardingChecklistItem(id: number, payload: Record<string, unknown>): Promise<void> {
+  async updateOnboardingChecklistItem(id: EntityId, payload: Record<string, unknown>): Promise<void> {
     await update('/hr/onboarding-checklist-items', id, payload)
   },
-  async deleteOnboardingChecklistItem(id: number): Promise<void> {
+  async deleteOnboardingChecklistItem(id: EntityId): Promise<void> {
     await remove('/hr/onboarding-checklist-items', id)
   },
 
@@ -424,10 +461,10 @@ export const hrLookupsService = {
   async createPayroll(payload: Record<string, unknown>): Promise<void> {
     await create('/hr/payrolls', payload)
   },
-  async updatePayroll(id: number, payload: Record<string, unknown>): Promise<void> {
+  async updatePayroll(id: EntityId, payload: Record<string, unknown>): Promise<void> {
     await update('/hr/payrolls', id, payload)
   },
-  async deletePayroll(id: number): Promise<void> {
+  async deletePayroll(id: EntityId): Promise<void> {
     await remove('/hr/payrolls', id)
   },
 
@@ -438,10 +475,10 @@ export const hrLookupsService = {
   async createPerformanceAppraisal(payload: Record<string, unknown>): Promise<void> {
     await create('/hr/performance-appraisals', payload)
   },
-  async updatePerformanceAppraisal(id: number, payload: Record<string, unknown>): Promise<void> {
+  async updatePerformanceAppraisal(id: EntityId, payload: Record<string, unknown>): Promise<void> {
     await update('/hr/performance-appraisals', id, payload)
   },
-  async deletePerformanceAppraisal(id: number): Promise<void> {
+  async deletePerformanceAppraisal(id: EntityId): Promise<void> {
     await remove('/hr/performance-appraisals', id)
   },
 
@@ -452,10 +489,10 @@ export const hrLookupsService = {
   async createPermission(payload: Record<string, unknown>): Promise<void> {
     await create('/hr/permissions', payload)
   },
-  async updatePermission(id: number, payload: Record<string, unknown>): Promise<void> {
+  async updatePermission(id: EntityId, payload: Record<string, unknown>): Promise<void> {
     await update('/hr/permissions', id, payload)
   },
-  async deletePermission(id: number): Promise<void> {
+  async deletePermission(id: EntityId): Promise<void> {
     await remove('/hr/permissions', id)
   },
 
@@ -466,10 +503,10 @@ export const hrLookupsService = {
   async createShift(payload: Record<string, unknown>): Promise<void> {
     await create('/hr/shifts', payload)
   },
-  async updateShift(id: number, payload: Record<string, unknown>): Promise<void> {
+  async updateShift(id: EntityId, payload: Record<string, unknown>): Promise<void> {
     await update('/hr/shifts', id, payload)
   },
-  async deleteShift(id: number): Promise<void> {
+  async deleteShift(id: EntityId): Promise<void> {
     await remove('/hr/shifts', id)
   },
 
@@ -480,10 +517,10 @@ export const hrLookupsService = {
   async createTrainingEnrollment(payload: Record<string, unknown>): Promise<void> {
     await create('/hr/training-enrollments', payload)
   },
-  async updateTrainingEnrollment(id: number, payload: Record<string, unknown>): Promise<void> {
+  async updateTrainingEnrollment(id: EntityId, payload: Record<string, unknown>): Promise<void> {
     await update('/hr/training-enrollments', id, payload)
   },
-  async deleteTrainingEnrollment(id: number): Promise<void> {
+  async deleteTrainingEnrollment(id: EntityId): Promise<void> {
     await remove('/hr/training-enrollments', id)
   },
 }

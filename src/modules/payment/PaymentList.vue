@@ -114,6 +114,7 @@ onMounted(loadPayments)
             <tr>
               <th class="text-left col-id">ID</th>
               <th class="text-left col-patient">Patient</th>
+              <th class="text-left col-doctor">Doctor</th>
               <th class="text-left col-type">Type</th>
               <th class="text-left col-amount">Amount</th>
               <th class="text-left col-amount">Payment Mode</th>
@@ -126,6 +127,7 @@ onMounted(loadPayments)
             <tr v-for="p in filteredPayments" :key="p.Id">
               <td class="col-id">{{ p.Id }}</td>
               <td class="col-patient">{{ p.PatientName }}</td>
+              <td class="col-doctor">{{ p.DoctorName || '-' }}</td>
               <td class="col-type">{{ p.PatientType }}</td>
               <td class="col-amount">{{ p.GrandTotal }}</td>
               <td class="col-payment-mode">{{ p.ModeOfPayment }}</td>
@@ -145,7 +147,7 @@ onMounted(loadPayments)
             </tr>
 
             <tr v-if="filteredPayments.length === 0">
-              <td colspan="6" class="no-records">No records</td>
+              <td colspan="8" class="no-records">No records</td>
             </tr>
           </tbody>
         </table>
